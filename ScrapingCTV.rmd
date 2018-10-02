@@ -1,0 +1,79 @@
+---
+title: "Scraping Cran Task View by Topic"
+author: "Madison Volpe"
+date: "10/2/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Necessary Packages 
+
+```{r}
+library(tidyverse)
+library(XML)
+library(rvest)
+library(RSelenium)
+library(RCurl)
+```
+
+# Bayesian
+
+## Pull list of Bayesian Packages from CTV 
+
+```{r}
+url <- "https://cran.r-project.org/web/views/Bayesian.html" 
+
+BayesianPackages <-url %>%
+                  read_html()%>%
+                  html_nodes(xpath = "/html/body/ul[1]/li")  %>% #unique xpath to pull in all individually
+                  html_text()
+
+BayesianPackages # we now have all Bayesian Packages listed on the webpage 
+```
+
+## Make dataframe 
+
+```{r}
+BayesianPackages <- data.frame(BayesianPackages)
+names(BayesianPackages) <- "Packages"
+BayesianPackages$Packages <- as.character(BayesianPackages$Packages)
+```
+
+## Now we will construct URLs for each package
+
+```{r}
+baseURL <- "https://cran.r-project.org/web/packages/"
+
+URLs <- paste(baseURL, BayesianPackages$Packages, "/index.html", sep = "") #makes URLs that you can navigate to
+
+URLs <- data.frame(URLs)
+
+URLs$URLs <- as.character(URLs$URLs)
+
+BayesianPackages <- cbind(BayesianPackages, URLs)
+
+```
+
+
+## Loop to grab HTML of each URL (1 per package)
+
+```{r}
+start.time <- Sys.time()
+
+mylist.names <- BayesianPackages$Packages
+HTMLs <- as.list(rep(NA, length(mylist.names)))
+names(HTMLs) <- mylist.names
+
+for(i in 1:nrow(URLs)){
+  HTMLs[[i]] <- getURL(URLs$URLs[i])
+}
+
+end.time <- Sys.time()
+
+end.time - start.time
+
+save(HTMLs, file = "HTMLs.rda")
+```

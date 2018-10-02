@@ -78,4 +78,4 @@ end.time - start.time
 save(HTMLs, file = "HTMLs.rda")
 ```
 
-## Scrape HTMLs 
+## Scrape HTMLs :)

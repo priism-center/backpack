@@ -1,0 +1,8 @@
+"","Package","Enhances"
+"1","glmmBUGS","nlme"
+"2","glmmBUGS","diseasemapping"
+"3","glmmBUGS","geoRglm"
+"4","glmmBUGS","R2WinBUGS"
+"5","glmmBUGS","R2OpenBUGS"
+"6","glmmBUGS","R2jags"
+"7","glmmBUGS","rjags"

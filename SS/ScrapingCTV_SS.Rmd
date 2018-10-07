@@ -1,0 +1,53 @@
+---
+title: "ScrapinCTV: Statistics for the Social Sciences"
+author: "Madison Volpe"
+date: "10/7/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Scraping and HTML Parsing
+
+```{r}
+setwd("/Users/madisonvolpe/Documents/Grad_School/Fall_2018/Consulting")
+load(file = "FullScrape.rda")
+
+X <- FullScrape("https://cran.r-project.org/web/views/SocialSciences.html", "https://cran.r-project.org/web/packages/")
+
+SS_Packages <- X[[1]]
+HTMLs <- X[[2]]
+PackageDesc <- X[[3]]
+PackageSummaries <- X[[4]]
+ReverseDepends <- X[[5]]
+SS_Base <- X[[6]]
+
+rm(X)
+```
+
+## Creating Tables / CSVs
+
+```{r}
+setwd("/Users/madisonvolpe/Documents/Grad_School/Fall_2018/Consulting")
+load(file = "MakeTables.rda")
+SS_List <- MakeTables(SS_Base)
+```
+
+```{r}
+setwd("/Users/madisonvolpe/Documents/Grad_School/Fall_2018/Consulting/SS")
+write.csv(SS_Base, "SocialScienceBase.csv")
+write.csv(SS_List[[1]], "SocialScienceDependencies.csv")
+write.csv(SS_List[[2]], "SocialScienceInViews.csv")
+write.csv(SS_List[[3]], "SocialScienceImports.csv")
+write.csv(SS_List[[4]], "SocialScienceLinkingTo.csv")
+write.csv(SS_List[[5]], "SocialScienceSuggests.csv")
+write.csv(SS_List[[6]], "SocialScienceEnhances.csv")
+write.csv(SS_List[[7]], "SocialScienceReverseDepends.csv")
+write.csv(SS_List[[8]], "SocialScienceReverseImports.csv")
+write.csv(SS_List[[9]], "SocialScienceReverseSuggests.csv")
+write.csv(SS_List[[10]], "SocialScienceReverseLinkingTo.csv")
+write.csv(SS_List[[11]], "SocialScienceReverseEnhances.csv")
+```
+

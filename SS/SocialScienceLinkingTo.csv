@@ -1,0 +1,6 @@
+"","Package","LinkingTo"
+"1","Amelia","Rcpp (≥ 0.11)"
+"2","Amelia","RcppArmadillo"
+"3","optmatch","Rcpp"
+"4","PAFit","Rcpp"
+"5","VIM","Rcpp"

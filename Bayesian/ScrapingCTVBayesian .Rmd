@@ -228,20 +228,150 @@ BayesianInViews <- BayesianInViews %>%
 
 ## Create Imports
 
+```{r}
+BayesianImports <- BayesianBase %>%
+  select(Package, Imports.) %>%
+  mutate(Imports. = strsplit(as.character(Imports.), ","))%>%
+  unnest(Imports.)
+
+names(BayesianImports)[2] <- "Imports"
+BayesianImports$Imports <- trimws(BayesianImports$Imports)
+
+BayesianImports <- BayesianImports %>%
+  filter(!is.na(Imports))
+```
+
 ## Create LinkingTo
+
+```{r}
+BayesianLinkingTo <- BayesianBase %>%
+  select(Package, LinkingTo.) %>%
+  mutate(LinkingTo. = strsplit(as.character(LinkingTo.), ","))%>%
+  unnest(LinkingTo.)
+
+names(BayesianLinkingTo)[2] <- "LinkingTo"
+BayesianLinkingTo$LinkingTo <- trimws(BayesianLinkingTo$LinkingTo)
+
+BayesianLinkingTo <- BayesianLinkingTo %>%
+  filter(!is.na(LinkingTo))
+```
 
 ## Create Suggests 
 
+```{r}
+BayesianSuggests <- BayesianBase %>%
+  select(Package, Suggests.) %>%
+  mutate(Suggests. = strsplit(as.character(Suggests.), ","))%>%
+  unnest(Suggests.)
+
+names(BayesianSuggests)[2] <- "Suggests"
+BayesianSuggests$Suggests <- trimws(BayesianSuggests$Suggests)
+
+BayesianSuggests <- BayesianSuggests %>%
+  filter(!is.na(Suggests))
+```
+
 ## Create Enhances
+
+```{r}
+BayesianEnhances <- BayesianBase %>%
+  select(Package, Enhances.) %>%
+  mutate(Enhances. = strsplit(as.character(Enhances.), ","))%>%
+  unnest(Enhances.)
+
+names(BayesianEnhances)[2] <- "Enhances"
+BayesianEnhances$Enhances <- trimws(BayesianEnhances$Enhances)
+
+BayesianEnhances <- BayesianEnhances %>%
+  filter(!is.na(Enhances))
+```
 
 ## Create Reverse Depends
 
+```{r}
+BayesianReverseDepends <- BayesianBase %>%
+  select(Package, Reverse.depends.) %>%
+  mutate(Reverse.depends. = strsplit(as.character(Reverse.depends.), ","))%>%
+  unnest(Reverse.depends.)
+
+names(BayesianReverseDepends)[2] <- "ReverseDepends"
+BayesianReverseDepends$ReverseDepends <- trimws(BayesianReverseDepends$ReverseDepends)
+
+BayesianReverseDepends <- BayesianReverseDepends %>%
+  filter(!is.na(ReverseDepends))
+```
+
 ## Create Reverse Imports
+
+```{r}
+BayesianReverseImports <- BayesianBase%>%
+  select(Package, Reverse.imports.) %>%
+  mutate(Reverse.imports. = strsplit(as.character(Reverse.imports.), ","))%>%
+  unnest(Reverse.imports.)
+
+names(BayesianReverseImports)[2] <- "ReverseImports"
+BayesianReverseImports$ReverseImports <- trimws(BayesianReverseImports$ReverseImports)
+
+BayesianReverseImports <- BayesianReverseImports %>%
+  filter(!is.na(ReverseImports))
+```
 
 ## Creeate Reverse Suggests
 
+```{r}
+BayesianReverseSuggests <- BayesianBase%>%
+  select(Package, Reverse.suggests.) %>%
+  mutate(Reverse.suggests. = strsplit(as.character(Reverse.suggests.), ","))%>%
+  unnest(Reverse.suggests.)
+
+names(BayesianReverseSuggests)[2] <- "ReverseSuggests"
+BayesianReverseSuggests$ReverseSuggests <- trimws(BayesianReverseSuggests$ReverseSuggests)
+
+BayesianReverseSuggests <- BayesianReverseSuggests %>%
+  filter(!is.na(ReverseSuggests))
+```
+
 ## Create Reverse linking to 
+
+```{r}
+BayesianReverseLinkingTo <- BayesianBase%>%
+  select(Package, Reverse.linking.to.) %>%
+  mutate(Reverse.linking.to. = strsplit(as.character(Reverse.linking.to.), ","))%>%
+  unnest(Reverse.linking.to.)
+
+names(BayesianReverseLinkingTo)[2] <- "ReverseLinkingTo"
+BayesianReverseLinkingTo$ReverseLinkingTo <- trimws(BayesianReverseLinkingTo$ReverseLinkingTo)
+
+BayesianReverseLinkingTo <- BayesianReverseLinkingTo%>%
+  filter(!is.na(ReverseLinkingTo))
+```
 
 ## Create Reverse enhances 
 
-## 
+```{r}
+BayesianReverseEnhances <- BayesianBase %>%
+  select(Package, Reverse.enhances.) %>%
+  mutate(Reverse.enhances. = strsplit(as.character(Reverse.enhances.), ","))%>%
+  unnest(Reverse.enhances.)
+
+names(BayesianReverseEnhances)[2] <- "ReverseEnhances"
+BayesianReverseEnhances$ReverseEnhances <- trimws(BayesianReverseEnhances$ReverseEnhances)
+
+BayesianReverseEnhances <- BayesianReverseEnhances%>%
+  filter(!is.na(ReverseEnhances))
+```
+
+```{r}
+write.csv(BayesianBase, "BayesianBase.csv")
+write.csv(BayesianDependencies, "BayesianDependencies.csv")
+write.csv(BayesianEnhances, "BayesianEnhances.csv")
+write.csv(BayesianImports, "BayesianImports.csv")
+write.csv(BayesianInViews, "BayesianInViews.csv")
+write.csv(BayesianLinkingTo, "BayesianLinkingTo.csv")
+write.csv(BayesianReverseDepends, "BayesianReverseDepends.csv")
+write.csv(BayesianReverseEnhances, "BayesianReverseEnhances.csv")
+write.csv(BayesianReverseImports, "BayesianReverseImports.csv")
+write.csv(BayesianReverseLinkingTo, "BayesianReverseLinkingTo.csv")
+write.csv(BayesianReverseSuggests, "BayesianReverseSuggests.csv")
+write.csv(BayesianSuggests, "BayesianSuggests.csv")
+```

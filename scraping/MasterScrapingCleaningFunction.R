@@ -20,6 +20,7 @@ FullScrape <- function(URL, baseURL){
     Packages <- data.frame(Packages)
     names(Packages) <- "Packages"
     Packages$Packages <- as.character(Packages$Packages)
+    Packages$Packages <- gsub(pattern = " (core)", replacement = "",Packages$Packages, fixed = TRUE)
 
 
 ## Now we will construct URLs for each package

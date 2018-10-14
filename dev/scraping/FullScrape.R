@@ -22,6 +22,7 @@ FullScrape <- function(URLs){
   suppressPackageStartupMessages(library(XML))
   suppressPackageStartupMessages(library(rvest))
   suppressPackageStartupMessages(library(RCurl))
+  suppressPackageStartupMessages(library(lubridate))
   
   ## Pull in list of Packages from CTV 
   Packages <- list()
@@ -165,8 +166,159 @@ FullScrape <- function(URLs){
   Updated$LastUpdate <- ymd_hms(Updated$LastUpdate)
   
   Packages <- left_join(Packages, Updated)
-return(Packages)
+  return(Packages)
 }
 
 Packages <- FullScrape(URLs)
 write.csv(Packages, "PackagesBase.csv")
+
+## Take Package DF and Make Edge lists with: DependS, Enhances, Imports, InViews, LinkingTo, 
+## ReverseDepends, ReverseEnhances, ReverseImports, ReverseLinkingTo, ReverseSuggests, Suggests 
+
+MakeEdgeLists <- function(data){ 
+  
+  #Load libraries
+  suppressPackageStartupMessages(library(dplyr))
+  suppressPackageStartupMessages(library(tidyr))
+  
+  #Make Depends Table 
+  Depends <- data %>%
+    select(Package, Depends.) %>%
+    mutate(Depends. = strsplit(as.character(Depends.), ",")) %>% 
+    unnest(Depends.)
+  
+  names(Depends)[2] <- "Depends"
+  Depends$Depends <- trimws(Depends$Depends)
+  
+  Depends <- Depends %>%
+    filter(!is.na(Depends))
+  
+  #Make InViews Table
+  InViews <- data %>%
+    select(Package, In.views.) %>%
+    mutate(In.views. = strsplit(as.character(In.views.), ","))%>%
+    unnest(In.views.)
+  
+  names(InViews)[2] <- "InViews"
+  InViews$InViews <- trimws(InViews$InViews)
+  
+  InViews <- InViews %>%
+    filter(!is.na(InViews))
+  
+  #Make Imports Table
+  
+  Imports <- data %>%
+    select(Package, Imports.) %>%
+    mutate(Imports. = strsplit(as.character(Imports.), ","))%>%
+    unnest(Imports.)
+  
+  names(Imports)[2] <- "Imports"
+  Imports$Imports <- trimws(Imports$Imports)
+  
+  Imports <- Imports %>%
+    filter(!is.na(Imports))
+  
+  #Make LinkingTo Table
+  LinkingTo <- data %>%
+    select(Package, LinkingTo.) %>%
+    mutate(LinkingTo. = strsplit(as.character(LinkingTo.), ","))%>%
+    unnest(LinkingTo.)
+  
+  names(LinkingTo)[2] <- "LinkingTo"
+  LinkingTo$LinkingTo <- trimws(LinkingTo$LinkingTo)
+  
+  LinkingTo <- LinkingTo %>%
+    filter(!is.na(LinkingTo))
+  
+  #Make Suggests Table
+  Suggests <- data %>%
+    select(Package, Suggests.) %>%
+    mutate(Suggests. = strsplit(as.character(Suggests.), ","))%>%
+    unnest(Suggests.)
+  
+  names(Suggests)[2] <- "Suggests"
+  Suggests$Suggests <- trimws(Suggests$Suggests)
+  
+  Suggests <- Suggests %>%
+    filter(!is.na(Suggests))
+  
+  #Make Enhances Table
+  Enhances <- data %>%
+    select(Package, Enhances.) %>%
+    mutate(Enhances. = strsplit(as.character(Enhances.), ","))%>%
+    unnest(Enhances.)
+  
+  names(Enhances)[2] <- "Enhances"
+  Enhances$Enhances <- trimws(Enhances$Enhances)
+  
+  Enhances <- Enhances %>%
+    filter(!is.na(Enhances))
+  
+  #Make ReverseDepends Table
+  ReverseDepends <- data %>%
+    select(Package, Reverse.depends.) %>%
+    mutate(Reverse.depends. = strsplit(as.character(Reverse.depends.), ","))%>%
+    unnest(Reverse.depends.)
+  
+  names(ReverseDepends)[2] <- "ReverseDepends"
+  ReverseDepends$ReverseDepends <- trimws(ReverseDepends$ReverseDepends)
+  
+  ReverseDepends <-ReverseDepends %>%
+    filter(!is.na(ReverseDepends))
+  
+  #Make ReverseImports Table
+  ReverseImports <- data %>%
+    select(Package, Reverse.imports.) %>%
+    mutate(Reverse.imports. = strsplit(as.character(Reverse.imports.), ","))%>%
+    unnest(Reverse.imports.)
+  
+  names(ReverseImports)[2] <- "ReverseImports"
+  ReverseImports$ReverseImports <- trimws(ReverseImports$ReverseImports)
+  
+  ReverseImports <- ReverseImports %>%
+    filter(!is.na(ReverseImports))
+  
+  #Make ReverseSuggests Table
+  ReverseSuggests <- data%>%
+    select(Package, Reverse.suggests.) %>%
+    mutate(Reverse.suggests. = strsplit(as.character(Reverse.suggests.), ","))%>%
+    unnest(Reverse.suggests.)
+  
+  names(ReverseSuggests)[2] <- "ReverseSuggests"
+  ReverseSuggests$ReverseSuggests <- trimws(ReverseSuggests$ReverseSuggests)
+  
+  ReverseSuggests <- ReverseSuggests %>%
+    filter(!is.na(ReverseSuggests))
+  
+  #Make ReverseLinkingTo Table
+  ReverseLinkingTo <- data%>%
+    select(Package, Reverse.linking.to.) %>%
+    mutate(Reverse.linking.to. = strsplit(as.character(Reverse.linking.to.), ","))%>%
+    unnest(Reverse.linking.to.)
+  
+  names(ReverseLinkingTo)[2] <- "ReverseLinkingTo"
+  ReverseLinkingTo$ReverseLinkingTo <- trimws(ReverseLinkingTo$ReverseLinkingTo)
+  
+  ReverseLinkingTo <- ReverseLinkingTo%>%
+    filter(!is.na(ReverseLinkingTo))
+  
+  #Make Reverse Enhances 
+  ReverseEnhances <- data %>%
+    select(Package, Reverse.enhances.) %>%
+    mutate(Reverse.enhances. = strsplit(as.character(Reverse.enhances.), ","))%>%
+    unnest(Reverse.enhances.)
+  
+  names(ReverseEnhances)[2] <- "ReverseEnhances"
+  ReverseEnhances$ReverseEnhances <- trimws(ReverseEnhances$ReverseEnhances)
+  
+  ReverseEnhances <- ReverseEnhances%>%
+    filter(!is.na(ReverseEnhances))
+  
+  #Return
+  return(list(Depends, InViews, Imports, LinkingTo, Suggests, Enhances, ReverseDepends, ReverseImports,
+              ReverseSuggests, ReverseLinkingTo, ReverseEnhances))
+}
+
+EdgeLists <- MakeEdgeLists(Packages)
+
+

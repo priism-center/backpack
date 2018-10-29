@@ -1,0 +1,28 @@
+---
+title: "Exploratory Analysis"
+author: "Kaushik Mohan"
+date: "10/15/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("igraph")
+```
+
+```{r}
+load("dev/data/Packages.rda")
+import_el <- read.csv(file="dev/data/EdgeLists/Imports.csv")
+```
+
+
+```{r}
+import_el <- import_el[,c(2:3)]
+head(import_el)
+```
+
+```{r}
+import.graph <- graph_from_edgelist(as.matrix(import_el),directed = TRUE)
+plot(import.graph,edge.arrow.size=.2,vertex.size=3,vertex.label.cex=0.25)
+```
+

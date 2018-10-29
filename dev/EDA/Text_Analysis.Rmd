@@ -1,0 +1,155 @@
+---
+title: "Text Analysis"
+author: "Kaushik Mohan"
+date: "10/29/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pdftools)
+```
+
+
+```{r}
+load("../data/Packages.rda")
+```
+
+## Starting with MLM
+```{r}
+mlm_packs <- c("arm","lme4","nlme")
+mlm_urls <- Packages$URL[Packages$Package %in% mlm_packs]
+
+## downloading files
+for(i in c(1:length(mlm_urls))){
+  man_url <- gsub("index.html",paste0(mlm_packs[i],".pdf"),mlm_urls[i])
+  file_name <- paste0("../data/man_",paste0(mlm_packs[i],".pdf"))
+  download.file(man_url,file_name)
+}
+
+## 
+
+descriptions <- vector("list",length(mlm_urls))
+references <- vector("list",length(mlm_urls))
+
+for(i in c(1:length(mlm_urls))){
+  file_name <- paste0("../data/man_",paste0(mlm_packs[i],".pdf"))
+  text <- pdf_text(file_name)
+  text <- paste(text,collapse=" ")
+  ## Cleaning
+  # text <- gsub("\n"," ",text)
+  # text <- gsub("  "," ",text)
+  
+  ## strsplit & unlist
+  text <- unlist(strsplit(text," "))
+  
+  ## find section
+  desc <- grep("\nDescription\n",text)
+  usage <- grep("\nUsage\n",text)
+  args <- grep("\nArguments\n",text)
+  details <- grep("\nDetails\n",text)
+  notes <- grep("\nNote\n",text)
+  vals <- grep("\nValue\n",text)
+  auths <- grep("\nAuthor\\(s\\)\n",text)
+  refs <- grep("\nReferences\n",text)
+  see <- grep("\nSee",text)
+  also <- grep("Also\n",text)
+  egs <- grep("\nExamples\n",text)
+  
+  ## break points
+  break_points <- c(desc,usage,args,details,notes,vals,auths,refs,see,also,egs)
+  break_points <- sort(break_points,decreasing = FALSE)
+  
+  ## Descriptions
+  for(j in seq_along(desc)){
+    st <- desc[j]
+    en <- break_points[match(desc[j],break_points) + 1]
+    tmp <- text[(st+1):en]
+    descriptions[[i]] <- c(descriptions[[i]],paste(tmp,collapse=" "))
+  }
+  
+  for(j in seq_along(refs)){
+    st <- refs[j]
+    en <- break_points[match(refs[j],break_points) + 1]
+    tmp <- text[(st+1):(en-1)]
+    references[[i]] <- c(references[[i]],paste(tmp,collapse=" "))
+  }
+  
+}
+
+
+
+# text2 <- text[8]
+# text2 <- gsub("\n"," ",text2)
+# text2 <- gsub("  "," ",text2)
+# text3 <- unlist(strsplit(text2," "))
+# grep('\\"',text3)
+# 
+# gsub('\\"',"",paste(text3[120:126],collapse = " "))
+# text3[136:141]
+
+```
+
+## cleaning the desc and refs
+
+```{r}
+descriptions <- lapply(descriptions,FUN=function(x){gsub("\nUsage\n|\nDescription\n|\n|  "," ",x)})
+references <- lapply(references,FUN=function(x){gsub("\nSee\n|\nDescription\n|\nExamples\n|\n|  "," ",x)})
+
+```
+
+
+## text-analysis
+
+```{r}
+library(tokenizers)
+library(SnowballC)
+library(tm)
+library(stopwords)
+
+```
+
+```{r}
+tokenized_desc <- vector("list",length(mlm_packs))
+tokenized_refs <- vector("list",length(mlm_packs))
+
+for(i in c(1:length(mlm_packs))){
+  tokenized_desc[[i]] <- unlist(tokenize_words(descriptions[[i]], lowercase = TRUE, 
+                                    stopwords = stopwords(), strip_punct = TRUE,
+                                    strip_numeric = TRUE, simplify = FALSE))  
+  
+  tokenized_refs[[i]] <- unlist(tokenize_words(references[[i]], lowercase = TRUE, 
+                                    stopwords = stopwords(), strip_punct = TRUE,
+                                    strip_numeric = TRUE, simplify = FALSE))  
+}
+
+
+
+words_df <- data.frame(matrix(NA,1,4))
+colnames(words_df) <- c("words","Freq","tf","package")
+for(i in c(1:length(mlm_packs))){
+  words <- c(tokenized_desc[[i]],tokenized_refs[[i]])
+  words <- as.data.frame(table(words))
+  words$tf <- words$Freq/sum(words$Freq)
+  words$package <- rep(mlm_packs[i],dim(words)[1])
+  words_df <- rbind(words_df,words)
+}
+
+# words_df <- words_df[-1,]
+
+find_n_packs <- function(x){
+  return(length(unique(words_df$package[words_df$words == x[1]])))
+}
+
+
+words_df$idf <- log(length(mlm_packs)/words_df$n_packs)
+
+words_df$tf_idf <- words_df$tf * words_df$idf
+
+words_df <- words_df %>% group_by(package) %>% mutate(max=ifelse(tf_idf==max(tf_idf),1,0))
+
+  
+
+
+```
+

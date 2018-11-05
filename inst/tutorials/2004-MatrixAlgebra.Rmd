@@ -1,0 +1,113 @@
+---
+title: "Matrix Algebra in R Tutorial"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Matrix Addition + Subtraction 
+
+### Matrix Addition 
+
+```{r prepare-as}
+A <- matrix(c(3,1,1,4), nrow =2, ncol=2, byrow = T)
+B <- matrix(c(7,2,3,5), nrow =2, ncol=2, byrow = T)
+C <- matrix(c(3,6,2,4), nrow =2, ncol=2, byrow = T)
+```
+
+*R allows you to perform vectorized operations, which makes matrix operations easy to perform. Three 2x2 matrices **A**, **B**, and **C** have been preloaded for you. The contents of matrix **A**, **B**, and **C** are shown below for you.*
+
+$\mathbf{A} = \left(\begin{array}{cc} 
+3 & 1\\
+1 & 4
+\end{array}\right)$
+
+$\mathbf{B} = \left(\begin{array}{cc} 
+7 & 2\\
+3 & 5
+\end{array}\right)$
+
+$\mathbf{C} = \left(\begin{array}{cc} 
+3 & 6\\
+2 & 4
+\end{array}\right)$
+
+Please write R code to perform the following matrix addition: **A** + **B**
+
+```{r as1, exercise = TRUE, exercise.setup = "prepare-as"}
+
+```
+
+```{r as1-solution}
+A+B
+```
+
+Please write R code to perform the following matrix addition 
+
+```{r as2, exercise = TRUE, exercise.setup = "prepare-as"}
+
+```
+
+### Matrix Subtraction
+
+*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
+
+Now write a function that adds any two numbers and then call it:
+
+```{r add-function, exercise=TRUE, exercise.lines = 5}
+add <- function() {
+  
+}
+```
+
+
+
+
+
+
+## Topic 2
+
+### Exercise with Hint
+
+*Here's an exercise where the chunk is pre-evaulated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+
+Modify the following code to limit the number of rows printed to 5:
+
+```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
+mtcars
+```
+
+```{r print-limit-hint}
+head(mtcars)
+```
+
+### Quiz
+
+*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+
+Some questions to verify that you understand the purposes of various base and recommended R packages:
+
+```{r quiz}
+quiz(
+  question("Which package contains functions for installing other R packages?",
+    answer("base"),
+    answer("tools"),
+    answer("utils", correct = TRUE),
+    answer("codetools")
+  ),
+  question("Which of the R packages listed below are used to create plots?",
+    answer("lattice", correct = TRUE),
+    answer("tools"),
+    answer("stats"),
+    answer("grid", correct = TRUE)
+  )
+)
+```
+

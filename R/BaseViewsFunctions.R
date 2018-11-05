@@ -12,8 +12,10 @@
 
 list_binders <- function(compartment="all"){
   load("./R/sysdata.rda")
-  x <-as.character(unique(Topics.Views$Topic))
+  x <- unique(Topics.Views$Topic)
+  
   ## To Do: Add number of packages column, concatenated head of packages
+  
   rm(Topics.Views)
   return(x)
 }
@@ -30,8 +32,6 @@ list_binders <- function(compartment="all"){
 
 install_binders <- function(binders){
   load("./R/sysdata.rda")
-  Topics.Views$Topic <- as.character(Topics.Views$Topic)
-  Topics.Views$Package <- as.character(Topics.Views$Package)
   
   pkgs <- Topics.Views$Package[Topics.Views$Topic %in% binders]
 
@@ -50,8 +50,6 @@ install_binders <- function(binders){
 
 uninstall_binders <- function(binders){
   load("./R/sysdata.rda")
-  Topics.Views$Topic <- as.character(Topics.Views$Topic)
-  Topics.Views$Package <- as.character(Topics.Views$Package)
   
   pkgs <- Topics.Views$Package[Topics.Views$Topic %in% binders]
   

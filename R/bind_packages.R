@@ -1,6 +1,5 @@
 ## Add Binder function
 
-# NOTE: need to add error handling
 
 
 ## This function let's you add packages to an existing binder
@@ -19,10 +18,26 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
   else{
     load(".R/user_data.rda")
   }
-
-  Topic = ifelse(length(binder) == length(Package), binder, rep(binder, length(Package)))
-  Source = ifelse(length(source) == length(Package), source, rep(source, length(Package)))
   
+  
+  if(length(binder) == length(Package) | length(binder) == 1){
+    Topic = binder
+  }
+  
+  else{
+    print("Either provide a single binder for all your packages, or one binder for each!")
+    stop()
+  }
+  
+
+  if(length(source) == length(Package) | length(binder) == 1){
+    Source = source
+  }
+  else{
+    print("Either provide a single source for all your packages, or one source for each!")
+    stop()
+  }
+
   to_bind = data.frame(Package, Topic, Source)
   user_data =  rbind(user_data, to_bind)
   user_data = user_data[order(user_data$Topic, user_data$Package),]

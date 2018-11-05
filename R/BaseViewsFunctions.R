@@ -12,12 +12,23 @@
 
 list_binders <- function(compartment="all"){
   load("./R/sysdata.rda")
-  x <- unique(Topics.Views$Topic)
+  compartment <- tolower(compartment)
+  if(!(compartment %in% c("all","master","user"))){
+    print("Error: Please enter either all, master or user compartments to look in.")
+  }else if (compartment == "all"){
+    binders <- Topics.Views
+    binders <- rbind(binders,User.Views)
+  }else if(compartment == "master"){
+    binders <- Topics.Views
+  }else if(compartment == "user"){
+    binders <- User.Views
+  }
   
   ## To Do: Add number of packages column, concatenated head of packages
   
   rm(Topics.Views)
-  return(x)
+  rm(User.Views)
+  return(unique(binders$Topic))
 }
 
 

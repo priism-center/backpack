@@ -8,33 +8,56 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(pdftools)
+library(tokenizers)
+library(SnowballC)
+library(tm)
+library(stopwords)
+library(dplyr)
 ```
 
 
 ```{r}
 load("../data/Packages.rda")
+base_packs <- read.csv("../data/QualitativePackageList.csv",stringsAsFactors = F)
+```
+
+
+```{r}
+packs <- base_packs$Package
+packs <- packs[packs %in% Packages$Package]
+packs <- unique(packs)
+
+### hack as no manual for boot 
+packs <- packs[packs != "boot"]
 ```
 
 ## Starting with MLM
 ```{r}
-mlm_packs <- c("arm","lme4","nlme")
-mlm_urls <- Packages$URL[Packages$Package %in% mlm_packs]
+# packs <- c("arm","lme4","nlme")
+urls <- Packages$URL[Packages$Package %in% packs]
+packs <- Packages$Package[Packages$Package %in% packs]
 
 ## downloading files
-for(i in c(1:length(mlm_urls))){
-  man_url <- gsub("index.html",paste0(mlm_packs[i],".pdf"),mlm_urls[i])
-  file_name <- paste0("../data/man_",paste0(mlm_packs[i],".pdf"))
+for(i in c(1:length(urls))){
+  man_url <- gsub("index.html",paste0(packs[i],".pdf"),urls[i])
+  file_name <- paste0("../data/Manuals/",paste0(packs[i],".pdf"))
   download.file(man_url,file_name)
 }
 
+
+```
 ## 
 
-descriptions <- vector("list",length(mlm_urls))
-references <- vector("list",length(mlm_urls))
 
-for(i in c(1:length(mlm_urls))){
-  file_name <- paste0("../data/man_",paste0(mlm_packs[i],".pdf"))
-  text <- pdf_text(file_name)
+```{r}
+descriptions <- vector("list",length(urls))
+references <- vector("list",length(urls))
+
+i<-21
+
+for(i in c(1:length(urls))){
+  file_name <- paste0("../data/Manuals/",paste0(packs[i],".pdf"))
+  text <- pdftools::pdf_text(file_name)
   text <- paste(text,collapse=" ")
   ## Cleaning
   # text <- gsub("\n"," ",text)
@@ -71,6 +94,9 @@ for(i in c(1:length(mlm_urls))){
   for(j in seq_along(refs)){
     st <- refs[j]
     en <- break_points[match(refs[j],break_points) + 1]
+    if(is.na(en)){
+      en <- break_points[match(refs[j],break_points)]
+    }
     tmp <- text[(st+1):(en-1)]
     references[[i]] <- c(references[[i]],paste(tmp,collapse=" "))
   }
@@ -78,6 +104,7 @@ for(i in c(1:length(mlm_urls))){
 }
 
 
+# packs[1] <- "datatable"
 
 # text2 <- text[8]
 # text2 <- gsub("\n"," ",text2)
@@ -88,6 +115,8 @@ for(i in c(1:length(mlm_urls))){
 # gsub('\\"',"",paste(text3[120:126],collapse = " "))
 # text3[136:141]
 
+
+packs
 ```
 
 ## cleaning the desc and refs
@@ -95,25 +124,16 @@ for(i in c(1:length(mlm_urls))){
 ```{r}
 descriptions <- lapply(descriptions,FUN=function(x){gsub("\nUsage\n|\nDescription\n|\n|  "," ",x)})
 references <- lapply(references,FUN=function(x){gsub("\nSee\n|\nDescription\n|\nExamples\n|\n|  "," ",x)})
-
 ```
 
 
 ## text-analysis
 
 ```{r}
-library(tokenizers)
-library(SnowballC)
-library(tm)
-library(stopwords)
+tokenized_desc <- vector("list",length(packs))
+tokenized_refs <- vector("list",length(packs))
 
-```
-
-```{r}
-tokenized_desc <- vector("list",length(mlm_packs))
-tokenized_refs <- vector("list",length(mlm_packs))
-
-for(i in c(1:length(mlm_packs))){
+for(i in c(1:length(packs))){
   tokenized_desc[[i]] <- unlist(tokenize_words(descriptions[[i]], lowercase = TRUE, 
                                     stopwords = stopwords(), strip_punct = TRUE,
                                     strip_numeric = TRUE, simplify = FALSE))  
@@ -123,33 +143,42 @@ for(i in c(1:length(mlm_packs))){
                                     strip_numeric = TRUE, simplify = FALSE))  
 }
 
+stem_nulls <- function(x){
+  if(!is.null(x)){
+    return(stemDocument(x))
+  }else{return(NULL)}
+}
 
 
+desc_stem_tok <- lapply(tokenized_desc,FUN=stemDocument)
+refs_stem_tok <- lapply(tokenized_refs,FUN=stem_nulls)
+
+```
+
+
+```{r}
 words_df <- data.frame(matrix(NA,1,4))
 colnames(words_df) <- c("words","Freq","tf","package")
-for(i in c(1:length(mlm_packs))){
+for(i in c(1:length(packs))){
   words <- c(tokenized_desc[[i]],tokenized_refs[[i]])
   words <- as.data.frame(table(words))
   words$tf <- words$Freq/sum(words$Freq)
-  words$package <- rep(mlm_packs[i],dim(words)[1])
+  words$package <- rep(packs[i],dim(words)[1])
   words_df <- rbind(words_df,words)
 }
 
-# words_df <- words_df[-1,]
+words_df <- words_df[-1,]
 
 find_n_packs <- function(x){
-  return(length(unique(words_df$package[words_df$words == x[1]])))
+  return(length(unique(words_df$package[words_df$words == x])))
 }
 
 
-words_df$idf <- log(length(mlm_packs)/words_df$n_packs)
+words_df$n_packs <- apply(words_df,1,find_n_packs)
+words_df$idf <- log(length(packs)/(words_df$n_packs+1))
 
 words_df$tf_idf <- words_df$tf * words_df$idf
 
 words_df <- words_df %>% group_by(package) %>% mutate(max=ifelse(tf_idf==max(tf_idf),1,0))
-
-  
-
-
 ```
 

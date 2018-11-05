@@ -1,0 +1,53 @@
+Package,Topic,Source
+dplyr,Data Cleaning,CRAN
+data.table,Data Cleaning,CRAN
+lubridate,Data Cleaning,CRAN
+reshape2,Data Cleaning,CRAN
+ggplot,"Data Visualization, Visualization",CRAN
+lattice,"Data Visualization, Visualization",CRAN
+rgl,"Data Visualization, Visualization",CRAN
+corrplot,"Data Visualization, Visualization",CRAN
+geepack,"Generalized Linear Models, GLM",CRAN
+nnet,"Generalized Linear Models, GLM",CRAN
+glmm,"Generalized Linear Models, GLM",CRAN
+glmnet,"Generalized Linear Models, GLM",CRAN
+igraph,Network Analysis,CRAN
+statnet,Network Analysis,CRAN
+network,Network Analysis,CRAN
+sna,Network Analysis,CRAN
+ergmm,Network Models,CRAN
+latentnet,Network Models,CRAN
+arm,"Multilevel Models, Hierarchical Models",CRAN
+RStan,Bayesian Inferece,CRAN
+MCMCpack,Bayesian hierarchical models,CRAN
+nlme,"Multilevel Models, Hierarchical Models",CRAN
+lme4,"Multilevel Models, Hierarchical Models",CRAN
+lmerTest,"Multilevel Models, Hierarchical Models",CRAN
+NbClust,"Clustering, Unsupervised Learning",CRAN
+Cluster,"Clustering, Unsupervised Learning",CRAN
+mclust,"Clustering, Unsupervised Learning",CRAN
+e1071,Miscellaneous functions,CRAN
+rpart,Machine Learning,CRAN
+xgboost,Machine Learning,CRAN
+doParallel,Parallel Processing,CRAN
+pwr,Power Analysis,CRAN
+randomForest,"Classification, Supervised Learning",CRAN
+foreach,Parallel Processing,CRAN
+caret,Supervised Learning,CRAN
+survey,Survey Analysis,CRAN
+doFuture,Parallel Processing,CRAN
+jtools,Linear Regression,CRAN
+phia,Linear Regression,CRAN
+laavan,Mediation Analysis,CRAN
+robmed,Mediation Analysis,CRAN
+psych,Multivariate Analysis,CRAN
+caret,Multivariate Analysis,CRAN
+fda,Semiparametric/non parametric,CRAN
+mgcv,Semiparametric/non parametric,CRAN
+gam,Semiparametric/non parametric,CRAN
+vgam,Semiparametric/non parametric,CRAN
+elesticnet,Model Selection,CRAN
+stat,Miscellaneous functions,CRAN
+mvtnorm,Miscellaneous functions,CRAN
+Hmisc,Miscellaneous functions,CRAN
+boot,Bootstrapping,CRAN

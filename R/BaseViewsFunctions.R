@@ -1,5 +1,12 @@
 ## List of views- based on ctv available.views ## 
 
+#' List Views available
+#'
+#' This function allows you to see the list of views available.
+#' @param Nothin
+#' @keywords views
+#' list.base.views()
+
 list.base.views <- function(){
   load("./R/BaseViews.rda")
   x <-as.character(unique(Topics.Views$Topic))
@@ -9,7 +16,7 @@ list.base.views <- function(){
 
 ## Test ## 
 
-list.base.views()
+# list.base.views()
 
 ## Installing views - based on ctv install.views ##  -
 

@@ -4,15 +4,14 @@
 ## This function let's you add packages to an existing binder
 ## or creates a new binder a new name is provided
 
-## Can you add documentation for this, please?
 
-#' List Binders
+#' Bind Packages
 #'
 #' Function to see the binders of packages available and a summary for each. 
-#' @usage bind_packages()
-#' @param Package 
-#' @param binder 
-#' @param source
+#' @usage bind_packages(Package, binder, source)
+#' @param Package : new packages to add
+#' @param binder : either an existing binder or a new user-defined binder
+#' @param source : whether package source is CRAN or Github
 #' @examples bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN")
 #' 
 #' bind_packages()
@@ -41,16 +40,27 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
     stop()
   }
   
-  ### To Do: Account for duplicate package-Topic combinations
+  
   to_bind = data.frame(Package, Topic, Source)
   User.Views <- rbind(User.Views,to_bind)
   User.Views$Package <- as.character(User.Views$Package)
   User.Views$Topic <- as.character(User.Views$Topic)
   User.Views$Source <- as.character(User.Views$Source)
+  
+  ### Account for duplicate package-Topic combinations
+  User.Views = User.Views[!duplicated(User.Views),]
+  
+  
   save(User.Views,Topics.Views, file = "./R/sysdata.rda")
   rm(User.Views,Topics.Views)
 }
 
 
-## let's have remove binders? 
+
+
+## Remove Binders
+
+
+
+
 

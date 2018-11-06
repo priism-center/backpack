@@ -18,6 +18,18 @@
 
 bind_packages = function(Package = NULL, binder = NULL, source = NULL){
   
+  if(is.null(Package)){
+    stop("argument 'Package' is missing with no default")
+  }
+  
+  if(is.null(binder)){
+    stop("argument 'binder' is missing with no default")
+  }
+  if(is.null(source)){
+    stop("argument 'source' is missing with no default")
+  }
+  
+  
   load("./R/sysdata.rda")
   
   ### To Do: check if packages are legit ?
@@ -27,8 +39,7 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
   }
   
   else{
-    print("Either provide a single binder for all your packages, or one binder for each!")
-    stop()
+    stop("Either provide a single binder for all your packages, or one binder for each!")
   }
   
 
@@ -36,8 +47,7 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
     Source = source
   }
   else{
-    print("Either provide a single source for all your packages, or one source for each!")
-    stop()
+    stop("Either provide a single source for all your packages, or one source for each!")
   }
   
   

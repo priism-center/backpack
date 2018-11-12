@@ -20,8 +20,7 @@
     
     pkgs <- append(pkgs,pkgs_to_add)
   }
-  rm(Topics.Views)
-  rm(User.Views)
+  rm(Topics.Views, User.Views)
   
   return(unique(pkgs))
   
@@ -84,7 +83,7 @@ list_binders <- function(compartment="all"){
 
 install_binders <- function(binders){
   pkgs <- .get_packages(binders)
-  install.packages(unique(pkgs),verbose=FALSE)  
+  install.packages(unique(pkgs),verbose=FALSE)
 }
 
 #' Uninstall Binders

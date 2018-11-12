@@ -1,4 +1,4 @@
-
+## Internal function
 .get_packages <- function(binders){
   ## Description: Internal functions to get packages from binders  
   ## Args: binders - binder names to get packages of
@@ -7,18 +7,19 @@
   ## loading data frames consisting of views
   load("./R/sysdata.rda")
   pkgs <- NULL
+  srcs <- NULL
   
   ## loading data frames consisting of views
   for(i in c(1:length(binders))){
-    pkgs_to_add <- Topics.Views$Package[Topics.Views$Topic %in% binders]
-    pkgs_to_add <- append(pkgs_to_add,User.Views$Package[User.Views$Topic %in% binders])
+    pkgs_to_add <- Topics.Views[Topics.Views$Topic %in% binders[i],c("Package","Source")]
+    pkgs_to_add <- append(pkgs_to_add,User.Views[User.Views$Topic %in% binders[i],c("Package","Source")])
     
     ## Error handling
-    if(length(pkgs_to_add) == 0){
+    if(dim(pkgs_to_add)[1] == 0){
       stop(paste0("Binder ",binders[i]," not found."))
     }
     
-    pkgs <- append(pkgs,pkgs_to_add)
+    pkgs <- rbind(pkgs,pkgs_to_add)
   }
   rm(Topics.Views, User.Views)
   
@@ -27,50 +28,47 @@
 }
 
 
-#' List Binders
+#' View Binders
 #'
 #' Function to see the binders of packages available and a summary for each. 
-#' @usage list_binders()
-#' @param compartment The compartment to view the binders in. Defaults to "all". 
+#' @usage view_binders()
+#' @param compartment character vector, the compartment to view the binders in. Defaults to "all". 
 #' - "all" to view all the binders
 #' - "master" to view binders that came with the package
 #' - "user" to view binders created by the user
-#' @examples list_binders(compartment="master")
+#' @param search character string, searches for binders with matches to words in the search string. Deafults to NULL in which case all the binders are shown. 
+#' @return 
+#' @examples view_binders(compartment="master") ## to view all the binders in the master list
+#' @examples view_binders(compartment="master",binders="Machine Learning") ## to view a summary of just the Machine Learning Binder
 #' 
-#' list_binders()
 
-list_binders <- function(compartment="all"){
+view_binders <- function(compartment="all", search=NULL ){
   load("./R/sysdata.rda")
   compartment <- tolower(compartment)
   if(!(compartment %in% c("all","master","user"))){
     print("Error: Please enter either all, master or user compartments to look in.")
   }else if (compartment == "all"){
-    binders <- Topics.Views
-    binders <- rbind(binders,User.Views)
+    views <- Topics.Views
+    views <- rbind(views,User.Views)
   }else if(compartment == "master"){
-    binders <- Topics.Views
+    views <- Topics.Views
   }else if(compartment == "user"){
-    binders <- User.Views
+    views <- User.Views
   }
   
-  ## To Do: Add number of packages column, concatenated head of packages
+  views <- views %>% group_by(Topic) %>% summarise(packages=paste(Package,collapse=", "),
+                                                             N=n())
+
+  if(length(search) > 0){
+    search_string <- gsub(" ","|",search)
+    views <- views[grepl(search_string,views$Topic),]
+  }
   
-  rm(Topics.Views)
-  rm(User.Views)
-  return(unique(binders$Topic))
+  rm(Topics.Views,User.Views)
+  # print.data.frame(views)
+  return(views)
 }
 
-#' View Binder
-#'
-#' Function to see the packages within a particular binder
-#' @usage list_binders()
-#' @param compartment The compartment to view the binders in. Defaults to "all". 
-#' - "all" to view all the binders
-#' - "master" to view binders that came with the package
-#' - "user" to view binders created by the user
-#' @examples list_binders(compartment="master")
-#' 
-#' list_binders()
 
 #' Install Binders
 #'
@@ -93,7 +91,6 @@ install_binders <- function(binders){
 #' @param binders The binder(s) to uninstall 
 #' @examples uninstall_binders("MLM")
 #' 
-#' uninstall_binders()
 
 uninstall_binders <- function(binders){
   pkgs <- .get_packages(binders)
@@ -105,7 +102,7 @@ uninstall_binders <- function(binders){
 #'
 #' Function to load the packages in a binder(s). 
 #' @usage load_binders(binders)
-#' @param binders The binder or a vector of binders whose packages are to be loaded into the environment.  
+#' @param binders character vector of binder names. The binder(s) whose packages are to be loaded into the environment.  
 #' @examples load_binders("MLM")
 #' 
 

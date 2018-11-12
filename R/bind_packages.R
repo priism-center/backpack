@@ -30,9 +30,12 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
   }
   
   
+  
   load("./R/sysdata.rda")
   
   ### To Do: check if packages are legit ?
+  
+  
   
   if(length(binder) == length(Package) | length(binder) == 1){
     Topic = binder
@@ -71,6 +74,11 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
 ## Remove Binders
 
 
+apply(as.matrix(apply(as.matrix(binders),1,FUN=regexify)),1,FUN=regexify)
 
+
+regexify <- function(string_a){
+  return(gsub(" ","|",string_a))
+}
 
 

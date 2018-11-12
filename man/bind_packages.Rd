@@ -2,14 +2,16 @@
 % Please edit documentation in R/bind_packages.R
 \name{bind_packages}
 \alias{bind_packages}
-\title{List Binders}
+\title{Bind Packages}
 \usage{
-bind_packages()
+bind_packages(Package, binder, source)
 }
 \arguments{
-\item{Package}{}
+\item{Package}{: new packages to add}
 
-\item{binder}{}
+\item{binder}{: either an existing binder or a new user-defined binder}
+
+\item{source}{: whether package source is CRAN or Github}
 }
 \description{
 Function to see the binders of packages available and a summary for each.

@@ -1,3 +1,32 @@
+
+.get_packages <- function(binders){
+  ## Description: Internal functions to get packages from binders  
+  ## Args: binders - binder names to get packages of
+  ## returns: vector of package names
+  
+  ## loading data frames consisting of views
+  load("./R/sysdata.rda")
+  pkgs <- NULL
+  
+  ## loading data frames consisting of views
+  for(i in c(1:length(binders))){
+    pkgs_to_add <- Topics.Views$Package[Topics.Views$Topic %in% binders]
+    pkgs_to_add <- append(pkgs_to_add,User.Views$Package[User.Views$Topic %in% binders])
+    
+    ## Error handling
+    if(length(pkgs_to_add) == 0){
+      stop(paste0("Binder ",binders[i]," not found."))
+    }
+    
+    pkgs <- append(pkgs,pkgs_to_add)
+  }
+  rm(Topics.Views, User.Views)
+  
+  return(unique(pkgs))
+  
+}
+
+
 #' List Binders
 #'
 #' Function to see the binders of packages available and a summary for each. 
@@ -31,6 +60,17 @@ list_binders <- function(compartment="all"){
   return(unique(binders$Topic))
 }
 
+#' View Binder
+#'
+#' Function to see the packages within a particular binder
+#' @usage list_binders()
+#' @param compartment The compartment to view the binders in. Defaults to "all". 
+#' - "all" to view all the binders
+#' - "master" to view binders that came with the package
+#' - "user" to view binders created by the user
+#' @examples list_binders(compartment="master")
+#' 
+#' list_binders()
 
 #' Install Binders
 #'
@@ -42,12 +82,8 @@ list_binders <- function(compartment="all"){
 #' install_binders()
 
 install_binders <- function(binders){
-  load("./R/sysdata.rda")
-  
-  pkgs <- Topics.Views$Package[Topics.Views$Topic %in% binders]
-
-  rm(User.Views,Topics.Views)
-  install.packages(pkgs,verbose=FALSE)
+  pkgs <- .get_packages(binders)
+  install.packages(unique(pkgs),verbose=FALSE)
 }
 
 #' Uninstall Binders
@@ -60,10 +96,32 @@ install_binders <- function(binders){
 #' uninstall_binders()
 
 uninstall_binders <- function(binders){
-  load("./R/sysdata.rda")
-  
-  pkgs <- Topics.Views$Package[Topics.Views$Topic %in% binders]
-  
-  rm(User.Views,Topics.Views)
+  pkgs <- .get_packages(binders)
   remove.packages(pkgs)
 }
+
+
+#' Load Binders
+#'
+#' Function to load the packages in a binder(s). 
+#' @usage load_binders(binders)
+#' @param binders The binder or a vector of binders whose packages are to be loaded into the environment.  
+#' @examples load_binders("MLM")
+#' 
+
+load_binders <- function(binders){
+  pkgs <- .get_packages(binders)
+  
+  for(i in c(1:length(pkgs))){
+    tryCatch(
+      {
+        library(pkgs[i],character.only = TRUE)      
+      },
+      error=function(cond){
+        install.packages(pkgs[i])
+        library(pkgs[i],character.only = TRUE)      
+      } 
+    )
+  }
+}
+

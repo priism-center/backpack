@@ -46,7 +46,7 @@ install_binders <- function(binders){
   
   pkgs <- Topics.Views$Package[Topics.Views$Topic %in% binders]
 
-  rm(Topics.Views)
+  rm(User.Views,Topics.Views)
   install.packages(pkgs,verbose=FALSE)
 }
 
@@ -64,6 +64,6 @@ uninstall_binders <- function(binders){
   
   pkgs <- Topics.Views$Package[Topics.Views$Topic %in% binders]
   
-  rm(Topics.Views)
+  rm(User.Views,Topics.Views)
   remove.packages(pkgs)
 }

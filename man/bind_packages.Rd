@@ -11,10 +11,11 @@ bind_packages(Package, binder, source)
 
 \item{binder}{: either an existing binder or a new user-defined binder}
 
-\item{source}{: whether package source is CRAN or Github}
+\item{source}{: whether package source is CRAN or Github Repo}
 }
 \description{
-Function to see the binders of packages available and a summary for each.
+Function to add packages to existing binders to the user views, or to create
+new binders to store packages
 }
 \examples{
 bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN")

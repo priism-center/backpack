@@ -93,11 +93,6 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
 ## Remove Binders
 
 
-apply(as.matrix(apply(as.matrix(binders),1,FUN=regexify)),1,FUN=regexify)
-
-
-regexify <- function(string_a){
-  return(gsub(" ","|",string_a))
-}
+# search_string <- gsub(" ","|",paste(binders,collapse=" "))
 
 

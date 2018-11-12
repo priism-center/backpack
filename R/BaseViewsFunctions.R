@@ -12,7 +12,7 @@
   ## loading data frames consisting of views
   for(i in c(1:length(binders))){
     pkgs_to_add <- Topics.Views[Topics.Views$Topic %in% binders[i],c("Package","Source")]
-    pkgs_to_add <- append(pkgs_to_add,User.Views[User.Views$Topic %in% binders[i],c("Package","Source")])
+    pkgs_to_add <- rbind(pkgs_to_add,User.Views[User.Views$Topic %in% binders[i],c("Package","Source")])
     
     ## Error handling
     if(dim(pkgs_to_add)[1] == 0){
@@ -36,8 +36,7 @@
 #' - "all" to view all the binders
 #' - "master" to view binders that came with the package
 #' - "user" to view binders created by the user
-#' @param search character string, searches for binders with matches to words in the search string. Deafults to NULL in which case all the binders are shown. 
-#' @return 
+#' @param search character string, regex style search string for binders with matches to words in the search string. Deafults to NULL in which case all the binders are shown. 
 #' @examples view_binders(compartment="master") ## to view all the binders in the master list
 #' @examples view_binders(compartment="master",binders="Machine Learning") ## to view a summary of just the Machine Learning Binder
 #' 
@@ -60,8 +59,7 @@ view_binders <- function(compartment="all", search=NULL ){
                                                              N=n())
 
   if(length(search) > 0){
-    search_string <- gsub(" ","|",search)
-    views <- views[grepl(search_string,views$Topic),]
+    views <- views[grepl(search,views$Topic),]
   }
   
   rm(Topics.Views,User.Views)
@@ -81,7 +79,29 @@ view_binders <- function(compartment="all", search=NULL ){
 
 install_binders <- function(binders){
   pkgs <- .get_packages(binders)
-  install.packages(unique(pkgs),verbose=FALSE)
+  
+  ## from CRAN
+  pkgs_cran <- pkgs$Package[pkgs$Source == "CRAN"]
+  install.packages(pkgs_cran,verbose=FALSE)
+  
+  ## external sources (github?)
+  pkgs_ext <- pkgs[!(pkgs$Source == "CRAN"),]
+  
+  for(i in c(1:length(pkgs_ext))){
+    tryCatch(
+      {
+        devtools::install_github(repo=pkgs_ext$Source[i])      
+      },
+      error=function(cond){
+        stop(paste(pkgs_ext$Package[i]," not found in GitHub source ",pkgs_ext$Source[i],
+                   "Currently only installs via GitHub supported. Other sources will be added soon!"))
+      }
+    )
+   
+  }
+  
+  
+  
 }
 
 #' Uninstall Binders
@@ -109,14 +129,19 @@ uninstall_binders <- function(binders){
 load_binders <- function(binders){
   pkgs <- .get_packages(binders)
   
-  for(i in c(1:length(pkgs))){
+  for(i in c(1:dim(pkgs)[1])){
     tryCatch(
       {
-        library(pkgs[i],character.only = TRUE)      
+        library(pkgs$Package[i],character.only = TRUE)      
       },
       error=function(cond){
-        install.packages(pkgs[i])
-        library(pkgs[i],character.only = TRUE)      
+        if (pkgs$Source[i] == "CRAN"){
+          install.packages(pkgs[i])
+          library(pkgs[i],character.only = TRUE)        
+        }else{
+          devtools::install_github(repo=pkgs$Source[i])
+          library(pkgs[i],character.only = TRUE)        
+        }
       } 
     )
   }

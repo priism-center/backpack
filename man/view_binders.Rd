@@ -12,7 +12,7 @@ view_binders()
 - "master" to view binders that came with the package
 - "user" to view binders created by the user}
 
-\item{binders}{character vector, the binder(s) to view. Deafults to NULL in which case all the binders are shown.}
+\item{search}{character string, regex style search string for binders with matches to words in the search string. Deafults to NULL in which case all the binders are shown.}
 }
 \description{
 Function to see the binders of packages available and a summary for each.
@@ -21,5 +21,4 @@ Function to see the binders of packages available and a summary for each.
 view_binders(compartment="master") ## to view all the binders in the master list
 view_binders(compartment="master",binders="Machine Learning") ## to view a summary of just the Machine Learning Binder
 
-view_binders()
 }

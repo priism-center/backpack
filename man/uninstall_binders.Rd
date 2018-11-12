@@ -15,5 +15,4 @@ Function to uninstall the packages in the binder(s).
 \examples{
 uninstall_binders("MLM")
 
-uninstall_binders()
 }

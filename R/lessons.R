@@ -13,3 +13,5 @@ start_lesson <- function(name="2004-MatrixAlgebra"){
   rmarkdown::run(paste0("./inst/tutorials/",name,"/",name,".Rmd"))
 }
 
+
+## List lessons

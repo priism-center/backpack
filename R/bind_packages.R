@@ -13,11 +13,12 @@
 #' @param Package : new packages to add
 #' @param binder : either an existing binder or a new user-defined binder
 #' @param source : whether package source is CRAN or Github Repo
+#' @param suggest : default = TRUE. Boolean indicating whether want suggestions on existing packages
 #' @examples bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN")
 #' 
 #' bind_packages()
 
-bind_packages = function(Package = NULL, binder = NULL, source = NULL){
+bind_packages = function(Package = NULL, binder = NULL, source = NULL, suggest = TRUE){
   
   if(is.null(Package)){
     stop("argument 'Package' is missing with no default")
@@ -32,7 +33,7 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
   
   ## Check if package exists in CRAN
   
-  if(toupper(Source) == 'CRAN'){
+  if(toupper(source) == 'CRAN'){
     cran_available = available.packages()[,1]
     is_available = Package %in% cran_available
     
@@ -67,32 +68,51 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL){
   }
   
 
-  ## To do: Account for lower-upper case inside TOPIC (binder)
-  existing_binders = list_binders('all')
-  if(Topic %in% existing_binders)
+  ## Look for suggested packages
+  
+  ## First, check if the package name is an exact match to something already existing
+  binder_match = binder %in% unique(rbind(Topics.Views, User.Views)$Topic)
+  if(all(binder_match) == TRUE){suggest == FALSE}
+  
+  ## If at least on of the binders is not an exact match, search through current views and suggest.
+  
+  if(suggest == TRUE){
+    search_string <- gsub(" ","|",paste(binder,collapse=" "))
+    print("The following binders already exist, would you like to add to one of  them instead?")
+    existing_binders = view_binders('all', search = search_string)
+    print(existing_binders)
+    print("If yes, change the name of the binder to an existing one, otherwise turn the paramenter 'suggest' to FALSE")
+  }
+  
+  else{
+    
+    
+    to_bind = data.frame(Package, Topic, Source)
+    User.Views <- rbind(User.Views,to_bind)
+    User.Views$Package <- as.character(User.Views$Package)
+    User.Views$Topic <- as.character(User.Views$Topic)
+    User.Views$Source <- as.character(User.Views$Source)
+    
+    ### Account for duplicate package-Topic combinations
+    User.Views = User.Views[!duplicated(User.Views),]
+    
+    save(User.Views,Topics.Views, file = "./R/sysdata.rda")
+    rm(User.Views,Topics.Views)
+  }
+    
+    
+  }
   
   
   
   
   
   
-  to_bind = data.frame(Package, Topic, Source)
-  User.Views <- rbind(User.Views,to_bind)
-  User.Views$Package <- as.character(User.Views$Package)
-  User.Views$Topic <- as.character(User.Views$Topic)
-  User.Views$Source <- as.character(User.Views$Source)
   
-  ### Account for duplicate package-Topic combinations
-  User.Views = User.Views[!duplicated(User.Views),]
-  
-  save(User.Views,Topics.Views, file = "./R/sysdata.rda")
-  rm(User.Views,Topics.Views)
-}
+
+
 
 
 ## Remove Binders
-
-
-# search_string <- gsub(" ","|",paste(binders,collapse=" "))
 
 

@@ -199,7 +199,6 @@ quiz(
 2. The dataset was obtained from https://stats.idre.ucla.edu/spss/output/factor-analysis/. 
 
 ```{r prepare-EFAex}
-library(RCurl, quietly = TRUE)
 library(psych, quietly = TRUE)
 library(GPArotation, quietly = TRUE)
 data <- packman::ExampleEFA

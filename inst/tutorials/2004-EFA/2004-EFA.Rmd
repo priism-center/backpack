@@ -202,8 +202,7 @@ quiz(
 library(RCurl, quietly = TRUE)
 library(psych, quietly = TRUE)
 library(GPArotation, quietly = TRUE)
-x <- getURL('https://raw.githubusercontent.com/madisonvolpe/EFAdataset/master/ExampleEFA.csv')
-data <- read.csv(text=x)
+data <- packman::ExampleEFA
 data <- data[-1]
 correl <- cor(data)
 

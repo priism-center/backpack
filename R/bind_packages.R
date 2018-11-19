@@ -12,7 +12,8 @@
 #' @usage bind_packages(Package, binder, source)
 #' @param Package : new packages to add
 #' @param binder : either an existing binder or a new user-defined binder
-#' @param source : whether package source is CRAN or Github Repo
+#' @param source : whether package source is CRAN or Github Repo. If the source is a GitHub repo, please provide 
+#' the `username/repo[/subdir]`
 #' @examples bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN")
 #' 
 #' bind_packages()

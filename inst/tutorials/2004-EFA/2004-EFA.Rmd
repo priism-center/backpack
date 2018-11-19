@@ -325,11 +325,9 @@ quiz(
 We can additionally see that simple structure is achieved with the oblimin rotation by graphing a path diagram. Please run the following code to see the path diagram. 
 
 ```{r prepare-path}
-library(RCurl, quietly = TRUE)
 library(psych, quietly = TRUE)
 library(GPArotation, quietly = TRUE)
-x <- getURL('https://raw.githubusercontent.com/madisonvolpe/EFAdataset/master/ExampleEFA.csv')
-data <- read.csv(text=x)
+data <- packman::ExampleEFA
 data <- data[-1]
 threefactor.rot2 <- fa(data, nfactors = 3, rotate = "oblimin")
 ```

@@ -1,0 +1,353 @@
+---
+title: "Exploratory Factor Analysis"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Introduction to Exploratory Factor Analysis 
+
+Exploratory Factor Analysis (EFA) is a statisical technique that is used to identify the latent traits underlying a set of observed variables. If this seems like an abstract concept, a more concrete way to think of EFA is by example. EFA is commonly used in the analysis of surveys to test whether the instrument used in the survey is measuring what it is supposed to be measuring. In other words, EFA is commonly used to examine the internal reliability of a survey isntrument. 
+
+In a broad sense, Factor Analysis seeks to "define the underlying structure among variables in the analysis." Factor Analysis is a tool that can explain the underlying interrelationships amongst a large number of variables. The factors in EFA represent the the sets of variables that are highly interrelated (correlated). Factors represent dimensions in the data. 
+
+***Side Note:** The content of this lecture is based on the Exploratory Factor Analysis chapter found in Multivariate Data Analysis (7th edition).*
+
+## Stage One: Objectives of Factor Analysis 
+
+The main objective of Factor Analysis is to condense the original variables into a smaller number of dimensions (factors). The researcher must also decide whether they would like to use R Factor Analysis or Q Factor Analysis. R Factor Analysis focuses on the variables present in the data, while Q Factor Analysis will focus on respondents. Therefore, selection of the unit of interest: variables or respondents is also necessary for Factor Analysis. Another important objective is to decide whether the reuslts of the Factor Analysis will be used for data summarization, data reduction, or a combination of both. Data summarization deals with defining the underlying "structure" of the data. Structure refers to grouping the variables into smaller factors (dimensions) based on their interrelatedness/correlation. The results of the data summarization can be used to aid data reduction. The goal of data reduction is keep the underlying structure of the variables, but reduce their number to ease multivariate data analysis. 
+
+### Quiz: EFA Objectives 
+
+```{r quiz1, echo=FALSE}
+quiz(
+  question("The goal of Factor Analysis is to identify the underlying structure of variables used in an anlysis?",
+    answer("Yes", correct = TRUE),
+    answer("No")
+  ),
+  question("R Factor Analysis examines the correlation matrix of the",
+    answer("Respondents", message = "This is Q Factor Analysis"),
+    answer("Variables", correct = TRUE)
+  ),
+  question("Data summarization and Data reduction are both outcomes of EFA ",
+    answer("Yes", correct = TRUE),
+    answer("No")
+)
+)
+```
+
+## Stage Two: EFA Design 
+
+The three major decisions necessary for EFA are:
+
+1.  **Correlation Matrix:** With R Factor Analysis, the individual should use a traditional correlation matrix as input. With Q Factor Analysis, the researcher will derive the correlation matrix from correlations amongst individual respondents. 
+
+2. **Variables:** The types of variables included in EFA is dependent on the ability to obtain a correlation matrix. Continuous variables have many more options for obtaining a correlation matrix. It is generally hard to include categorical variables in the process. However, there are special options, such as Boolean Factor Analysis. Regarding the amount of variables, there should be enough included that represent each proposed factor. The typical amount is five variables per each proposed factor.
+
+3. **Sample Size:** A researcher should not perform factor analysis on a sample less than 50 observations, 100 observations or more is usually the norm. The researcher should avoid overfitting the data because the more variables you use can increase correlations. 
+
+### Quiz: EFA Design
+
+```{r quiz2, echo=FALSE}
+quiz(
+  question("Factor Analysis can be performed on both continuous and discrete variables?",
+    answer("Yes", correct = TRUE),
+    answer("No", message = "You can include a small number of discrete variables")
+  ),
+  question("How many variables should there be for each proposed factor?",
+    answer("2"),
+    answer("3"),
+    answer("4"),
+    answer("5", correct = TRUE)
+  ),
+  question("You can conduct EFA regardless of sample size",
+    answer("Yes", message = "You should have at least 50 observations overall"),
+    answer("No", correct = TRUE)
+)
+)
+```
+
+## Stage Three: Assumptions 
+
+There are both conceptual and statistical assumptions. 
+
+1. **Conceptual:** The *overall* assumption is that underlying structure does exist in the set of variables. 
+2. **Statistical:** The assumptions of homoscedasticity and linearity are not important. However, normality is necessary for significance tests of factors. The researcher should ensure that there are significant correlations because if there is not signficant correlations between variables then the justification for conducting a factor analysis is null. Typically, there should be a large number of correlations greater than .30. Partial correlations of variables can also be taken. In this case then partial correlations should be small to indicate the existence of "factors" in the data. Large partial correlations would suggest that factor analysis is inappropriate. 
+
+3. **Examining the Correlation Matrix:** One can use the *Bartlett's Test of Sphericity* to determine the appropriateness of EFA. This significance test examines the entire correlation matrix to test for the presence of significant correlations between variables. However, you should be cautious that increasing the sample size can affect the outcomes of this test.  Another method to test for the appropriateness of EFA is  *Measure of Sampling Adequacy (MSA)*. This is a measure of the intercorrelations between variables, typicaly each variables will range from 0 to 1, a score of 1 represents that the variable is perfectly predicted by other variables in the analysis. Typically, each variable should have an MSA value of .50 or above and an overall MSA score of .50 or above provides justification for factor analysis. 
+
+```{r quiz3, echo=FALSE}
+quiz(
+  question("Conceputal assumptions are more important than statistical assumptions in EFA",
+    answer("Yes", correct = TRUE),
+    answer("No")
+  ),
+  question("To justify EFA, there should be a substantial number of correlations greater than at least",
+    answer(".15"),
+    answer(".20"),
+    answer(".30", correct = TRUE),
+    answer(".50")
+  ),
+  question("An overall MSA score of 'X' is needed to justify EFA?",
+    answer(".50", correct = TRUE),
+    answer(".70"),
+    answer(".75"),
+    answer(".65")
+)
+)
+```
+
+## Stage Four: Deriving Factors and Assessing Fit 
+
+1. **Variance:** The variance of each variable can be partitioned in the following way: *Common variance*, *Specific variance* and *Error variance*. Common variance is an estimate for the variance of a variable shared by other variables in the analysis. Relatedly, communality is an estimate of a variable's common variance among the variables as represented by the derived factors. The specific variance is a variable's own variance that cannot be attributed to correlations with other variables. Finally, error variance is the variances associated with a variable that is also not attributable to correlations, but rather the data generating process, measurement or randomness. With the understanding of a variable's variance, we can now see that factor analysis seeks to identify the underlying structure of the variables based only on the  **Common variance** of variables. In this case, the researcher does not think that neither the unique nor the error variance influences the underlying structure of the variables. In this case, we can see that EFA is more theoretical than a method, such as Principal Components Analysis (PCA), which is only concerned with extracting the linear composites of observed variables. PCA maximizes the total variance, common + specific + error, to  create components. 
+
+2. **Number of Factors to Extract:** In general, each factor that is extracted represents a portion of the variance in the data. Each extraction of a factor accounts for smaller and smaller amounts of variance until all the variance is explained.  To decide on the number of factors to be extracted one must rely on theoretical assumptions. However, some criteria have been developed to assist the researcher in choosing the right amount of factors to extract. These methods include: Latent Root Criterion, A Priori Criterion, Percentage of Variance Criterion, Scree Test Criterion, and Heterogeneity of the Respondents. Some of these methods will be discussed in more detail with the EFA example using R. 
+
+```{r quiz4, echo=FALSE}
+quiz(
+  question("Common Factor Analysis considers 'X' to derive factors ",
+    answer("Total variance"),
+    answer("Error variance"),
+    answer("Specific variance"),
+    answer("Common variance", correct = TRUE)
+  ),
+  question("Common variance is an estimate for the variance of a variable shared by other variables in the analysis",
+    answer("True", correct = TRUE),
+    answer("False")
+  )
+)
+```
+
+## Stage Five: Factor Interpretation 
+
+Factor interpretation involves the following steps: 
+
+1. **Estimating the Factor Matrix**
+    
+    * You will obtain the *Factor Matrix*, which contains the factor loadings for each variable.
+    * *Factor loadings* are the correlation of each variable and the factor
+    * A higher loading indicates a high correspondence between the variable and the factor 
+    
+2. **Factor Rotation**
+    
+    * A researcher will typically apply a rotation method to achieve more meaningful factor solutions
+    * Different rotation methods include:
+        + Quartimax  (orthogonal)
+        + Varimax (orthogonal)
+        + Equimax (orthogonal)
+        + Oblique rotation methods, specific to statistical software package 
+    * Typically, orthogonal rotation methods are more widely used and preferred when data reduction is the goal of the analysis
+    * Oblique rotation methods are best suited for obtaining meaningful factors or constructs 
+    
+3. **Factor Interpretation and Respecification**
+
+    * After implementing a rotation method, re-examine the factor loadings to see the variable's role and contribution to the factor structure. 
+    * Respecification can occur if the researcher would like to: 
+        + Delete a variable from the analysis
+        + Employ a different rotation method 
+        + Extract a different number of factors 
+
+**Aside:** A factor loading represents the correlation of the factor and the variable. The sqaured loading is the amount of the variable's total variance accounted for by the factor. The loading must exceed .70 for the factor to account for 50% of the variable's variance. Typically, loadings in the .30 -.40 range are acceptable, those at .50 are practically significant. We must also consider the sample size to determine the significance of the factor loadings. Typically, for a loading of  .30 to be considered significant the sample size must be at least 350. For a loading of  .50 to be considered sigificant the sample size must be at least 120. 
+
+```{r quiz5, echo=FALSE}
+quiz(
+  question("Common Factor Analysis considers 'X' to derive factors ",
+    answer("Total variance"),
+    answer("Error variance"),
+    answer("Specific variance"),
+    answer("Common variance", correct = TRUE)
+  ),
+  question("A high factor loading indicates a large correspondence between the variable and the factor",
+    answer("True", correct = TRUE),
+    answer("False")
+  ),
+  question("A factor loading of .30 is considered significant at a sample size of?",
+    answer("80"),
+    answer("150"),
+    answer("120"),
+    answer("350", correct = TRUE)
+    )
+  )
+```
+
+
+## EFA Analysis in R 
+
+1. We will now run through an example of Exploratory Factor Analysis (EFA) in R. We will make use of the following packages: *psych*, *GPArotation*. The dataset to run the EFA is already preloaded for you. The dataset includes 12 items with 1365 observations derived from student evaluations. The items correspond to the following variables: 
+
+    * Item13: Instructor well prepared 
+    * Item14: Instructor scholarly grasp
+    * Item15: Instructor confidence
+    * Item16: Instructor focus lectures
+    * Item17: Instructor uses clear relevant examples
+    * Item18: Instructor sensitive to students 
+    * Item19: Instructor allows me to ask questions
+    * Item20: Instructor accessible to students outside class
+    * Item21: Instructor aware of students understanding 
+    * Item22: I am satisfied with student performance evaluation
+    * Item23: Compared to other instructors, this instructor is 
+    * Item24: Compared to other courses this course was
+
+2. The dataset was obtained from https://stats.idre.ucla.edu/spss/output/factor-analysis/. 
+
+```{r prepare-EFAex}
+library(RCurl, quietly = TRUE)
+library(psych, quietly = TRUE)
+library(GPArotation, quietly = TRUE)
+x <- getURL('https://raw.githubusercontent.com/madisonvolpe/EFAdataset/master/ExampleEFA.csv')
+data <- read.csv(text=x)
+data <- data[-1]
+correl <- cor(data)
+
+```
+
+### Step One: Obtain the Correlation Matrix 
+
+Please run the following code to obtain the correlation matrix to perform EFA. 
+
+```{r CorrMatrix, exercise=TRUE, exercise.setup = "prepare-EFAex"}
+# obtain correlation matrix 
+correl <- cor(data)
+correl
+cor.plot(data, numbers = TRUE)
+```
+
+### Step Two: EFA Assumptions 
+
+Run the following code to conduct Bartlett's Test of Sphericity 
+
+```{r Bartlett, exercise=TRUE, exercise.setup = "prepare-EFAex"}
+#Bartlett's Test - Large enough correlations to justify EFA 
+cortest.bartlett(correl, n = nrow(data))
+```
+
+```{r quiz6, echo=FALSE}
+quiz(
+  question("Based on the p-value, do we have large enough correlation amongst variables to perform an EFA ?",
+    answer("No"),
+    answer("Yes", correct = TRUE)
+  )
+)
+```
+
+Run the following code to obtain the Measure of Sampling Adequacy (MSA)
+
+```{r MSA, exercise=TRUE, exercise.setup = "prepare-EFAex"}
+#kmo
+KMO(correl)
+```
+
+```{r quiz7, echo=FALSE}
+quiz(
+  question("Is the overall MSA value large enough to justify an EFA?",
+    answer("No"),
+    answer("Yes", correct = TRUE)
+  )
+)
+```
+
+### Step Three: How Many Factors to Extract? 
+
+Run the following code to determine the number of factors to extract in the analysis. The code generates a scree plot. The elbow of the scree plot will give you an estimate of the appropriate number of factors to extract. 
+
+```{r NoFactors1, exercise = TRUE, exercise.setup = "prepare-EFAex"}
+#how many factors? 
+parallel <- fa.parallel(data, fm = 'minres', fa = 'fa')
+```
+
+We can see that parallel analysis suggests a 3 factor solution. The resulting scree plot shows that after a three factor solution each subsequent factor accounts for smaller and smaller amounts of the total variance. 
+
+### Step Four: Examination of the Unoratated Factor Matrix 
+
+Please run the following code to obtain the Factor Matrix with the unrotated factor loadings. 
+
+```{r Unrotated, exercise = TRUE, exercise.setup = "prepare-EFAex"}
+threefactor.no <- fa(data, nfactors = 3, rotate = "none")
+print(threefactor.no$loadings, cutoff = 0.3)
+```
+
+```{r quiz8, echo=FALSE}
+quiz(
+  question("Are variables with factor loadings of .3 significant in this case?",
+    answer("No, because we do not have an accurate sample size", message = "In order for factor loadings of .3 to be signficant we need a sample size of at least 350."),
+    answer("Yes, because our sample size is adequate (n>350)", correct = TRUE)
+  ),
+  question("Is simple structure achieved? Simple structure refers to one variable being loaded onto one factor only",
+    answer("Yes"),
+    answer("No", correct = TRUE))
+)
+```
+
+### Step Five: Examination of the Rotated Factor Matrix 
+
+Please run the following code to obtain a Factor Matrix after applying a varimax rotation method. 
+
+```{r Rotated, exercise = TRUE, exercise.setup = "prepare-EFAex"}
+threefactor.rot <- fa(data, nfactors = 3, rotate = "varimax")
+print(threefactor.rot$loadings, cutoff = 0.3)
+```
+
+```{r quiz9, echo=FALSE}
+quiz(
+  question("Is simple structure achieved? Simple structure refers to one variable being loaded onto one factor only",
+    answer("Yes"),
+    answer("No", correct = TRUE)
+  )
+)
+```
+
+### Step Six: Another Rotation Method 
+
+Please run the following code to obtain a Factor Matrix after applying an oblimin rotation method. 
+
+```{r Rotated2, exercise = TRUE, exercise.setup = "prepare-EFAex"}
+threefactor.rot2 <- fa(data, nfactors = 3, rotate = "oblimin")
+print(threefactor.rot2$loadings, cutoff = 0.3)
+```
+
+```{r quiz10, echo=FALSE}
+quiz(
+  question("Is simple structure achieved? Simple structure refers to one variable being loaded onto one factor only",
+    answer("Yes", correct = TRUE),
+    answer("No")
+  )
+)
+```
+
+We can additionally see that simple structure is achieved with the oblimin rotation by graphing a path diagram. Please run the following code to see the path diagram. 
+
+```{r prepare-path}
+library(RCurl, quietly = TRUE)
+library(psych, quietly = TRUE)
+library(GPArotation, quietly = TRUE)
+x <- getURL('https://raw.githubusercontent.com/madisonvolpe/EFAdataset/master/ExampleEFA.csv')
+data <- read.csv(text=x)
+data <- data[-1]
+threefactor.rot2 <- fa(data, nfactors = 3, rotate = "oblimin")
+```
+
+```{r path, exercise = TRUE, exercise.setup = "prepare-path"}
+fa.diagram(threefactor.rot2)
+```
+
+### Step Seven: Adequacy
+
+Please run the following code to see the adequacy of the Factor Analysis model run with a three factor solution and oblimin rotation. 
+
+```{r ade, exercise = TRUE, exercise.setup = "prepare-path"}
+print(threefactor.rot2)
+```
+
+We see that the root mean square of residuals (RMSR) is 0.02. This is acceptable as this value should be closer to 0. Next we see that the RMSEA (root mean square error of approximation) index is 0.049, which shows good model fit as it’s below 0.05. Finally, the Tucker-Lewis Index (TLI) is 0.975 – an acceptable value considering it’s over 0.9.
+
+
+
+

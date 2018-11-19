@@ -330,6 +330,7 @@ library(GPArotation, quietly = TRUE)
 data <- packman::ExampleEFA
 data <- data[-1]
 threefactor.rot2 <- fa(data, nfactors = 3, rotate = "oblimin")
+#hi
 ```
 
 ```{r path, exercise = TRUE, exercise.setup = "prepare-path"}

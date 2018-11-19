@@ -204,7 +204,6 @@ library(GPArotation, quietly = TRUE)
 data <- packman::ExampleEFA
 data <- data[-1]
 correl <- cor(data)
-
 ```
 
 ### Step One: Obtain the Correlation Matrix 

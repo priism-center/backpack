@@ -9,15 +9,18 @@
 #'
 #' Function to add packages to existing binders to the user views, or to create
 #' new binders to store packages
-#' @usage bind_packages(Package, binder, source)
+#' @usage bind_packages(Package, binder, source, suggest)
 #' @param Package : new packages to add
 #' @param binder : either an existing binder or a new user-defined binder
 #' @param source : whether package source is CRAN or Github Repo. If the source is a GitHub repo, please provide 
 #' the `username/repo[/subdir]`
-#' @param suggest : default = TRUE. Boolean indicating whether want suggestions on existing packages
-#' @examples bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN")
+#' @param suggest : default = TRUE. Boolean indicating whether want suggestions on existing packages. Once you chose the final name, set
+#' suggest = FALSE to either add packages to an existing binder or create a new binder. 
+#' @examples bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN", suggest = FALSE)
 #' 
-#' bind_packages()
+#' 
+#'
+
 
 bind_packages = function(Package = NULL, binder = NULL, source = NULL, suggest = TRUE){
   
@@ -87,7 +90,6 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL, suggest =
   
   else{
     
-    
     to_bind = data.frame(Package, Topic, Source)
     User.Views <- rbind(User.Views,to_bind)
     User.Views$Package <- as.character(User.Views$Package)
@@ -99,21 +101,76 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL, suggest =
     
     save(User.Views,Topics.Views, file = "./R/sysdata.rda")
     rm(User.Views,Topics.Views)
+  
   }
     
     
   }
   
   
-  
-  
-  
-  
-  
-
-
-
 
 ## Remove Binders
+
+
+## This function let's you remove packages from user-defined binders
+## or creates remove entire binders. 
+
+
+#' Unbind Packages
+#'
+#' Function to remove packages from existing binders, or entire binders, from user views. 
+#' @usage unbind_packages(Package, binder)
+#' @param Package : package(s) to remove. Pass a vector if multiple packages.
+#' @param binder : specifies the binder from which Packages need to be removed. If Packages is NULL, will remove entire binder. 
+#' @examples unbind_packages(Package = c("a","b"), binder = "alphabets") 
+#' unbind_packages(binder = 'alphabets')
+#' 
+#' 
+#'
+
+unbind_packages = function(Package = NULL, binder = NULL){
+  
+  if(is.null(binder)){
+    stop("argument 'binder' is missing with no default")
+  }
+
+  load("./R/sysdata.rda")
+  
+  if(length(binder) == length(Package) | length(binder) == 1){
+    Topic = binder
+  }
+  
+  else{
+    stop("Either provide a single binder for all your packages, or one binder for each!")
+  }
+  
+
+    User.Views$Package <- as.character(User.Views$Package)
+    User.Views$Topic <- as.character(User.Views$Topic)
+    User.Views$Source <- as.character(User.Views$Source)
+    
+    if(is.null(Package)){
+      
+      
+      User.Views = User.Views[!(User.Views$Topic %in% Topic) ,]
+      
+    }
+    
+    else{
+      
+      User.Views = User.Views[!(User.Views$Topic %in% Topic & User.Views$Package %in% Package), ]
+      
+    }
+    
+    
+    User.Views = User.Views[!duplicated(User.Views),]
+    
+    save(User.Views,Topics.Views, file = "./R/sysdata.rda")
+    rm(User.Views,Topics.Views)
+  }
+
+
+
+
 
 

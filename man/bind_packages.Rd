@@ -4,21 +4,26 @@
 \alias{bind_packages}
 \title{Bind Packages}
 \usage{
-bind_packages(Package, binder, source)
+bind_packages(Package, binder, source, suggest)
 }
 \arguments{
 \item{Package}{: new packages to add}
 
 \item{binder}{: either an existing binder or a new user-defined binder}
 
-\item{source}{: whether package source is CRAN or Github Repo}
+\item{source}{: whether package source is CRAN or Github Repo. If the source is a GitHub repo, please provide 
+the `username/repo[/subdir]`}
+
+\item{suggest}{: default = TRUE. Boolean indicating whether want suggestions on existing packages. Once you chose the final name, set
+suggest = FALSE to either add packages to an existing binder or create a new binder.}
 }
 \description{
 Function to add packages to existing binders to the user views, or to create
 new binders to store packages
 }
 \examples{
-bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN")
+bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN", suggest = FALSE)
 
-bind_packages()
+
+
 }

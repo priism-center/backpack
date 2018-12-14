@@ -13,5 +13,16 @@ start_lesson <- function(name="2004-MatrixAlgebra"){
   rmarkdown::run(paste0("./inst/tutorials/",name,"/",name,".Rmd"))
 }
 
+#' List Lessons
+#'
+#' Function to list available lessons. 
+#' @usage list_lessons(name)
+#' @param name Name of the lesson to learn.
+#' @examples list_lessons()
+#' 
 
-## List lessons
+list_lessons <- function(){
+  lessons = list.files('./inst/tutorials')
+  lessons = lessons[ ! lessons %in% c('readme.md', 'README.md')]
+  print(lessons)
+}

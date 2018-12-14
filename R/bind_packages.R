@@ -82,11 +82,12 @@ bind_packages = function(Package = NULL, binder = NULL, source = NULL, suggest =
   
   if(suggest == TRUE){
     search_string <- gsub(" ","|",paste(binder,collapse=" "))
-    print("The following binders already exist, would you like to add to one of  them instead?")
+    print("The following binders already exist, would you like to add to one of them instead?")
     existing_binders = view_binders('all', search = search_string)
     print(existing_binders)
     print("If yes, change the name of the binder to an existing one, otherwise turn the paramenter 'suggest' to FALSE")
   }
+  
   
   else{
     

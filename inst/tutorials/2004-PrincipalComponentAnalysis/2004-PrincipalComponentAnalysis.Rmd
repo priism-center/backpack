@@ -134,7 +134,7 @@ seeds_PCA$loadings
 ## Plotting Results
 
 Complete the code to create a line plot of the variance of each component from `seeds_PCA`:
-
+ 
 ```{r variance_plot, exercise=TRUE}
 plot(___, type = "l")
 ```

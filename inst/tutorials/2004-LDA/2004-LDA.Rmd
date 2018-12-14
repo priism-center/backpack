@@ -1,0 +1,64 @@
+---
+title: "Linear Discriminant Analysis in R Tutorial"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Introduction to Linear Discriminant Analysis
+
+The goal of Discriminat Analysis is used to examine differences among groups on the basis of a set of p predictor variables. When are only looking at the differences between two groups, this can be accomplished by regression, but when we have three or more groups we need more than one indicator variable to represent the groups, and we have a multivariate extension of regression, called **multivariate discriminant analysis** (mda).
+
+
+In discriminant analysis we:  
+  1. Determine the linear composites of the predictors that maximize between group to within group variability.  
+    
+  2. Test whether the linear composites do, indeed, discriminate among groups (to determine whether the group means on the linear composites of predictor variables, when considered simultaneously, are significantly different) and, if so, to determine the number of composites (discriminant axes) for which this is the case.  
+    
+  3. Find which predictors contribute most to the discrimination among groups.
+
+
+
+
+
+## Exercises 
+
+To complete the following exercise you will need the package psych: 
+
+```{r load, exercise = TRUE}
+require(psych)
+```
+
+```{r data_desc, exercise = TRUE}
+data <- packman::tatsuoka
+head(data)
+psych::describeBy(data[,c("imaginative","venturesome")], group = data$group)
+```
+
+
+
+Start by creating a scatter plot of the predictors
+
+```{r scatter_plot, exercise=TRUE}
+plot(___ , ___, col = data$group,main = "") 
+legend(1,10,c("Artists","Accountants"),col=1:length(data$group),pch=1)
+```
+
+```{r scatter_plot-solution}
+plot(data$venturesome, data$imaginative, col = data$group,main = "")
+legend(1,10,c("Artists","Accountants"),col=1:length(data$group),pch=1)
+```
+
+
+## Quiz: Review your Understanding
+
+
+

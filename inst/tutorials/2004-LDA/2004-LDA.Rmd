@@ -14,7 +14,6 @@ packman::load_binders("2004-LDA")
 ```
 
 
-
 ## Introduction to Linear Discriminant Analysis
 
 The goal of Discriminat Analysis is used to examine differences among groups on the basis of a set of p predictor variables. When are only looking at the differences between two groups, this can be accomplished by regression, but when we have three or more groups we need more than one indicator variable to represent the groups, and we have a multivariate extension of regression, called **multivariate discriminant analysis** (mda).
@@ -26,8 +25,6 @@ In discriminant analysis we:
   2. Test whether the linear composites do, indeed, discriminate among groups (to determine whether the group means on the linear composites of predictor variables, when considered simultaneously, are significantly different) and, if so, to determine the number of composites (discriminant axes) for which this is the case.  
     
   3. Find which predictors contribute most to the discrimination among groups.
-
-
 
 
 

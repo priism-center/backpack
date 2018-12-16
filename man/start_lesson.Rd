@@ -4,10 +4,10 @@
 \alias{start_lesson}
 \title{Start Lesson}
 \usage{
-start_lesson(name)
+start_lesson(lesson_name)
 }
 \arguments{
-\item{name}{Name of the lesson to learn.}
+\item{lesson_name}{Name of the lesson to learn.}
 }
 \description{
 Function to start a lesson.

@@ -4,10 +4,7 @@
 \alias{list_lessons}
 \title{List Lessons}
 \usage{
-list_lessons(name)
-}
-\arguments{
-\item{name}{Name of the lesson to learn.}
+list_lessons()
 }
 \description{
 Function to list available lessons.

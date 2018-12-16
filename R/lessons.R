@@ -11,6 +11,7 @@
 
 start_lesson <- function(lesson_name="2004-MatrixAlgebra"){
   avl_lessons <- backpack::list_lessons()
+  
   if(length(lesson_name) > 1){
     stop("Please enter only 1 lesson name")
   }
@@ -28,8 +29,7 @@ start_lesson <- function(lesson_name="2004-MatrixAlgebra"){
 #' List Lessons
 #'
 #' Function to list available lessons. 
-#' @usage list_lessons(name)
-#' @param name Name of the lesson to learn.
+#' @usage list_lessons()
 #' @examples list_lesson()
 #' 
 

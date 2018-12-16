@@ -1,0 +1,62 @@
+---
+title: "Multivariate Analysis of Variance"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true 
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+# backpack::load_binders("2004-MANOVA")
+```
+
+## Introduction to Multivariate Analysis of Variance 
+
+Multivariate Analysis of Variance (MANOVA) is a procedure to analyze group differences for two or more groups. Similar to its univariate counterpart, ANOVA, this multivariate technqiue tests whether or not designated groups appear to differ based on a set of continuous dependent variables considered simultaneously or collectively. 
+
+While ANOVA tests the null hypothesis that all the group means are equal across a dependent variable, MANOVA tests the null hypothesis that all group means are equal, meaning they come from the same population. MANOVA uses a set of metric variables as dependent variables and the objective becomes finding groups of respondents that exhibit differences on the set of dependent variables. Groups are not prespecified, but the researcher uses one or more independent variables to form these groups.
+
+To understand how MANOVA works in a more concrete way, consider the following situation: one's perception of workplace safety and turnover rates. For example, do turnover rates of home-care, school, and hospital-based nurses differ on their perceptions of safety in the workplace. In this case, there are three dependent variables: turnover rates for home-care nurses, turnover rates for school nurses, and turnover rates for hospital-based nurses. We could imagine the independent variable as a sum score from a survey that measures one's perception of workplace safety. In this case, the scores can be categorized into "unsafe", "somewhat unsafe", "neither safe nor unsafe", "somewhat safe", "safe." Therefore, the one independent variable now has five groups. 
+
+## Assumptions of MANOVA 
+
+The helpful assumptions for MANOVA were taken from: https://statistics.laerd.com/stata-tutorials/one-way-manova-using-stata.php. 
+
+This a good source to read for a clear and concrete explanation of MANOVA. 
+
+Important assumptions for MANOVA are:
+
+1. The two or more dependent variables must be continuous 
+2. The independent variable must have two or more groups 
+3. Each observation can only belong to one group
+4. There needs to be more observations in each group than the number of dependent variables
+5. No univariate or multivariate outliers
+6. Multivariate normality
+7. Linear relationship between between each pair of dependent variables for each group of the independent variable 
+8. Homogeneity of variance-covariance matrices
+9. No Multicollinearity 
+
+### Quiz: Assumptions
+
+```{r quiz1, echo=FALSE}
+quiz(
+  question("Dependent variables can be categorical ",
+    answer("True "),
+    answer("False", correct = TRUE)
+  ),
+  question("Observations can belong to more than one group",
+    answer("True"),
+    answer("False", correct = TRUE)
+  )
+)
+```
+
+## One-Way MANOVA in R
+
+We will now run through an example of a [one-way] Multivariate Analysis of Variance (MANOVA) in R. The MANOVA function is included in base R, but we will make use of : *dpylr* to manipulate data. The dataset to run the MANOVA is already preloaded for you. The dataset includes 3 variables, two dependent variables and one indepenent variable. The dependent variables are math scores and english scores, and the independent variable is one's anxiety level(low, medium, high). 
+
+
+

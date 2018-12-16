@@ -11,8 +11,8 @@
   
   ## loading data frames consisting of views
   for(i in c(1:length(binders))){
-    pkgs_to_add <- Topics.Views[Topics.Views$Topic %in% binders[i],c("Package","Source")]
-    pkgs_to_add <- rbind(pkgs_to_add,User.Views[User.Views$Topic %in% binders[i],c("Package","Source")])
+    pkgs_to_add <- Topics.Views[Topics.Views$Binder %in% binders[i],c("Package","Source")]
+    pkgs_to_add <- rbind(pkgs_to_add,User.Views[User.Views$Binder %in% binders[i],c("Package","Source")])
     
     ## Error handling
     if(dim(pkgs_to_add)[1] == 0){
@@ -55,12 +55,12 @@ view_binders <- function(compartment="all", search=NULL ){
     views <- User.Views
   }
   
-  views <- views %>% group_by(Topic) %>% summarise(packages=paste(Package,collapse=", "),
-                                                             N=n())
-
   if(length(search) > 0){
     views <- views[grepl(search,views$Topic),]
   }
+  
+  views <- views %>% dplyr::select(Binder,Package,Source) %>% dplyr::group_by(Binder) %>% 
+    summarise(packages=paste(Package,collapse=", "),N=n())
   
   rm(Topics.Views,User.Views)
   # print.data.frame(views)
@@ -94,7 +94,7 @@ install_binders <- function(binders){
       },
       error=function(cond){
         stop(paste(pkgs_ext$Package[i]," not found in GitHub source ",pkgs_ext$Source[i],
-                   "Currently only installs via GitHub supported. Other sources will be added soon!"))
+                   ".Currently only installs via GitHub supported. Other sources will be added soon!"))
       }
     )
    

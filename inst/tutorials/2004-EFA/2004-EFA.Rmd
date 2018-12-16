@@ -10,7 +10,7 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
-packman::load_binders("2004-EFA")
+# backpack::install_binders("2004-EFA")
 ```
 
 
@@ -202,7 +202,7 @@ quiz(
 ```{r prepare-EFAex}
 library(psych, quietly = TRUE)
 library(GPArotation, quietly = TRUE)
-data <- packman::ExampleEFA
+data <- backpack::ExampleEFA
 data <- data[-1]
 correl <- cor(data)
 ```
@@ -325,7 +325,7 @@ We can additionally see that simple structure is achieved with the oblimin rotat
 ```{r prepare-path}
 library(psych, quietly = TRUE)
 library(GPArotation, quietly = TRUE)
-data <- packman::ExampleEFA
+data <- backpack::ExampleEFA
 data <- data[-1]
 threefactor.rot2 <- fa(data, nfactors = 3, rotate = "oblimin")
 #hi

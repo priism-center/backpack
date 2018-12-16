@@ -58,11 +58,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h2>Exercises</h2>
 <p>To complete the following exercise you will need the package psych:</p>
 <div class="tutorial-exercise" data-label="load" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>require(psych)</code></pre>
+<pre class="text"><code>require(psych, quietly = TRUE)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise" data-label="data_desc" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>data &lt;- packman::tatsuoka
+<pre class="text"><code>data &lt;- backpack::tatsuoka
 head(data)
 psych::describeBy(data[,c(&quot;imaginative&quot;,&quot;venturesome&quot;)], group = data$group)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
@@ -84,6 +84,7 @@ legend(1,10,c(&quot;Artists&quot;,&quot;Accountants&quot;),col=1:length(data$gro
 <script type="application/shiny-prerendered" data-context="server-start">
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
+# backpack::load_binders("2004-LDA")
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">

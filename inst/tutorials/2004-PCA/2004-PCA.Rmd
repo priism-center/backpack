@@ -19,7 +19,7 @@ In this tutorial, we will learn how to use the `princomp` function from the `sta
 ## Examining the Original Dataset
 
 ```{r prepare-data}
-seeds_full <- packman::seeds
+seeds_full <- backpack::seeds
 seeds <- seeds_full[ , -8]
 ```
 

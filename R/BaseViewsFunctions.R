@@ -1,3 +1,6 @@
+library(dplyr, quietly = TRUE)
+library(devtools, quietly = TRUE)
+
 ## Internal function
 .get_packages <- function(binders){
   ## Description: Internal functions to get packages from binders  
@@ -56,12 +59,12 @@ view_binders <- function(compartment="all", search=NULL ){
   }
   
   if(length(search) > 0){
-    binders <- views[grepl(tolower(search),views$Topic)| ## search in topics
-                     grepl(tolower(search),views$Binder)| ## search in binders
-                     grepl(tolower(search),views$Package),"Binder"] ## search in packages
+    binders <- views[grepl(paste0(search,"|",tolower(search)),views$Topic)| ## search in topics
+                     grepl(paste0(search,"|",tolower(search)),views$Binder)| ## search in binders
+                     grepl(paste0(search,"|",tolower(search)),views$Package),"Binder"] ## search in packages
     
     if(length(binders) == 0){
-      stop("Search found no results. Try changing the search query")
+      # stop("Search found no results. Try changing the search query")
       return(NULL)
     }else{
       views <- views[views$Binder %in% binders,]
@@ -153,11 +156,11 @@ load_binders <- function(binders){
       },
       error=function(cond){
         if (pkgs$Source[i] == "CRAN"){
-          install.packages(pkgs[i])
-          library(pkgs[i],character.only = TRUE)        
+          install.packages(pkgs$Package[i])
+          library(pkgs$Package[i],character.only = TRUE)        
         }else{
           devtools::install_github(repo=pkgs$Source[i])
-          library(pkgs[i],character.only = TRUE)        
+          library(pkgs$Package[i],character.only = TRUE)        
         }
       } 
     )

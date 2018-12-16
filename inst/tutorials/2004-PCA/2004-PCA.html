@@ -121,6 +121,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="section-exercise-reading-the-summary" class="section level3">
 <h3>Exercise: Reading the Summary</h3>
+<p>Examine the resulting principal components by running <code>summary</code> on <code>seeds_PCA</code>:</p>
 <div class="tutorial-exercise" data-label="pca_output" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
@@ -130,17 +131,21 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="section-exercise-examining-the-loadings" class="section level3">
 <h3>Exercise: Examining the Loadings</h3>
+<p>Complete the code below to examine the loadings of the variables on the components from <code>seeds_PCA</code>:</p>
 <div class="tutorial-exercise" data-label="loadings" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>___$loadings</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="loadings-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-
+<pre class="text"><code>seeds_PCA$loadings</code></pre>
 </div>
 </div>
 </div>
 <div id="section-plotting-results" class="section level2">
 <h2>Plotting Results</h2>
+<p>Complete the code to create a line plot of the variance of each component from <code>seeds_PCA</code>:</p>
 <div class="tutorial-exercise" data-label="variance_plot" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>plot(___, type = &quot;l&quot;)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="variance_plot-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">

@@ -10,7 +10,7 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
-packman::load_binders("2004-LDA")
+# backpack::load_binders("2004-LDA")
 ```
 
 
@@ -33,11 +33,11 @@ In discriminant analysis we:
 To complete the following exercise you will need the package psych: 
 
 ```{r load, exercise = TRUE}
-require(psych)
+require(psych, quietly = TRUE)
 ```
 
 ```{r data_desc, exercise = TRUE}
-data <- packman::tatsuoka
+data <- backpack::tatsuoka
 head(data)
 psych::describeBy(data[,c("imaginative","venturesome")], group = data$group)
 ```

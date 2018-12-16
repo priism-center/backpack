@@ -4,10 +4,10 @@
 \alias{bind_packages}
 \title{Bind Packages}
 \usage{
-bind_packages(Package, binder, source, suggest)
+bind_packages(package, binder, source, suggest)
 }
 \arguments{
-\item{Package}{: new packages to add}
+\item{package}{: new packages to add}
 
 \item{binder}{: either an existing binder or a new user-defined binder}
 
@@ -22,7 +22,7 @@ Function to add packages to existing binders to the user views, or to create
 new binders to store packages
 }
 \examples{
-bind_packages(Package = c("a","b","c"),binder = "alphabets", source = "CRAN", suggest = FALSE)
+bind_packages(Package = c("a","b","c"), Binder = "alphabets", source = "CRAN", suggest = FALSE)
 
 
 

@@ -7,7 +7,7 @@
 unbind_packages(Package, binder)
 }
 \arguments{
-\item{Package}{: package(s) to remove. Pass a vector if multiple packages.}
+\item{package}{: package(s) to remove. Pass a vector if multiple packages.}
 
 \item{binder}{: specifies the binder from which Packages need to be removed. If Packages is NULL, will remove entire binder.}
 }

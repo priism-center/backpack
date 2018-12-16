@@ -45,7 +45,7 @@ view_binders <- function(compartment="all", search=NULL ){
   load("./R/sysdata.rda")
   compartment <- tolower(compartment)
   if(!(compartment %in% c("all","master","user"))){
-    print("Error: Please enter either all, master or user compartments to look in.")
+    stop(paste0('Compartment ',compartment,' not found: Please enter either all, master or user'))
   }else if (compartment == "all"){
     views <- Topics.Views
     views <- rbind(views,User.Views)
@@ -56,11 +56,28 @@ view_binders <- function(compartment="all", search=NULL ){
   }
   
   if(length(search) > 0){
-    views <- views[grepl(search,views$Topic),]
+    binders <- views[grepl(tolower(search),views$Topic)| ## search in topics
+                     grepl(tolower(search),views$Binder)| ## search in binders
+                     grepl(tolower(search),views$Package),"Binder"] ## search in packages
+    
+    if(length(binders) == 0){
+      stop("Search found no results. Try changing the search query")
+      return(NULL)
+    }else{
+      views <- views[views$Binder %in% binders,]
+    }
   }
   
-  views <- views %>% dplyr::select(Binder,Package,Source) %>% dplyr::group_by(Binder) %>% 
-    summarise(packages=paste(Package,collapse=", "),N=n())
+  views <- views %>% dplyr::group_by(Binder) %>% 
+    summarise(packages=paste(Package,collapse=", "),
+              topics=paste(names(sort(table(unlist(strsplit(paste(Topic,collapse = ", "),
+                      ", "))),decreasing = TRUE))[1:min(3,
+                      length(names(sort(table(unlist(strsplit(paste(Topic,collapse = ", "),
+                              ", "))),decreasing = TRUE))))],collapse=", "),
+              N=n()) 
+  ## really ugly code to display topics
+                                      
+              
   
   rm(Topics.Views,User.Views)
   # print.data.frame(views)

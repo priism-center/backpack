@@ -10,11 +10,7 @@
 #' Function to add packages to existing binders to the user views, or to create
 #' new binders to store packages
 #' @usage bind_packages(package, binder, source, suggest)
-<<<<<<< HEAD
-#' @param Package : new packages to add
-=======
 #' @param package : new packages to add
->>>>>>> d7cd7465b8f2ed4439da06f7b37390a72edd75f4
 #' @param binder : either an existing binder or a new user-defined binder
 #' @param source : whether package source is CRAN or Github Repo. If the source is a GitHub repo, please provide 
 #' the `username/repo[/subdir]`

@@ -1,4 +1,4 @@
-# packman
+# backpack
 Repository for building an R package for Stat Consulting Class
 
 One package to rule them all, one package to find them, one package to bring them all and in the darkness bind them!

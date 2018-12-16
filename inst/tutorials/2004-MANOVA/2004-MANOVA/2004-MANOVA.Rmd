@@ -56,7 +56,76 @@ quiz(
 
 ## One-Way MANOVA in R
 
-We will now run through an example of a [one-way] Multivariate Analysis of Variance (MANOVA) in R. The MANOVA function is included in base R, but we will make use of : *dpylr* to manipulate data. The dataset to run the MANOVA is already preloaded for you. The dataset includes 3 variables, two dependent variables and one indepenent variable. The dependent variables are math scores and english scores, and the independent variable is one's anxiety level(low, medium, high). 
+We will now run through an example of a [one-way] Multivariate Analysis of Variance (MANOVA) in R. The MANOVA function is included in base R, but we will make use of : *dpylr* to manipulate data. The dataset to run the MANOVA is already preloaded for you. The dataset includes 3 variables, two dependent variables and one indepenent variable. The dependent variables are math scores and english scores, and the independent variable is one's anxiety level(low, medium, high). Ultimately, we are trying test whether one's test performance on math and english examinations differed based on test anxiety levels.  
 
+```{r prepare-one}
+library(dplyr, quietly = TRUE)
+dat <- backpack::anxiety
+```
 
+### Step One - Examine Potential Outliers 
+
+The following code allows you to create boxplots for each dependent variable, math + english, at each level of anxiety. Please fill in the *blank* to create boxplots for students with low, med, and high levels of anxiety. 
+
+```{r Outliers, exercise=TRUE, exercise.setup = "prepare-one"}
+boxplot(dat$math[dat$anxiety==""])
+boxplot(dat$english[dat$anxiety==""])
+```
+
+### Step Two - Scatterplots (Linearity)
+
+Outliers were removed from the dataset based on observations in the boxplot. Another important assumption to consider is that there must be a linear relationship between between each pair of the dependent variables for each group of the independent variable.  The following code plots math scores against english scores. You can fill in the blank to show the scatterplot at each level of anxiety. 
+
+```{r prepare-two}
+library(dplyr, quietly = TRUE)
+dat <- backpack::anxiety
+dat = dat %>%
+  group_by(anxiety) %>%
+  filter(!(abs(math - median(math)) > 2*sd(math)) & !(abs(english-median(english)) > 2*sd(english)))
+```
+
+```{r Linearity, exercise = TRUE, exercise.setup="prepare-two"}
+plot(dat$math[dat$anxiety==""], dat$english[dat$anxiety==""])
+```
+
+### Step Three - Box's M Test (Homogeneity of variance-covariance matrices)
+
+The null hypothesis for this test is that the observed covariance matrices for the 
+dependent variables are equal across groups. We want a small enough p-value so that we can reject the null hypothesis and confirm that the covariance matrices for the dependent variables are different across groups. Run the following code to conduct Box's M Test.  
+
+```{r prepare-three}
+suppressPackageStartupMessages(library(dplyr, quietly = TRUE))
+suppressPackageStartupMessages(library(heplots,quietly = TRUE))
+
+dat <- backpack::anxiety
+dat = dat %>%
+  group_by(anxiety) %>%
+  filter(!(abs(math - median(math)) > 2*sd(math)) & !(abs(english-median(english)) > 2*sd(english)))
+```
+
+```{r BoxM, exercise = TRUE, exercise.setup = "prepare-three"}
+boxM(dat[,c("math","english")], group = dat$anxiety)
+```
+
+### Step Four - Running the MANOVA 
+
+The command to run a MANOVA is already loaded when you startup R as it is part of the stats package. The first line in the code runs the MANOVA. Running the summary.manova command on the fit outputs the results. You can fill in the blank with either Wilks, Pillai, Hotelling-Lawley, or Roy. In this case, we use Wilks. 
+
+```{r MANOVA, exercise = TRUE, exercise.setup = "prepare-three"}
+fit <- manova(cbind(math,english)~as.factor(anxiety), data = dat)
+summary.manova(fit, test = "Wilks")
+```
+
+```{r quiz2, echo=FALSE}
+quiz(
+  question("Is the p-value for anxiety significant?",
+    answer("No"),
+    answer("Yes", correct = TRUE)
+  )
+)
+```
+
+## Conclusion 
+
+You can see from the previous exercise that the value in the "Pr(> F)" column is significant, which confirms that the one-way MANOVA result is statistically significant. Therefore, we can confirm that there is a difference in test performance on math and english scores between low, medium and high anxiety students. Overall, a one-way MANOVA only confirms that there is a difference between at least two of the groups. However, it does not tell us exactly which groups are different. Additional, post-hoc testing can be done to find these exact differences, but that is beyond the scope of this lesson. 
 

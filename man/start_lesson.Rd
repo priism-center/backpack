@@ -14,7 +14,8 @@ Function to start a lesson.
 }
 \details{
 This can also be done using the learnr package as follows 
-'learnr::run_tutorial("2004-MatrixAlgebra",package="backpack")'
+'learnr::run_tutorial("2004-MatrixAlgebra",package="backpack")'. It must be noted that when using this, 
+the packages needed for the tutorial aren't automatically loaded. It is recommended to use start_lesson.
 }
 \examples{
 start_lesson(name="2004-MatrixAlgebra")

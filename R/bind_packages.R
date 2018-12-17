@@ -80,12 +80,14 @@ bind_packages = function(package = NULL, binder = NULL, source = NULL, suggest =
   ## First, check if the package name is an exact match to something already existing
   binder_match = binder %in% unique(rbind(Topics.Views, User.Views)$Binder)
   
-  if(all(binder_match) == TRUE){suggest == FALSE}
+  if(all(binder_match) == TRUE){
+    suggest = FALSE
+    }
   
   ## If at least on of the binders is not an exact match, search through current views and suggest.
   
   if(suggest == TRUE){
-    search_string <- gsub(" ","|",paste(binder,collapse=" "))
+    search_string <- gsub(" ","|",paste(c(binder,package),collapse=" "))
     print("The following binders already exist, would you like to add to one of them instead?")
     existing_binders = view_binders('all', search = search_string)
     print(existing_binders)

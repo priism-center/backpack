@@ -72,7 +72,7 @@ view_binders <- function(compartment="all", search=NULL ){
   }
   
   views <- views %>% dplyr::group_by(Binder) %>% 
-    summarise(packages=paste(Package,collapse=", "),
+    dplyr::summarise(packages=paste(Package,collapse=", "),
               topics=paste(names(sort(table(unlist(strsplit(paste(Topic,collapse = ", "),
                       ", "))),decreasing = TRUE))[1:min(3,
                       length(names(sort(table(unlist(strsplit(paste(Topic,collapse = ", "),

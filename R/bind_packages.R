@@ -13,7 +13,7 @@
 #' @param package : new packages to add
 #' @param binder : either an existing binder or a new user-defined binder
 #' @param source : whether package source is CRAN or Github Repo. If the source is a GitHub repo, please provide 
-#' the `username/repo[/subdir]`
+#' the `username/repo[/subdir]`. Default is to CRAN. 
 #' @param suggest : default = TRUE. Boolean indicating whether want suggestions on existing packages. Once you chose the final name, set
 #' suggest = FALSE to either add packages to an existing binder or create a new binder. 
 #' @examples bind_packages(Package = c("a","b","c"), Binder = "alphabets", source = "CRAN", suggest = FALSE)
@@ -22,7 +22,7 @@
 #'
 
 
-bind_packages = function(package = NULL, binder = NULL, source = NULL, suggest = TRUE){
+bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest = TRUE){
   
   if(is.null(package)){
     stop("argument 'Package' is missing with no default")
@@ -86,16 +86,21 @@ bind_packages = function(package = NULL, binder = NULL, source = NULL, suggest =
   
   ## If at least on of the binders is not an exact match, search through current views and suggest.
   
-  if(suggest == TRUE){
-    search_string <- gsub(" ","|",paste(c(binder,package),collapse=" "))
-    print("The following binders already exist, would you like to add to one of them instead?")
-    existing_binders = view_binders('all', search = search_string)
-    print(existing_binders)
-    print("If yes, change the name of the binder to an existing one, otherwise turn the paramenter 'suggest' to FALSE")
+  search_string <- gsub(" ","|",paste(c(binder,package),collapse=" "))
+  existing_binders = view_binders('all', search = search_string)
+  if(is.null(existing_binders) == TRUE){
+    suggest = FALSE
   }
   
   
-  else{
+  if(suggest == TRUE){
+      print("The following binders already exist, would you like to add to one of them instead?")
+      print(existing_binders)
+      print("If yes, change the name of the binder to an existing one, otherwise turn the paramenter 'suggest' to FALSE")
+  }
+  
+  
+  else if(suggest == FALSE){
     
     to_bind = data.frame(Package, Binder, Topic, Source)
     

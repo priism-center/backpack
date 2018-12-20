@@ -12,7 +12,7 @@ bind_packages(package, binder, source, suggest)
 \item{binder}{: either an existing binder or a new user-defined binder}
 
 \item{source}{: whether package source is CRAN or Github Repo. If the source is a GitHub repo, please provide 
-the `username/repo[/subdir]`}
+the `username/repo[/subdir]`. Default is to CRAN.}
 
 \item{suggest}{: default = TRUE. Boolean indicating whether want suggestions on existing packages. Once you chose the final name, set
 suggest = FALSE to either add packages to an existing binder or create a new binder.}

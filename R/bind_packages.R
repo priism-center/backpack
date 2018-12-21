@@ -105,14 +105,14 @@ bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest
     to_bind = data.frame(Package, Binder, Topic, Source)
     # print(to_bind)
     User.Views <- rbind(User.Views,to_bind)
-    print(User.Views)
+    
     User.Views$Package <- as.character(User.Views$Package)
     User.Views$Binder <- as.character(User.Views$Binder)
     User.Views$Source <- as.character(User.Views$Source)
     
     ### Account for duplicate package-Topic combinations
-    User.Views = User.Views[!duplicated(User.Views),]
-    usethis::use_data(Topics.Views, User.Views, internal = TRUE)
+    User.Views <- User.Views[!duplicated(User.Views),]
+    print(getwd())
     # save(User.Views,Topics.Views, file = "./R/sysdata.rda")
     # rm(User.Views,Topics.Views)
     

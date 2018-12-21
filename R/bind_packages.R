@@ -112,8 +112,8 @@ bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest
     ### Account for duplicate package-Topic combinations
     User.Views = User.Views[!duplicated(User.Views),]
     
-    save(User.Views,Topics.Views, file = "./R/sysdata.rda")
-    rm(User.Views,Topics.Views)
+    # save(User.Views,Topics.Views, file = "./R/sysdata.rda")
+    # rm(User.Views,Topics.Views)
     
   }
 }
@@ -173,8 +173,8 @@ unbind_packages = function(package = NULL, binder = NULL){
     
     User.Views = User.Views[!duplicated(User.Views),]
     
-    save(User.Views,Topics.Views, file = "./R/sysdata.rda")
-    rm(User.Views,Topics.Views)
+    # save(User.Views,Topics.Views, file = "./R/sysdata.rda")
+    # rm(User.Views,Topics.Views)
   }
 
 

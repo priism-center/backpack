@@ -103,17 +103,18 @@ bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest
   else if(suggest == FALSE){
     
     to_bind = data.frame(Package, Binder, Topic, Source)
-    
+    # print(to_bind)
     User.Views <- rbind(User.Views,to_bind)
+    
     User.Views$Package <- as.character(User.Views$Package)
     User.Views$Binder <- as.character(User.Views$Binder)
     User.Views$Source <- as.character(User.Views$Source)
     
     ### Account for duplicate package-Topic combinations
-    User.Views = User.Views[!duplicated(User.Views),]
-    
-    save(User.Views,Topics.Views, file = "./R/sysdata.rda")
-    rm(User.Views,Topics.Views)
+    User.Views <- User.Views[!duplicated(User.Views),]
+    print(getwd())
+    # save(User.Views,Topics.Views, file = "./R/sysdata.rda")
+    # rm(User.Views,Topics.Views)
     
   }
 }
@@ -173,8 +174,8 @@ unbind_packages = function(package = NULL, binder = NULL){
     
     User.Views = User.Views[!duplicated(User.Views),]
     
-    save(User.Views,Topics.Views, file = "./R/sysdata.rda")
-    rm(User.Views,Topics.Views)
+    # save(User.Views,Topics.Views, file = "./R/sysdata.rda")
+    # rm(User.Views,Topics.Views)
   }
 
 

@@ -16,4 +16,5 @@ Imports:
     dplyr,
     learnr,
     devtools,
-    magrittr
+    magrittr,
+    usethis

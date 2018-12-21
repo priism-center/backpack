@@ -7,7 +7,7 @@
   ## returns: vector of package names
   
   ## loading data frames consisting of views
-  load("./R/sysdata.rda")
+  load("R/sysdata.rda")
   pkgs <- NULL
   srcs <- NULL
   
@@ -44,7 +44,7 @@
 #' 
 
 view_binders <- function(search=NULL, compartment="all"){
-  load("./R/sysdata.rda")
+  load("R/sysdata.rda")
   compartment <- tolower(compartment)
   if(!(compartment %in% c("all","master","user"))){
     stop(paste0('Compartment ',compartment,' not found: Please enter either all, master or user'))

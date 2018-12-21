@@ -7,12 +7,12 @@
 view_binders()
 }
 \arguments{
+\item{search}{character string, regex style search string for binders with matches to words in the search string. Deafults to NULL in which case all the binders are shown.}
+
 \item{compartment}{character vector, the compartment to view the binders in. Defaults to "all". 
 - "all" to view all the binders
 - "master" to view binders that came with the package
 - "user" to view binders created by the user}
-
-\item{search}{character string, regex style search string for binders with matches to words in the search string. Deafults to NULL in which case all the binders are shown.}
 }
 \description{
 Function to see the binders of packages available and a summary for each.

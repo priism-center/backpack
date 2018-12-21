@@ -96,14 +96,14 @@ Now that our data is ready, we will run the PCA.
 
 ### Exercise: Performing the PCA
 
-Run a principal component analysis using `princomp` on `seeds_standard` and assign it to the name `seeds_PCA`:  
+Run a principal component analysis using `princomp` on `seeds_standard` and assign it to the name `seeds_PCA`. Make sure to set the argument `cor = TRUE` so that the correlation matrix is used instead of the covariance matrix:  
 
 ```{r princomp, exercise=TRUE}
 
 ```
 
 ```{r princomp-solution}
-seeds_PCA <- princomp(seeds_standard)
+seeds_PCA <- princomp(seeds_standard, cor = TRUE)
 ```
 
 ### Exercise: Reading the Summary

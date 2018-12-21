@@ -49,7 +49,7 @@ bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest
   }
   
   
-  load("./R/sysdata.rda")
+  # load("./R/sysdata.rda")
 
   Package = package
   Topic = rep(NA, length(Package))
@@ -145,7 +145,7 @@ unbind_packages = function(package = NULL, binder = NULL){
     stop("argument 'binder' is missing with no default")
   }
 
-  load("./R/sysdata.rda")
+  # load("./R/sysdata.rda")
   
   Package = package
   

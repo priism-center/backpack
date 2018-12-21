@@ -7,7 +7,7 @@
   ## returns: vector of package names
   
   ## loading data frames consisting of views
-  load("R/sysdata.rda")
+  #data(sysdata)
   pkgs <- NULL
   srcs <- NULL
   
@@ -23,7 +23,7 @@
     
     pkgs <- rbind(pkgs,pkgs_to_add)
   }
-  rm(Topics.Views, User.Views)
+  # rm(Topics.Views, User.Views)
   
   return(unique(pkgs))
   
@@ -44,7 +44,7 @@
 #' 
 
 view_binders <- function(search=NULL, compartment="all"){
-  load("R/sysdata.rda")
+  # data(sysdata, envir=environment())
   compartment <- tolower(compartment)
   if(!(compartment %in% c("all","master","user"))){
     stop(paste0('Compartment ',compartment,' not found: Please enter either all, master or user'))
@@ -81,7 +81,7 @@ view_binders <- function(search=NULL, compartment="all"){
                                       
               
   
-  rm(Topics.Views,User.Views)
+  # rm(Topics.Views,User.Views)
   # print.data.frame(views)
   return(views)
 }

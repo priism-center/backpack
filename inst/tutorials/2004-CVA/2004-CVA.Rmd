@@ -12,6 +12,142 @@ library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Coming Soon!
+## CVA in R
 
+In this tutorial, we will learn how to use the `CCA` package to perform a canonical variate analysis (CVA) on an example dataset in R. First, we will examine the dataset, and then we will analyze it using the `CCA` package.
+
+## Examining the Dataset
+
+```{r prepare-data}
+library(CCA, quietly = TRUE)
+library(CCP, quietly = TRUE)
+psych_ed <- backpack::psych_ed
+```
+
+We will work with a datset called `psych_ed`, which contains scores on tests of three psychoological constructs and four standardized academic tests.
+
+### Exercise: Dataset Structure
+
+Complete the R code below to examine the structure of the `psych_ed` dataset:
+
+```{r str_data, exercise=TRUE}
+str(___)
+```
+
+```{r str_data-solution}
+str(psych_ed)
+```
+
+We can see that the first three variables are the psychological variables and the last four are the education variables.
+
+## Splitting into Groups and Examining the Correlation Matrix
+
+In order to perform CVA, we need to split our dataset into two groups of variables: the psychological variables and the education variables. Then we will examine the correlations within and between the two groups.  
+
+### Exercise: Splitting into Two Groups
+
+Try creating the two groups by completing the code below. The psychological variables group will be called `psych`, and the education variables group will be called `ed`.
+
+```{r grouping, exercise=TRUE}
+___ <- psych_ed[1:3]
+___ <- psych_ed[___]
+```
+
+```{r grouping-solution}
+psych <- psych_ed[1:3]
+ed <- psych_ed[4:7]
+```
+
+### Exercise: Examine Correlations
+
+Now that we have our two groups, we can use the `matcor` function from the `CCA` package to examine the correlations amongst the variables within and between the two groups. The function `matcor` simply takes the two datasets as arguments, the order of which does not matter, but we will set X as `psych` and Y as `ed`. Try completing the code below to get the correlation matrices using `matcor`:
+
+```{r matcor, exercise=TRUE}
+matcor(X = ___, Y = ___)
+```
+
+```{r matcor-solution}
+matcor(X = psych, Y = ed)
+```
+
+
+## Conducting the CVA
+
+Now we will actually conduct the canonical variate analysis using the `cc` function from the `CCA` package. We will then examine the relevant outputs to complete our analysis.
+
+### Exercise: Run and Save the Analysis
+
+Complete the code to run the CVA in R. The `cc` function again takes the two datasets as arguments, and we will use set X as `psych` and Y as `ed` again for consistency. We will save the output as an object called `cva`.
+
+```{r cc, exercise=TRUE}
+___ <- cc(X = ___, Y = ___)
+```
+
+```{r cc-solution}
+cva <- cc(X = psych, Y = ed)
+```
+
+
+### Exercise: Extracting the Canonical Correlations
+
+The object just created is a list with several elements, each of which can be called by name using the `$` operator. The first element in the `cva` list is called `cor` and contains the canonical correlations. Complete the code below to view the canonical correlations:
+
+```{r ccor, exercise=TRUE}
+___$___
+```
+
+```{r ccor-solution}
+cva$cor
+```
+
+
+### Exercise: Viewing the Raw Coefficients
+
+The raw coefficients on each canonical variate are also contained in the `cva` list as `xcoef` and `ycoef`. Call each of these from `cva` keeping in mind which group we set to X and Y.
+
+```{r coefs, exercise=TRUE}
+# Coefficients for psych
+___$___
+
+# Coefficients for ed
+___$___
+```
+
+```{r coefs-solution}
+# Coefficients for psych
+cva$xcoef
+
+# Coefficients for ed
+cva$ycoef
+```
+
+### Exercise: Compute the Canonical Loadings
+
+Finally, we can compute the loadings on each canonical variate, which are correlations between variables and the canonical variates. This is done using the `comput` function from `CCA`, which takes`X`, `Y`, and `res` as arguments. `res` is the results of the CVA, which we saved as `cva`. Complete the code below to save the output as `cva_loadings`. To view the loadings, call elements 3 through 6 of `cva_loadings`:
+
+```{r loadings, exercise=TRUE}
+cva_loadings <- comput(X = ___, Y = ___, res = ___)
+___[3:6]
+```
+
+```{r loadings-solution}
+cva_loadings <- comput(X = psych, Y = ed, res = cva)
+cva_loadings[3:6]
+```
+
+## Testing for Significance
+
+We have run an analysis that has produced three canonical variates. The next objective is to test which of these, if any, are statistically significant. To do this, we will utilize the `CCP` package.
+
+### Exercise: Test the Canonical Correlations using Bartlett's Test
+
+The `CCP` package is already loaded into the working environment. All we need to do is call the `p.asym` function with a few arguments. The argument `rho` take a vector containing the canonical correlation coefficients. This is was the first element of `cva`. The argument `N` is the number of observations in our dataset. You can check this by running `nrow(psych_ed)` or using the `str` command as we did earlier. The argument `p` is the number of independent variables, while the argument `q` is the number of dependent variables. Since we have been using X = `psych` and Y = `ed`, `p` is the number of variables in the `psych` group, and `q` is the number of variables in the `ed` group. Complete the code below to run the test:
+
+```{r sig, exercise=TRUE}
+p.asym(rho = ___, N = ___, p = ___, q = ___)
+```
+
+```{r sig-solution}
+p.asym(rho = cva$cor, N = 300, p = 3, q = 4)
+```
 

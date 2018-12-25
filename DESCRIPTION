@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Bianca Brusco, Andrea Hassler, Kaushik Mohan, and Madison Volpe
 Maintainer: Kaushik Mohan <kaushik.s.mohan@nyu.edu>
 Description: Use built-in binders (collections) of packages for topics in statistics.
-    Create your own binders to store colelctions of packages for easy installing and loading within your projects. Also, explore lessons on multivariate statistical modeling in R. 
+    Create your own binders to store collections of packages for easy installing and loading within your projects. Also, explore lessons on multivariate statistical modeling in R. 
 License: GPL (>=2)
 URL: https://github.com/priism-center/backpack
 BugReports: https://github.com/priism-center/backpack/issues

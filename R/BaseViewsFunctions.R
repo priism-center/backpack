@@ -14,6 +14,7 @@
   ## loading data frames consisting of views
   for(i in c(1:length(binders))){
     pkgs_to_add <- Topics.Views[Topics.Views$Binder %in% binders[i],c("Package","Source")]
+    User.Views <- .get_user_views()
     pkgs_to_add <- rbind(pkgs_to_add,User.Views[User.Views$Binder %in% binders[i],c("Package","Source")])
     
     ## Error handling
@@ -29,6 +30,47 @@
   
 }
 
+
+## Internal function
+.get_user_views <- function(){
+  path_to_file <- Sys.getenv("PATH_TO_BACKPACK_USER_VIEWS")
+  load(file=path_to_file)
+  return(User.Views)
+}
+
+#' Set backpack path
+#'
+#' creates the environment variable "PATH_TO_BACKPACK_USER_VIEWS" where the backpack path will be stored. This is referenced internally to look for user's personla binders. 
+#' @usage set_backpack_path()
+#' @param path file path where user-defined binders are. Creates an environment variable where the path is stored. 
+#' @examples set_backpack_path("~/Documents/") 
+#' 
+
+set_backpack_path <- function(path){
+  if(!grepl("/$",path)){
+    path <- paste0(path,"/")
+  }
+  Sys.setenv("PATH_TO_BACKPACK_USER_VIEWS"= paste0(path,"backpack_user_content.rda"))
+}
+
+#' Initalize Backpack
+#'
+#' Function to initialize the file where user-defined binders will be saved. 
+#' @usage initialize_user_views()
+#' @param path file path to store the table with user-defined binders in. Creates an environment variable where the path is stored. 
+#' @examples initialize_backpack("~/Documents/") ## to store the user binders in documents folder. 
+#' 
+
+initialize_backpack <- function(path){
+  set_backpack_path(path)
+  path_to_file <- Sys.getenv("PATH_TO_BACKPACK_USER_VIEWS")
+  User.Views <- data.frame(Package=character(),
+                   Binder=character(), 
+                   Topic=character(), 
+                   Source=character(),
+                   stringsAsFactors=FALSE) 
+  save(User.Views,file=path_to_file)
+}
 
 #' View Binders
 #'
@@ -50,10 +92,12 @@ view_binders <- function(search=NULL, compartment="all"){
     stop(paste0('Compartment ',compartment,' not found: Please enter either all, master or user'))
   }else if (compartment == "all"){
     views <- Topics.Views
+    User.Views <- .get_user_views()
     views <- rbind(views,User.Views)
   }else if(compartment == "master"){
     views <- Topics.Views
   }else if(compartment == "user"){
+    User.Views <- .get_user_views()
     views <- User.Views
   }
   

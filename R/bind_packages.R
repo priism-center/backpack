@@ -74,6 +74,7 @@ bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest
     stop("Either provide a single source for all your packages, or one source for each!")
   }
   
+  User.Views <- .get_user_views()
   
   ## Look for suggested packages
   
@@ -112,9 +113,8 @@ bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest
     
     ### Account for duplicate package-Topic combinations
     User.Views <- User.Views[!duplicated(User.Views),]
-    print(getwd())
-    # save(User.Views,Topics.Views, file = "./R/sysdata.rda")
-    # rm(User.Views,Topics.Views)
+    save(User.Views, file = Sys.getenv("PATH_TO_BACKPACK_USER_VIEWS"))
+    rm(User.Views)
     
   }
 }
@@ -155,7 +155,7 @@ unbind_packages = function(package = NULL, binder = NULL){
   } else if(length(binder) == 1){
     Binder = ifelse(is.null(package), binder, rep(binder,length(package)))
   } 
-
+    User.Views <- .get_user_views()
     User.Views$Package <- as.character(User.Views$Package)
     User.Views$Binder <- as.character(User.Views$Binder)
     User.Views$Topic <- as.character(User.Views$Topic)
@@ -172,10 +172,10 @@ unbind_packages = function(package = NULL, binder = NULL){
     }
     
     
-    User.Views = User.Views[!duplicated(User.Views),]
-    
+    User.Views <- User.Views[!duplicated(User.Views),]
+    save(User.Views, file = Sys.getenv("PATH_TO_BACKPACK_USER_VIEWS"))
     # save(User.Views,Topics.Views, file = "./R/sysdata.rda")
-    # rm(User.Views,Topics.Views)
+    rm(User.Views)
   }
 
 

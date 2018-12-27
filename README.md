@@ -32,8 +32,4 @@ set_backpack_path("~/Documents/")
 ```
 
 ## Authors
-This project was developed as part of the Fall '18 Statistical Consulting course, part of the Applied Statistics for Social Science Research, NYU Steinhardt. 
-
-**Consultants**: Bianca Brusco, Andrea Hassler, Kaushik Mohan and Madison Volpe
-
-**Advisor**: Prof. Ying Lu
+This project was developed as part of the Fall '18 Statistical Consulting course, part of the Applied Statistics for Social Science Research, NYU Steinhardt by Bianca Brusco, Andrea Hassler, Kaushik Mohan and Madison Volpe with support from Prof. Ying Lu.

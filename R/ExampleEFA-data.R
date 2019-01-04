@@ -23,6 +23,5 @@
 #'   \item{Item 23}{Compared to other courses this course was}
 #' }
 #' @keywords datasets
-#' @source \href{https://stats.idre.ucla.edu/spss/output/factor-analysis/}
-#' {Institute for Digital Research and Education}
+#' @source \href{https://stats.idre.ucla.edu/spss/output/factor-analysis/}{Institute for Digital Research and Education}
 "ExampleEFA"

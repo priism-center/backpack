@@ -13,6 +13,5 @@
 #'   \item{anxiety}{anxiety level (low, med, high)}
 #' }
 #' @keywords datasets
-#' @source \href{https://statistics.laerd.com/stata-tutorials/one-way-manova-using-stata.php}
-#' {Laerd Statistics}
+#' @source \href{https://statistics.laerd.com/stata-tutorials/one-way-manova-using-stata.php}{Laerd Statistics}
 "anxiety"

@@ -17,6 +17,5 @@
 #'   \item{science}{standardized test score in science}
 #' }
 #' @keywords datasets
-#' @source \href{https://stats.idre.ucla.edu/stat/data/mmreg.csv}
-#' {UCLA Institute for Digital Research and Education}
+#' @source \href{https://stats.idre.ucla.edu/stat/data/mmreg.csv}{UCLA Institute for Digital Research and Education}
 "psych_ed"

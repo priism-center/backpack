@@ -15,8 +15,7 @@
   \item{science}{standardized test score in science}
 }}
 \source{
-\href{https://stats.idre.ucla.edu/stat/data/mmreg.csv}
-{UCLA Institute for Digital Research and Education}
+\href{https://stats.idre.ucla.edu/stat/data/mmreg.csv}{UCLA Institute for Digital Research and Education}
 }
 \usage{
 data(psych_ed)

@@ -11,8 +11,7 @@
   \item{anxiety}{anxiety level (low, med, high)}
 }}
 \source{
-\href{https://statistics.laerd.com/stata-tutorials/one-way-manova-using-stata.php}
-{Laerd Statistics}
+\href{https://statistics.laerd.com/stata-tutorials/one-way-manova-using-stata.php}{Laerd Statistics}
 }
 \usage{
 data(anxiety)

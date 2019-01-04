@@ -21,8 +21,7 @@
   \item{Item 23}{Compared to other courses this course was}
 }}
 \source{
-\href{https://stats.idre.ucla.edu/spss/output/factor-analysis/}
-{Institute for Digital Research and Education}
+\href{https://stats.idre.ucla.edu/spss/output/factor-analysis/}{Institute for Digital Research and Education}
 }
 \usage{
 data(ExampleEFA)

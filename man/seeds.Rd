@@ -16,8 +16,7 @@
   \item{variety}{variety of wheat: 1 = Kama, 2 = Rosa and 3 = Canadian}
 }}
 \source{
-\href{http://archive.ics.uci.edu/ml/datasets/seeds?ref=datanews.io}
-{UCI Machine Learning Repository}
+\href{http://archive.ics.uci.edu/ml/datasets/seeds?ref=datanews.io}{UCI Machine Learning Repository}
 }
 \usage{
 data(seeds)

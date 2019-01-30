@@ -35,7 +35,7 @@ start_lesson <- function(lesson_name="2004-MatrixAlgebra"){
 #' 
 
 list_lessons <- function(){
-  lessons = list.files('./inst/tutorials')
+  lessons = list.files('./tutorials')
   lessons = lessons[ ! lessons %in% c('readme.md', 'README.md')]
   return(lessons)
 }

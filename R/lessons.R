@@ -24,7 +24,15 @@ start_lesson <- function(lesson_name="2004-MatrixAlgebra"){
   if(!is.null(backpack::view_binders(search=lesson_name))){
     load_binders(lesson_name)
   }
-  rmarkdown::run(paste0("./inst/tutorials/",lesson_name,"/",lesson_name,".Rmd"))
+  
+  # get path to tutorial
+  tutorial_path <- system.file("tutorials", lesson_name, package = "backpack")
+  
+  # # validate that it's a direcotry
+  # if (!utils::file_test("-d", tutorial_path))
+  #   stop("Tutorial ", name, " was not found in the ", package, " package.")
+  
+  rmarkdown::run(paste0(tutorial_path,"/",lesson_name,".Rmd"))
 }
 
 #' List Lessons
@@ -35,7 +43,10 @@ start_lesson <- function(lesson_name="2004-MatrixAlgebra"){
 #' 
 
 list_lessons <- function(){
-  lessons = list.files('./inst/tutorials')
+  # get path to tutorial
+  tutorial_path <- system.file("tutorials", package = "backpack")
+  
+  lessons = list.files(tutorial_path)
   lessons = lessons[ ! lessons %in% c('readme.md', 'README.md')]
   return(lessons)
 }

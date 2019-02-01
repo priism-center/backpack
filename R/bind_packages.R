@@ -104,7 +104,7 @@ bind_packages = function(package = NULL, binder = NULL, source = 'CRAN', suggest
   else if(suggest == FALSE){
     
     to_bind = data.frame(Package, Binder, Topic, Source)
-    # print(to_bind)
+    # print(to_bind)  
     User.Views <- rbind(User.Views,to_bind)
     
     User.Views$Package <- as.character(User.Views$Package)

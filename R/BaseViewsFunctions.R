@@ -62,6 +62,7 @@ set_backpack_path <- function(path){
 #' 
 
 initialize_backpack <- function(path){
+
   set_backpack_path(path)
   path_to_file <- Sys.getenv("PATH_TO_BACKPACK_USER_VIEWS")
   User.Views <- data.frame(Package=character(),

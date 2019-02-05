@@ -6,5 +6,4 @@
 .Rproj
 .Rbuildignore
 packrat/lib*/
-inst/tutorials/*/*.html
 

@@ -41,7 +41,7 @@ To complete the following exercise you will need the package psych,heplots, cand
 Replace the __  or blanks!!
 
 
-```{r prepare-tatsuoka, include = TRUE, echo = TRUE}
+```{r prepare-tatsuoka}
 library(psych, quietly = TRUE)
 library(heplots, quietly = TRUE)
 library(plyr, quietly = TRUE)
@@ -84,7 +84,7 @@ legend(1,10,c("Artists","Accountants"),col=1:length(data$group),pch=1)
 
 ### Getting the variance for each group:
 
-```{r covars,exercise = TRUE, exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r covars,exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
 ddply(.data = data, .variables = ___, summarise, covar = ___, var_imag = ___, var_vent = ___)
 ```
 
@@ -98,7 +98,7 @@ plyr::ddply(.data = data, .variables = "group", summarise, covar = cov(imaginati
 
 We can use Box's M Test to test equality of variances. You can use function boxM()  that can be found in the package 'heplots'. 
 
-```{r box_m, exercise=TRUE,  exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r box_m, exercise=TRUE,  exercise.setup = "prepare-tatsuoka"}
 
 ```
 
@@ -135,7 +135,7 @@ We will be using the candisc package to continue in our analysis:
 Start by creating a linear model for your two outcomes: 'imaginative' and 'ventuesome'. Think about how you will want to input them in the lm() function first: they will need to be in a matrix form with two columns (you can use cbind() to achieve this) 
 Print the Save and print the results:
 
-```{r cda1, exercise=TRUE,  exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r cda1, exercise=TRUE,  exercise.setup = "prepare-tatsuoka"}
 cda.mod <- lm( ____  ~ ____, data = data)
 cda.results <- candisc(____, LRtests = T, means = T, scores = T, coef = T)
 summary(cda.results)
@@ -151,13 +151,13 @@ summary(cda.results)
  
 Let's break down the results in "cda.results". We can see what information this function gives us as follows:
 
-```{r explorecandisc,exercise= TRUE,exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r explorecandisc,exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
 str(cda.results)
 ```
 
 With this information, find the canonical correlation (note that the function candisc gives us the $R^2$)
 
-```{r canonical_corr, exercise=TRUE,  exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r canonical_corr, exercise=TRUE,  exercise.setup = "prepare-tatsuoka"}
 # To get the canonical correlation (since candisc gives us R-squared)
 cancorr <- ___
 ```
@@ -170,7 +170,7 @@ print(cancorr)
 
 Now extract and print the two eigenvalues:
 
-```{r candisceign, exercise= TRUE,exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r candisceign, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
 eigenvs <--
 print(eigenvs)
 ```
@@ -182,7 +182,7 @@ print(eigenvs)
 
 Last, print both the raw coefficients and the standardized discriminant coefficients:
 
-```{r candisccoeff, exercise= TRUE,exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r candisccoeff, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
 raw.coeffs <- ____
 print(raw.coeffs)
 std.coeffs <- ____
@@ -214,7 +214,7 @@ quiz(
 
 You can extract the discriminat scores from the function as follows:
 
-```{r extract disc scores, exercise= TRUE,exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r extract disc scores, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
 data$dsc <- cda.results$scores$Can1
 
 # this is how the data-set 'scores' looks like:
@@ -232,7 +232,7 @@ $Y1 = coef_1 \times X_1 + coef_2  \times X_2$
 
 Let's start with the un-standardized, raw-coefficients: 
 
-```{r dst_unst, exercise= TRUE,exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r dst_unst, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
 dst <- as.numeric(raw.coeffs[1]*__ + raw.coeffs[2]*___)
 ```
 
@@ -242,7 +242,7 @@ dst <- as.numeric(raw.coeffs[1]*data$imaginative + raw.coeffs[2]*data$venturesom
 
 What if we use the standardized coefficients? We will first need to standardize our variables. You can use the scale() function to achieve this.
 
-```{r dst_st, exercise= TRUE,exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r dst_st, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
 data$Zimaginative <- scale()
 data$Zventuresome <- scale()
 data$dst2 <- as.numeric(__*__ + __*__)
@@ -263,7 +263,7 @@ To do this , we need the MASS package and the function lda. This is another way 
 
 Let's start by seeing how we fit the model and access the function coefficients:
 
-```{r MASSlda,exercise = TRUE,exercise.setup = "prepare-tatsuoka",eval= FALSE }
+```{r MASSlda,exercise = TRUE,exercise.setup = "prepare-tatsuoka" }
 fit <- lda(group~ ___ + ___ , data = data, na.action="na.omit", CV=F)
 
 # coefficients
@@ -282,13 +282,13 @@ fit$scaling
 Note: if you set the CV = TRUE paramenter, you will get the Leave One Out (LOO) table
 
 Through this function, we can plot the discriminant function
-```{r lda_plot, exercise = TRUE, exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r lda_plot, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
 plot(fit)
 ```
 
 Use the function predict() to classify your observations based on the LDA model:
 
-```{r lda_predict, exercise = TRUE, exercise.setup = "prepare-tatsuoka", eval= FALSE }
+```{r lda_predict, exercise = TRUE, exercise.setup = "prepare-tatsuoka" }
 lda.pred <- predict(___)$___
 ```
 
@@ -299,7 +299,7 @@ lda.pred <- predict(fit)$class
 How did our classification perform?
 Confusion matrix below:
 
-```{r confmatrix, exercise = TRUE,exercise.setup = "prepare-tatsuoka", eval= FALSE}
+```{r confmatrix, exercise = TRUE,exercise.setup = "prepare-tatsuoka"}
 table(data$group, lda.pred, dnn = c('Actual Group','Predicted Group'))
 ```
 

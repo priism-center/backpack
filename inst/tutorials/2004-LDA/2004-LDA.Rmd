@@ -1,9 +1,6 @@
 ---
 title: "Linear Discriminant Analysis in R Tutorial"
-output: 
-  learnr::tutorial:
-    progressive: true
-    allow_skip: true
+output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
@@ -64,7 +61,6 @@ lda.pred <- predict(fit)$class
 Let's take a look at the first few rows of the data and at some summary statistics:
 
 ```{r data_desc, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
-
 head(data)
 # you can use describeBy to get description of the data:
 psych::describeBy(data[,c("imaginative","venturesome")], group = data$group)
@@ -72,7 +68,7 @@ psych::describeBy(data[,c("imaginative","venturesome")], group = data$group)
 
 Start by creating a scatter plot of the predictors (imaginative and venturosome):
 
-```{r scatter_plot, exercise = TRUE, exercise.setup = "prepare-tasuoka"}
+```{r scatter_plot, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
 plot(data$venturesome, data$imaginative, col = data$group,main = "")
 legend(1,10,c("Artists","Accountants"),col=1:length(data$group),pch=1)
 ```

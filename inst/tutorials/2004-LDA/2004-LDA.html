@@ -10,8 +10,8 @@
 
 
 
-<meta name="progressive" content="true" />
-<meta name="allow-skip" content="true" />
+<meta name="progressive" content="false" />
+<meta name="allow-skip" content="false" />
 
 <title>Linear Discriminant Analysis in R Tutorial</title>
 
@@ -94,7 +94,7 @@ psych::describeBy(data[,c(&quot;imaginative&quot;,&quot;venturesome&quot;)], gro
 <div class="tutorial-exercise" data-label="scatter_plot" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>plot(data$venturesome, data$imaginative, col = data$group,main = &quot;&quot;)
 legend(1,10,c(&quot;Artists&quot;,&quot;Accountants&quot;),col=1:length(data$group),pch=1)</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-tasuoka","exercise.checker":"NULL"}</script>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-tatsuoka","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="scatter_plot-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>plot(data$venturesome, data$imaginative, col = data$group,main = &quot;&quot;)
@@ -125,14 +125,14 @@ legend(1,10,c(&quot;Artists&quot;,&quot;Accountants&quot;),col=1:length(data$gro
 <tr>
 <td>
 
-<div id="htmlwidget-78ad04776da561392127" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-dc32e946b22faa658c23" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-78ad04776da561392127">{"x":{"question":"In this case, is the assumption of equal variance met?","answers":[{"option":"Yes","correct":true,"message":null},{"option":"No","correct":false,"message":null}],"label":"quiz1-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"In this case, is the assumption of equal variance met?","a":[{"option":"Yes","correct":true,"message":null},{"option":"No","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-dc32e946b22faa658c23">{"x":{"question":"In this case, is the assumption of equal variance met?","answers":[{"option":"Yes","correct":true,"message":null},{"option":"No","correct":false,"message":null}],"label":"quiz1-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"In this case, is the assumption of equal variance met?","a":[{"option":"Yes","correct":true,"message":null},{"option":"No","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>
@@ -148,14 +148,14 @@ legend(1,10,c(&quot;Artists&quot;,&quot;Accountants&quot;),col=1:length(data$gro
 <tr>
 <td>
 
-<div id="htmlwidget-361fc93a7b87ef5ecce8" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-5a07cc0d4902baafa75d" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-361fc93a7b87ef5ecce8">{"x":{"question":"Given that we have two groups, how many linear discriminants will we have?","answers":[{"option":"1","correct":true,"message":null},{"option":"2","correct":false,"message":null},{"option":"3","correct":false,"message":null}],"label":"quiz2-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Given that we have two groups, how many linear discriminants will we have?","a":[{"option":"1","correct":true,"message":null},{"option":"2","correct":false,"message":null},{"option":"3","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-5a07cc0d4902baafa75d">{"x":{"question":"Given that we have two groups, how many linear discriminants will we have?","answers":[{"option":"1","correct":true,"message":null},{"option":"2","correct":false,"message":null},{"option":"3","correct":false,"message":null}],"label":"quiz2-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Given that we have two groups, how many linear discriminants will we have?","a":[{"option":"1","correct":true,"message":null},{"option":"2","correct":false,"message":null},{"option":"3","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>
@@ -222,14 +222,14 @@ std.coeffs</code></pre>
 <tr>
 <td>
 
-<div id="htmlwidget-8ec1619780fdf527461a" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-6c6fb6d5c7008f1644cd" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-8ec1619780fdf527461a">{"x":{"question":"Which indicator is most important in separating between the two groups?","answers":[{"option":"imaginative","correct":true,"message":null},{"option":"venturesome","correct":false,"message":null}],"label":"quiz3-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which indicator is most important in separating between the two groups?","a":[{"option":"imaginative","correct":true,"message":null},{"option":"venturesome","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-6c6fb6d5c7008f1644cd">{"x":{"question":"Which indicator is most important in separating between the two groups?","answers":[{"option":"imaginative","correct":true,"message":null},{"option":"venturesome","correct":false,"message":null}],"label":"quiz3-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which indicator is most important in separating between the two groups?","a":[{"option":"imaginative","correct":true,"message":null},{"option":"venturesome","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>
@@ -314,14 +314,14 @@ Through this function, we can plot the discriminant function
 <tr>
 <td>
 
-<div id="htmlwidget-24d927ee0013cf77cb22" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-47cfa7205e9dbf71956f" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-24d927ee0013cf77cb22">{"x":{"question":"Given that we have two groups, how many linear discriminants will we have?","answers":[{"option":"1","correct":false,"message":null},{"option":"3","correct":false,"message":null},{"option":"4","correct":false,"message":null},{"option":"7","correct":true,"message":null},{"option":"56","correct":false,"message":null}],"label":"quiz4-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Given that we have two groups, how many linear discriminants will we have?","a":[{"option":"1","correct":false,"message":null},{"option":"3","correct":false,"message":null},{"option":"4","correct":false,"message":null},{"option":"7","correct":true,"message":null},{"option":"56","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-47cfa7205e9dbf71956f">{"x":{"question":"Given that we have two groups, how many linear discriminants will we have?","answers":[{"option":"1","correct":false,"message":null},{"option":"3","correct":false,"message":null},{"option":"4","correct":false,"message":null},{"option":"7","correct":true,"message":null},{"option":"56","correct":false,"message":null}],"label":"quiz4-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Given that we have two groups, how many linear discriminants will we have?","a":[{"option":"1","correct":false,"message":null},{"option":"3","correct":false,"message":null},{"option":"4","correct":false,"message":null},{"option":"7","correct":true,"message":null},{"option":"56","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>

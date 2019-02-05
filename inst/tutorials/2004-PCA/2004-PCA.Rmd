@@ -33,7 +33,7 @@ We will work with a datset called `seeds`, which contains data on the physical p
 Complete the R code below to examine the structure of the `seeds` dataset:
 
 ```{r str_data, exercise=TRUE, exercise.setup = 'prepare-data'}
-str(___)
+
 ```
 
 ```{r str_data-solution}

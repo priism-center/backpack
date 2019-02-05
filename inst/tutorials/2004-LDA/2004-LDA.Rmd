@@ -73,7 +73,7 @@ psych::describeBy(data[,c("imaginative","venturesome")], group = data$group)
 Start by creating a scatter plot of the predictors (imaginative and venturosome):
 
 ```{r scatter_plot, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
-plot(___ , ___, col = data$group,main = "") 
+plot( ,  , col = data$group,main = "") 
 legend(1,10,c("Artists","Accountants"),col=1:length(data$group),pch=1)
 ```
 

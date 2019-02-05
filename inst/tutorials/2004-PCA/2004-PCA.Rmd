@@ -21,6 +21,8 @@ In this tutorial, we will learn how to use the `princomp` function from the `sta
 ```{r prepare-data}
 seeds_full <- backpack::seeds
 seeds <- seeds_full[ , -8]
+seeds_standard <- scale(x = seeds, center = TRUE, scale = TRUE)
+seeds_PCA <- princomp(seeds_standard, cor = TRUE)
 ```
 
 We will work with a datset called `seeds`, which contains data on the physical properties of seeds from three species of wheat plants.
@@ -30,7 +32,7 @@ We will work with a datset called `seeds`, which contains data on the physical p
 
 Complete the R code below to examine the structure of the `seeds` dataset:
 
-```{r str_data, exercise=TRUE}
+```{r str_data, exercise=TRUE, exercise.setup = 'prepare-data'}
 str(___)
 ```
 
@@ -42,7 +44,7 @@ str(seeds)
 
 Now call the `summary` function on the dataset to acquire more detailed information on each variable:
 
-```{r summary_data, exercise=TRUE}
+```{r summary_data, exercise=TRUE,exercise.setup = 'prepare-data' }
 ___(seeds)
 ```
 
@@ -54,7 +56,7 @@ summary(seeds)
 
 PCA relies on the variance of the variables to create simpler components. However, differing scales and units of measurement across variables may distort our analysis. To overcome this issue, it is generally advisable to center and standardize variables before performing the PCA. 
 
-```{r summary-output}
+```{r summary-output, exercise = TRUE , exercise.setup = 'prepare-data'}
 print("Mean")
 round(apply(seeds, 2, mean), 2)
 print("Standard Deviation")
@@ -72,7 +74,7 @@ Try standardizing our example dataset using the `scale` function and setting the
 ___ <- scale(x = ___, ___, ___)
 ```
 
-```{r scale_data-solution}
+```{r scale_data-solution, exercise.setup = 'prepare-data'}
 seeds_standard <- scale(x = seeds, center = TRUE, scale = TRUE)
 ```
 
@@ -81,7 +83,7 @@ seeds_standard <- scale(x = seeds, center = TRUE, scale = TRUE)
 
 Our variables should now all have a mean of zero and units in standard deviations from the mean. Let's run the `summary` function on our standardized data so we can see how it has been transformed:  
 
-```{r summary_standard, exercise=TRUE}
+```{r summary_standard, exercise = TRUE, exercise.setup = 'prepare-data'}
 
 ```
 
@@ -98,7 +100,7 @@ Now that our data is ready, we will run the PCA.
 
 Run a principal component analysis using `princomp` on `seeds_standard` and assign it to the name `seeds_PCA`. Make sure to set the argument `cor = TRUE` so that the correlation matrix is used instead of the covariance matrix:  
 
-```{r princomp, exercise=TRUE}
+```{r princomp, exercise=TRUE, exercise.setup = 'prepare-data'}
 
 ```
 
@@ -114,7 +116,7 @@ Examine the resulting principal components by running `summary` on `seeds_PCA`:
 
 ```
 
-```{r pca_output-solution}
+```{r pca_output-solution, exercise.setup = 'prepare-data'}
 summary(seeds_PCA)
 ```
 
@@ -122,7 +124,7 @@ summary(seeds_PCA)
 
 Complete the code below to examine the loadings of the variables on the components from `seeds_PCA`:  
 
-```{r loadings, exercise=TRUE}
+```{r loadings, exercise=TRUE, exercise.setup = 'prepare-data'}
 ___$loadings
 ```
 
@@ -135,7 +137,7 @@ seeds_PCA$loadings
 
 Complete the code to create a line plot of the variance of each component from `seeds_PCA`:
  
-```{r variance_plot, exercise=TRUE}
+```{r variance_plot, exercise=TRUE, exercise.setup = 'prepare-data'}
 plot(___, type = "l")
 ```
 

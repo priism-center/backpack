@@ -18,7 +18,7 @@ In this tutorial, we will learn how to use the `princomp` function from the `sta
 
 ## Examining the Original Dataset
 
-```{r prepare-data}
+```{r prepare-data, include = TRUE, echo = TRUE}
 seeds_full <- backpack::seeds
 seeds <- seeds_full[ , -8]
 seeds_standard <- scale(x = seeds, center = TRUE, scale = TRUE)

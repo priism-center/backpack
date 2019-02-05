@@ -7,7 +7,7 @@ output:
 runtime: shiny_prerendered
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
 # backpack::install_binders("2004-LDA")

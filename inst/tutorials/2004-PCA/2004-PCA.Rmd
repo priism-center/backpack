@@ -70,11 +70,11 @@ Centering all variables on their respective mean and then standardizing can be d
 
 Try standardizing our example dataset using the `scale` function and setting the arguments `center` and `scale` to `TRUE`. Assign this new dataset to the name `seeds_standard`:  
 
-```{r scale_data, exercise=TRUE}
+```{r scale_data, exercise=TRUE,exercise.setup = 'prepare-data'}
 ___ <- scale(x = ___, ___, ___)
 ```
 
-```{r scale_data-solution, exercise.setup = 'prepare-data'}
+```{r scale_data-solution}
 seeds_standard <- scale(x = seeds, center = TRUE, scale = TRUE)
 ```
 
@@ -112,11 +112,11 @@ seeds_PCA <- princomp(seeds_standard, cor = TRUE)
 
 Examine the resulting principal components by running `summary` on `seeds_PCA`:  
 
-```{r pca_output, exercise=TRUE}
+```{r pca_output, exercise=TRUE,exercise.setup = 'prepare-data'}
 
 ```
 
-```{r pca_output-solution, exercise.setup = 'prepare-data'}
+```{r pca_output-solution}
 summary(seeds_PCA)
 ```
 

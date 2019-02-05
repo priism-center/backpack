@@ -38,6 +38,8 @@ Assumptions of LDA:
 
 To complete the following exercise you will need the package psych,heplots, candisc and MASS. To do some data-manipulation we will also load the plyr package.
 
+Replace the __  or blanks!!
+
 
 ```{r prepare-tatsuoka, include = TRUE, echo = TRUE}
 library(psych, quietly = TRUE)
@@ -280,13 +282,13 @@ fit$scaling
 Note: if you set the CV = TRUE paramenter, you will get the Leave One Out (LOO) table
 
 Through this function, we can plot the discriminant function
-```{r lda_plot, exercise = TRUE,exercise.setup = "prepare-tatsuoka"}
+```{r lda_plot, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
 plot(fit)
 ```
 
 Use the function predict() to classify your observations based on the LDA model:
 
-```{r lda_predict, exercise = TRUE,exercise.setup = "prepare-tatsuoka" }
+```{r lda_predict, exercise = TRUE, exercise.setup = "prepare-tatsuoka" }
 lda.pred <- predict(___)$___
 ```
 

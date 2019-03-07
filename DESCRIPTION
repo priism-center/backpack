@@ -1,6 +1,6 @@
 Package: backpack
 Type: Package
-Title: Easily discover, collect, and learn to use packages for statiscal modeling.
+Title: Easily discover, collect, and learn to use packages for statistical modeling.
 Version: 0.1.0
 Author: Bianca Brusco, Andrea Hassler, Kaushik Mohan, and Madison Volpe
 Maintainer: Kaushik Mohan <kaushik.s.mohan@nyu.edu>

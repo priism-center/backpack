@@ -1,16 +1,13 @@
 ---
 title: "Linear Discriminant Analysis in R Tutorial"
-output: 
-  learnr::tutorial:
-    progressive: true
-    allow_skip: true
+output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
-# backpack::load_binders("2004-LDA")
+# backpack::install_binders("2004-LDA")
 ```
 
 
@@ -20,34 +17,59 @@ The goal of Discriminat Analysis is used to examine differences among groups on 
 
 
 In discriminant analysis we:  
+
   1. Determine the linear composites of the predictors that maximize between group to within group variability.  
     
-  2. Test whether the linear composites do, indeed, discriminate among groups (to determine whether the group means on the linear composites of predictor variables, when considered simultaneously, are significantly different) and, if so, to determine the number of composites (discriminant axes) for which this is the case.  
+  2. Test whether the linear composites discriminate among groups. This means that we are trying to to determine whether the group means on the linear composites of our predictor variables, when considered simultaneously, are significantly different. 
     
   3. Find which predictors contribute most to the discrimination among groups.
 
 
+Assumptions of LDA:
 
-## Exercises 
+1. The observations are independent of each other
+2. the observations onthe $p$ continuous predictor variables follow a multivariate normal distribution within each group
+3. The population covariance matrices for the p continuous variables ine ach group are equal
 
-To complete the following exercise you will need the package psych: 
+## Exercises : Set up data and check assumptions
 
-```{r load, exercise = TRUE}
-require(psych, quietly = TRUE)
+To complete the following exercise you will need the package psych,heplots, candisc and MASS. To do some data-manipulation we will also load the plyr package.
+
+Replace the __  or blanks!!
+
+
+```{r prepare-tatsuoka}
+library(psych, quietly = TRUE)
+library(heplots, quietly = TRUE)
+library(plyr, quietly = TRUE)
+library(candisc, quietly = TRUE)
+library(MASS, quietly = TRUE)
+data <- backpack::tatsuoka
+data$group = as.factor(data$group)
+cda.mod <- lm(cbind(imaginative, venturesome)~group, data = data)
+cda.results <- candisc(cda.mod, LRtests = T, means = T, scores = T, coef = T)
+cancorr <- sqrt(cda.results$canrsq)
+eigenvs <- cda.results$eigenvalues
+raw.coeffs <- cda.results$coeffs.raw
+std.coeffs <- cda.results$coeffs.std
+data$dsc <- cda.results$scores$Can1
+dst <- as.numeric(raw.coeffs[1]*data$imaginative + raw.coeffs[2]*data$venturesome)
+fit <- MASS::lda(group~imaginative+venturesome, data = data, na.action="na.omit", CV=F)
+lda.pred <- predict(fit)$class
 ```
 
-```{r data_desc, exercise = TRUE}
-data <- backpack::tatsuoka
+Let's take a look at the first few rows of the data and at some summary statistics:
+
+```{r data_desc, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
 head(data)
+# you can use describeBy to get description of the data:
 psych::describeBy(data[,c("imaginative","venturesome")], group = data$group)
 ```
 
+Start by creating a scatter plot of the predictors (imaginative and venturosome):
 
-
-Start by creating a scatter plot of the predictors
-
-```{r scatter_plot, exercise=TRUE}
-plot(___ , ___, col = data$group,main = "") 
+```{r scatter_plot, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
+plot(data$venturesome, data$imaginative, col = data$group,main = "")
 legend(1,10,c("Artists","Accountants"),col=1:length(data$group),pch=1)
 ```
 
@@ -56,8 +78,241 @@ plot(data$venturesome, data$imaginative, col = data$group,main = "")
 legend(1,10,c("Artists","Accountants"),col=1:length(data$group),pch=1)
 ```
 
+### Getting the variance for each group:
 
-## Quiz: Review your Understanding
+```{r covars,exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
+ddply(.data = data, .variables = ___, summarise, covar = ___, var_imag = ___, var_vent = ___)
+```
 
 
+```{r covars-solution}
+plyr::ddply(.data = data, .variables = "group", summarise, covar = cov(imaginative, venturesome), var_imag = var(imaginative), var_vent = var(venturesome))
+
+```
+
+### Testing the assumptions
+
+We can use Box's M Test to test equality of variances. You can use function boxM()  that can be found in the package 'heplots'. 
+
+```{r box_m, exercise=TRUE,  exercise.setup = "prepare-tatsuoka"}
+
+```
+
+
+```{r box_m-solution}
+heplots::boxM(data[,c("venturesome","imaginative")], group = data$group)
+```
+
+```{r quiz1, echo=FALSE}
+quiz(
+  question("In this case, is the assumption of equal variance met?",
+    answer("Yes", correct = TRUE),
+    answer("No")
+  )
+  )
+
+```
+
+## Exercises :  Canonical Discriminant Analysis
+
+Before we continue...
+
+```{r quiz2, echo=FALSE}
+quiz(
+  question("Given that we have two groups, how many linear discriminants will we have?",
+  answer("1", correct= TRUE),
+  answer("2"),
+  answer("3")
+  )
+  )
+```
+
+We will be using the candisc package to continue in our analysis:
+Start by creating a linear model for your two outcomes: 'imaginative' and 'ventuesome'. Think about how you will want to input them in the lm() function first: they will need to be in a matrix form with two columns (you can use cbind() to achieve this) 
+Print the Save and print the results:
+
+```{r cda1, exercise=TRUE,  exercise.setup = "prepare-tatsuoka"}
+cda.mod <- lm( ____  ~ ____, data = data)
+cda.results <- candisc(____, LRtests = T, means = T, scores = T, coef = T)
+summary(cda.results)
+```
+
+```{r cda1-solution}
+cda.mod <- lm(cbind(imaginative, venturesome)~group, data = data)
+cda.results <- candisc(cda.mod, LRtests = T, means = T, scores = T, coef = T)
+summary(cda.results)
+```
+
+### Exploring the candisc() function:
+ 
+Let's break down the results in "cda.results". We can see what information this function gives us as follows:
+
+```{r explorecandisc,exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
+str(cda.results)
+```
+
+With this information, find the canonical correlation (note that the function candisc gives us the $R^2$)
+
+```{r canonical_corr, exercise=TRUE,  exercise.setup = "prepare-tatsuoka"}
+# To get the canonical correlation (since candisc gives us R-squared)
+cancorr <- ___
+```
+
+```{r canonical_corr-solution}
+cancorr <- sqrt(cda.results$canrsq)
+print(cancorr)
+```
+
+
+Now extract and print the two eigenvalues:
+
+```{r candisceign, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
+eigenvs <--
+print(eigenvs)
+```
+
+```{r candisceign-solution}
+eigenvs <- cda.results$eigenvalues
+print(eigenvs)
+```
+
+Last, print both the raw coefficients and the standardized discriminant coefficients:
+
+```{r candisccoeff, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
+raw.coeffs <- ____
+print(raw.coeffs)
+std.coeffs <- ____
+std.coeffs
+```
+
+```{r candisccoeff-solution}
+# To extract the unstandardized discriminant coefficients
+raw.coeffs <- cda.results$coeffs.raw
+raw.coeffs
+# To extract the standardized discriminant coefficients
+std.coeffs <- cda.results$coeffs.std
+std.coeffs
+```
+
+
+Based on the coefficients you just found:
+
+```{r quiz3, echo=FALSE}
+quiz(
+  question("Which indicator is most important in separating between the two groups?",
+  answer("imaginative", correct= TRUE),
+  answer("venturesome")
+  )
+  )
+```
+
+### Extracting Discriminant Scores:
+
+You can extract the discriminat scores from the function as follows:
+
+```{r extract disc scores, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
+data$dsc <- cda.results$scores$Can1
+
+# this is how the data-set 'scores' looks like:
+head(cda.results$scores)
+
+```
+
+In this case, since we only have one linear discriminant, we only have the column (Can1). If we have more groups and more linear discriminants, we will have more columns. 
+
+To understand what's happening behind the scences- how would you find these scores from the coefficients that you printed above?
+
+Recall that :
+
+$Y1 = coef_1 \times X_1 + coef_2  \times X_2$
+
+Let's start with the un-standardized, raw-coefficients: 
+
+```{r dst_unst, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
+dst <- as.numeric(raw.coeffs[1]*__ + raw.coeffs[2]*___)
+```
+
+```{r dst_unst-solution}
+dst <- as.numeric(raw.coeffs[1]*data$imaginative + raw.coeffs[2]*data$venturesome)
+```
+
+What if we use the standardized coefficients? We will first need to standardize our variables. You can use the scale() function to achieve this.
+
+```{r dst_st, exercise= TRUE,exercise.setup = "prepare-tatsuoka"}
+data$Zimaginative <- scale()
+data$Zventuresome <- scale()
+data$dst2 <- as.numeric(__*__ + __*__)
+```
+
+
+```{r dst_st-solution}
+data$Zimaginative <- scale(data$imaginative)
+data$Zventuresome <- scale(data$venturesome)
+data$dst2 <- as.numeric(std.coeffs[1]*data$Zimaginative + std.coeffs[2]*data$Zventuresome)
+```
+
+
+## Exercise: classification using LDA
+
+We know try to classify in our two groups the linear discriminant function we found above. 
+To do this , we need the MASS package and the function lda. This is another way of doing LDA in R that does not involve the candisc package. 
+
+Let's start by seeing how we fit the model and access the function coefficients:
+
+```{r MASSlda,exercise = TRUE,exercise.setup = "prepare-tatsuoka" }
+fit <- lda(group~ ___ + ___ , data = data, na.action="na.omit", CV=F)
+
+# coefficients
+fit$scaling
+```
+
+
+```{r MASSlda-solution}
+fit <- MASS::lda(group~imaginative+venturesome, data = data, na.action="na.omit", CV=F)
+
+# coefficients
+fit$scaling
+```
+
+
+Note: if you set the CV = TRUE paramenter, you will get the Leave One Out (LOO) table
+
+Through this function, we can plot the discriminant function
+```{r lda_plot, exercise = TRUE, exercise.setup = "prepare-tatsuoka"}
+plot(fit)
+```
+
+Use the function predict() to classify your observations based on the LDA model:
+
+```{r lda_predict, exercise = TRUE, exercise.setup = "prepare-tatsuoka" }
+lda.pred <- predict(___)$___
+```
+
+```{r lda_predict-solution}
+lda.pred <- predict(fit)$class
+```
+
+How did our classification perform?
+Confusion matrix below:
+
+```{r confmatrix, exercise = TRUE,exercise.setup = "prepare-tatsuoka"}
+table(data$group, lda.pred, dnn = c('Actual Group','Predicted Group'))
+```
+
+How many observations are misclassified?
+
+```{r quiz4, echo=FALSE}
+quiz(
+  question("Given that we have two groups, how many linear discriminants will we have?",
+  answer("1"),
+  answer("3"),
+  answer("4"),
+  answer("7", correct = TRUE),
+  answer("56")
+  )
+  )
+```
+
+
+As a final question, looking back at the initial plot, think about why we might have not achieved perfect separation.
 

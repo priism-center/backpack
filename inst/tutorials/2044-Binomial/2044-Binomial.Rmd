@@ -15,8 +15,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r prepare-data, include = TRUE, echo = TRUE}
-data_raw <- backpack::birthwt
-birthweight <- data_raw
+birthweight <- backpack::birthwt
 birthweight$LBW <- birthweight$BIRTH_WT <= 2500
 birthweight$PremY <- birthweight$PREM > 0
 ```
@@ -147,7 +146,7 @@ It has been loaded for you as `birthweight`.
 
 Generate a new variable (in the dataset), `LBW`, which takes on a value of 1 if birth weight is 2500 grams or lower and 0 otherwise. What are the log-odds of low birth weight? Remember that the mean of a 0/1 valued variable is the probability of that variable taking value 1. 
 
-```{r gen_lbw, exercise=TRUE, exercise.setup = 'load-data'}
+```{r gen_lbw, exercise=TRUE, exercise.setup = 'prepare-data'}
 
 ```
 
@@ -189,7 +188,7 @@ exp(coefficients(birthweight_logit2)[2])
 
 You can calculate the odds ratio a different way by making use of the `table` function (or something similar). Is it the same as what you got from the logistic regression coefficient?
 
-```{r odds_ratio-compare, exercise = TRUE, exercise.setup = 'prepare-data-2'}
+```{r odds_ratio-compare, exercise = TRUE, exercise.setup = 'prepare-data'}
 
 ```
 
@@ -198,7 +197,7 @@ You can calculate the odds ratio a different way by making use of the `table` fu
 
 Now run a logistic regression using all the predictors in the dataset except ID, birth weight, and `PREM`, and call it `birthweight_logit`. Inspect the results using the `summary` function. Recode `RACE` as dummy variables for `Black` and `Other`, and use those instead of the factor variable `RACE`.
 
-```{r fit_logit_3, exercise=TRUE, exercise.setup = 'prepare-data-2'}
+```{r fit_logit_3, exercise=TRUE, exercise.setup = 'prepare-data'}
 
 ```
 
@@ -242,7 +241,7 @@ Instead of the logit link, we may consider using a different link function, like
 
 Fit the same model as above, except using the probit link instead of the logit link. Again, use dummies for `Black` and `Other` instead of the `RACE` variable.
 
-```{r fit_probit, exercise = TRUE, exercise.setup = 'prepare-data-2'}
+```{r fit_probit, exercise = TRUE, exercise.setup = 'prepare-data'}
 
 ```
 
@@ -305,7 +304,7 @@ deviance(birthweight_probit)
 
 Now run model low birth weight using the same predictors, except with the complementary log-log link. (Specify `link = "cloglog"`.) Print out the log-likelihood of the model. Again, use dummies for `Black` and `Other` instead of the `RACE` variable.
 
-```{r fit_cloglog, exercise = TRUE, exercise.setup = 'prepare-data-2'}
+```{r fit_cloglog, exercise = TRUE, exercise.setup = 'prepare-data'}
 
 ```
 
@@ -330,7 +329,7 @@ quiz(
 
 As in linear regression, we can allow for interaction effects in binomial regression models. Run the same logit regression as above, allowing for an interaction effect between hypertension and smoking. Print out the regression results using the `summary` function.
 
-```{r interaction, exercise=TRUE, exercise.setup = 'prepare-data-2'}
+```{r interaction, exercise=TRUE, exercise.setup = 'prepare-data'}
 
 ```
 

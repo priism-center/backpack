@@ -45,8 +45,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <div class="topics">
 
 <div class="tutorial-exercise-support" data-label="prepare-data" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>data_raw &lt;- backpack::birthwt
-birthweight &lt;- data_raw
+<pre class="text"><code>birthweight &lt;- backpack::birthwt
 birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
 birthweight$PremY &lt;- birthweight$PREM &gt; 0</code></pre>
 </div>
@@ -144,7 +143,7 @@ hl_stat &lt;- sum(positives + negatives)</code></pre>
 <h3>Exercise: The (log-)odds of low birth weight</h3>
 <p>Generate a new variable (in the dataset), <code>LBW</code>, which takes on a value of 1 if birth weight is 2500 grams or lower and 0 otherwise. What are the log-odds of low birth weight? Remember that the mean of a 0/1 valued variable is the probability of that variable taking value 1.</p>
 <div class="tutorial-exercise" data-label="gen_lbw" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"load-data","exercise.checker":"NULL"}</script>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="gen_lbw-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
@@ -179,14 +178,14 @@ exp(coefficients(birthweight_logit2)[2])</code></pre>
 </div>
 <p>You can calculate the odds ratio a different way by making use of the <code>table</code> function (or something similar). Is it the same as what you got from the logistic regression coefficient?</p>
 <div class="tutorial-exercise" data-label="odds_ratio-compare" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
 </div>
 </div>
 <div id="section-exercise-more-predictors" class="section level3">
 <h3>Exercise: More predictors</h3>
 <p>Now run a logistic regression using all the predictors in the dataset except ID, birth weight, and <code>PREM</code>, and call it <code>birthweight_logit</code>. Inspect the results using the <code>summary</code> function. Recode <code>RACE</code> as dummy variables for <code>Black</code> and <code>Other</code>, and use those instead of the factor variable <code>RACE</code>.</p>
 <div class="tutorial-exercise" data-label="fit_logit_3" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="fit_logit_3-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
@@ -201,27 +200,27 @@ summary(birthweight_logit)</code></pre>
 <tr>
 <td>
 
-<div id="htmlwidget-d06f140f5a903df4c6b3" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-611877b66772a77643e7" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-d06f140f5a903df4c6b3">{"x":{"question":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","answers":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"label":"logistic-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","a":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-611877b66772a77643e7">{"x":{"question":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","answers":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"label":"logistic-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","a":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 <tr>
 <td>
 
-<div id="htmlwidget-8dfd418df95ad007bddb" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-ae35100a77832432c22e" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-8dfd418df95ad007bddb">{"x":{"question":"All else equal, an additional physician visit is associated with a ___ increase in the probability of low birth weight.","answers":[{"option":"5.2 percent","correct":false,"message":null},{"option":"105.2 percent","correct":false,"message":null},{"option":"5.2 percentage point","correct":false,"message":null},{"option":"Ambiguous; it depends on the values of the other covariates","correct":true,"message":null}],"label":"logistic-quiz-2","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"All else equal, an additional physician visit is associated with a ___ increase in the probability of low birth weight.","a":[{"option":"5.2 percent","correct":false,"message":null},{"option":"105.2 percent","correct":false,"message":null},{"option":"5.2 percentage point","correct":false,"message":null},{"option":"Ambiguous; it depends on the values of the other covariates","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-ae35100a77832432c22e">{"x":{"question":"All else equal, an additional physician visit is associated with a ___ increase in the probability of low birth weight.","answers":[{"option":"5.2 percent","correct":false,"message":null},{"option":"105.2 percent","correct":false,"message":null},{"option":"5.2 percentage point","correct":false,"message":null},{"option":"Ambiguous; it depends on the values of the other covariates","correct":true,"message":null}],"label":"logistic-quiz-2","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"All else equal, an additional physician visit is associated with a ___ increase in the probability of low birth weight.","a":[{"option":"5.2 percent","correct":false,"message":null},{"option":"105.2 percent","correct":false,"message":null},{"option":"5.2 percentage point","correct":false,"message":null},{"option":"Ambiguous; it depends on the values of the other covariates","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>
@@ -235,7 +234,7 @@ summary(birthweight_logit)</code></pre>
 <h3>Exercise: The probit model</h3>
 <p>Fit the same model as above, except using the probit link instead of the logit link. Again, use dummies for <code>Black</code> and <code>Other</code> instead of the <code>RACE</code> variable.</p>
 <div class="tutorial-exercise" data-label="fit_probit" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="fit_probit-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
@@ -249,14 +248,14 @@ summary(birthweight_probit)</code></pre>
 <tr>
 <td>
 
-<div id="htmlwidget-c88e99a45465c9069cb6" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-ecc7aa54e93d1e8317d2" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-c88e99a45465c9069cb6">{"x":{"question":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","answers":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"label":"probit-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","a":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-ecc7aa54e93d1e8317d2">{"x":{"question":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","answers":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"label":"probit-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","a":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>
@@ -293,7 +292,7 @@ deviance(birthweight_probit)</code></pre>
 <h3>Exercise: The complementary log-log link</h3>
 <p>Now run model low birth weight using the same predictors, except with the complementary log-log link. (Specify <code>link = &quot;cloglog&quot;</code>.) Print out the log-likelihood of the model. Again, use dummies for <code>Black</code> and <code>Other</code> instead of the <code>RACE</code> variable.</p>
 <div class="tutorial-exercise" data-label="fit_cloglog" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="fit_cloglog-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
@@ -307,14 +306,14 @@ logLik(birthweight_cloglog)</code></pre>
 <tr>
 <td>
 
-<div id="htmlwidget-0ee109ed53420147d762" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-bfb14e1939099368b8f7" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-0ee109ed53420147d762">{"x":{"question":"Which of the three link functions, based on the log-likelihood, is best for our model of low birth weight? (Ignore the fact that they may be very close to each other.)","answers":[{"option":"Logit","correct":false,"message":null},{"option":"Probit","correct":false,"message":null},{"option":"Complementary log-log","correct":true,"message":null}],"label":"link-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the three link functions, based on the log-likelihood, is best for our model of low birth weight? (Ignore the fact that they may be very close to each other.)","a":[{"option":"Logit","correct":false,"message":null},{"option":"Probit","correct":false,"message":null},{"option":"Complementary log-log","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-bfb14e1939099368b8f7">{"x":{"question":"Which of the three link functions, based on the log-likelihood, is best for our model of low birth weight? (Ignore the fact that they may be very close to each other.)","answers":[{"option":"Logit","correct":false,"message":null},{"option":"Probit","correct":false,"message":null},{"option":"Complementary log-log","correct":true,"message":null}],"label":"link-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the three link functions, based on the log-likelihood, is best for our model of low birth weight? (Ignore the fact that they may be very close to each other.)","a":[{"option":"Logit","correct":false,"message":null},{"option":"Probit","correct":false,"message":null},{"option":"Complementary log-log","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>
@@ -325,7 +324,7 @@ logLik(birthweight_cloglog)</code></pre>
 <h2>Interaction effects</h2>
 <p>As in linear regression, we can allow for interaction effects in binomial regression models. Run the same logit regression as above, allowing for an interaction effect between hypertension and smoking. Print out the regression results using the <code>summary</code> function.</p>
 <div class="tutorial-exercise" data-label="interaction" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="interaction-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
@@ -339,27 +338,27 @@ summary(birthweight_logit.int)</code></pre>
 <tr>
 <td>
 
-<div id="htmlwidget-11a9b516adaba8b654b5" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-7aa528cf3cf2f23ae773" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-11a9b516adaba8b654b5">{"x":{"question":"Is there a statistically significant (p &lt; 0.05) interaction effect between hypertension and smoking?","answers":[{"option":"Yes","correct":false,"message":null},{"option":"No","correct":true,"message":null}],"label":"interaction-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Is there a statistically significant (p &lt; 0.05) interaction effect between hypertension and smoking?","a":[{"option":"Yes","correct":false,"message":null},{"option":"No","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-7aa528cf3cf2f23ae773">{"x":{"question":"Is there a statistically significant (p &lt; 0.05) interaction effect between hypertension and smoking?","answers":[{"option":"Yes","correct":false,"message":null},{"option":"No","correct":true,"message":null}],"label":"interaction-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Is there a statistically significant (p &lt; 0.05) interaction effect between hypertension and smoking?","a":[{"option":"Yes","correct":false,"message":null},{"option":"No","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 <tr>
 <td>
 
-<div id="htmlwidget-68accb04cb3c47ed0792" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-3b22f6913114e3f87e39" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-68accb04cb3c47ed0792">{"x":{"question":"All else equal, compared to a non-smoker with no hypertension history, how much greater are the odds of low birth weight for a woman who smokes and has a history of hypertension?","answers":[{"option":"133 percent","correct":false,"message":null},{"option":"2,240 percent","correct":true,"message":null},{"option":"4,962 percent","correct":false,"message":null},{"option":"It depends on the values of the other covariates","correct":false,"message":null}],"label":"interaction-quiz-2","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"All else equal, compared to a non-smoker with no hypertension history, how much greater are the odds of low birth weight for a woman who smokes and has a history of hypertension?","a":[{"option":"133 percent","correct":false,"message":null},{"option":"2,240 percent","correct":true,"message":null},{"option":"4,962 percent","correct":false,"message":null},{"option":"It depends on the values of the other covariates","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-3b22f6913114e3f87e39">{"x":{"question":"All else equal, compared to a non-smoker with no hypertension history, how much greater are the odds of low birth weight for a woman who smokes and has a history of hypertension?","answers":[{"option":"133 percent","correct":false,"message":null},{"option":"2,240 percent","correct":true,"message":null},{"option":"4,962 percent","correct":false,"message":null},{"option":"It depends on the values of the other covariates","correct":false,"message":null}],"label":"interaction-quiz-2","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"All else equal, compared to a non-smoker with no hypertension history, how much greater are the odds of low birth weight for a woman who smokes and has a history of hypertension?","a":[{"option":"133 percent","correct":false,"message":null},{"option":"2,240 percent","correct":true,"message":null},{"option":"4,962 percent","correct":false,"message":null},{"option":"It depends on the values of the other covariates","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>
@@ -597,14 +596,14 @@ hl_stat</code></pre>
 <tr>
 <td>
 
-<div id="htmlwidget-e07a9657bc997e99066d" style="width:100%;height:auto;", class = "quiz html-widget">
+<div id="htmlwidget-de864733acf1a5cc5c2d" style="width:100%;height:auto;", class = "quiz html-widget">
 <div class="panel panel-default">
 <div class="panel-body quizArea">
 </div>
 </div>
 </div>
 
-<script type="application/json" data-for="htmlwidget-e07a9657bc997e99066d">{"x":{"question":"What conclusion do you draw from this hypothesis test?","answers":[{"option":"We fail to reject the null hypothesis of a well calibrated model.","correct":true,"message":null},{"option":"We fail to reject the null hypothesis of a poorly calibrated model.","correct":false,"message":null},{"option":"We reject the null hypothesis of a well calibrated model and conclude the model is poorly calibrated.","correct":false,"message":null},{"option":"We reject the null hypothesis of a poorly calibrated model and conclude the model is well calibrated.","correct":false,"message":null}],"label":"hosmer_lemeshow-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"What conclusion do you draw from this hypothesis test?","a":[{"option":"We fail to reject the null hypothesis of a well calibrated model.","correct":true,"message":null},{"option":"We fail to reject the null hypothesis of a poorly calibrated model.","correct":false,"message":null},{"option":"We reject the null hypothesis of a well calibrated model and conclude the model is poorly calibrated.","correct":false,"message":null},{"option":"We reject the null hypothesis of a poorly calibrated model and conclude the model is well calibrated.","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-de864733acf1a5cc5c2d">{"x":{"question":"What conclusion do you draw from this hypothesis test?","answers":[{"option":"We fail to reject the null hypothesis of a well calibrated model.","correct":true,"message":null},{"option":"We fail to reject the null hypothesis of a poorly calibrated model.","correct":false,"message":null},{"option":"We reject the null hypothesis of a well calibrated model and conclude the model is poorly calibrated.","correct":false,"message":null},{"option":"We reject the null hypothesis of a poorly calibrated model and conclude the model is well calibrated.","correct":false,"message":null}],"label":"hosmer_lemeshow-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"What conclusion do you draw from this hypothesis test?","a":[{"option":"We fail to reject the null hypothesis of a well calibrated model.","correct":true,"message":null},{"option":"We fail to reject the null hypothesis of a poorly calibrated model.","correct":false,"message":null},{"option":"We reject the null hypothesis of a well calibrated model and conclude the model is poorly calibrated.","correct":false,"message":null},{"option":"We reject the null hypothesis of a poorly calibrated model and conclude the model is well calibrated.","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
 </td>
 </tr>
 </table>

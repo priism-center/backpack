@@ -14,22 +14,15 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
-```{r load-data, include = TRUE, echo = TRUE}
-birthweigth <- backpack::birthwt
-```
-
 ```{r prepare-data, include = TRUE, echo = TRUE}
-birthweight$LBW <- birthweight$BIRTH_WT <= 2500
-```
-
-```{r prepare-data-2, include = TRUE, echo = TRUE}
-birthweigth <- backpack::birthwt
+data_raw <- backpack::birthwt
+birthweight <- data_raw
 birthweight$LBW <- birthweight$BIRTH_WT <= 2500
 birthweight$PremY <- birthweight$PREM > 0
 ```
 
 ```{r fitted-models, include = TRUE, echo = TRUE}
-birthweigth <- backpack::birthwt
+birthweight <- backpack::birthwt
 birthweight$Black <- as.numeric(birthweight$RACE=="Black")
 birthweight$Other <- as.numeric(birthweight$RACE=="Other")
 
@@ -40,7 +33,7 @@ birthweight_probit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URI
 ```
 
 ```{r predictions-setup, include = TRUE, echo = FALSE}
-birthweigth <- backpack::birthwt
+birthweight <- backpack::birthwt
 birthweight$Black <- as.numeric(birthweight$RACE=="Black")
 birthweight$Other <- as.numeric(birthweight$RACE=="Other")
 
@@ -51,7 +44,7 @@ lbw_preds <- predict(birthweight_logit, type = "response") > 0.5
 ```
 
 ```{r roc-setup, include = TRUE, echo = FALSE}
-birthweigth <- backpack::birthwt
+birthweight <- backpack::birthwt
 birthweight$Black <- as.numeric(birthweight$RACE=="Black")
 birthweight$Other <- as.numeric(birthweight$RACE=="Other")
 

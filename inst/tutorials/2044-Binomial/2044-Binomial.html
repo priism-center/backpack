@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<meta name="progressive" content="false" />
+<meta name="allow-skip" content="false" />
+
+<title>Lab 1: Binary response data</title>
+
+
+<!-- highlightjs -->
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="pageContent band">
+<div class="bandContent page">
+
+<div class="topics">
+
+<div class="tutorial-exercise-support" data-label="prepare-data" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>data_raw &lt;- backpack::birthwt
+birthweight &lt;- data_raw
+birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+birthweight$PremY &lt;- birthweight$PREM &gt; 0</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="fitted-models" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight &lt;- backpack::birthwt
+birthweight$Black &lt;- as.numeric(birthweight$RACE==&quot;Black&quot;)
+birthweight$Other &lt;- as.numeric(birthweight$RACE==&quot;Other&quot;)
+
+birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+birthweight$PremY &lt;- birthweight$PREM &gt; 0
+birthweight_logit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;logit&quot;))
+birthweight_probit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;probit&quot;))</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-1-setup" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweigth &lt;- backpack::birthwt
+birthweight$Black &lt;- as.numeric(birthweight$RACE==&quot;Black&quot;)
+birthweight$Other &lt;- as.numeric(birthweight$RACE==&quot;Other&quot;)
+
+birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+birthweight$PremY &lt;- birthweight$PREM &gt; 0
+birthweight_logit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;logit&quot;))</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-2-setup" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweigth &lt;- backpack::birthwt
+birthweight$Black &lt;- as.numeric(birthweight$RACE==&quot;Black&quot;)
+birthweight$Other &lt;- as.numeric(birthweight$RACE==&quot;Other&quot;)
+
+birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+birthweight$PremY &lt;- birthweight$PREM &gt; 0
+birthweight_logit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;logit&quot;))
+birthweight$LBW_prob &lt;- predict(birthweight_logit, type = &quot;response&quot;)</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-3-setup" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweigth &lt;- backpack::birthwt
+birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+birthweight$PremY &lt;- birthweight$PREM &gt; 0
+birthweight_logit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;logit&quot;))
+birthweight$LBW_prob &lt;- predict(birthweight_logit, type = &quot;response&quot;)
+birthweight &lt;- birthweight[order(birthweight$LBW_prob),]
+birthweight$decile &lt;- rep(1:10, each = 19)[-190]</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-4-setup" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweigth &lt;- backpack::birthwt
+birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+birthweight$PremY &lt;- birthweight$PREM &gt; 0
+birthweight_logit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;logit&quot;))
+birthweight$LBW_prob &lt;- predict(birthweight_logit, type = &quot;response&quot;)
+birthweight &lt;- birthweight[order(birthweight$LBW_prob),]
+birthweight$decile &lt;- rep(1:10, each = 19)[-190]
+observed_pos &lt;- tapply(birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+observed_neg &lt;- tapply(!birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+expected_pos &lt;- tapply(birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+expected_neg &lt;- tapply(1 - birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+birthweight_deciles &lt;- data.frame(decile = 1:10, observed_pos, observed_neg, expected_pos, expected_neg)</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-5-setup" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweigth &lt;- backpack::birthwt
+birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+birthweight$PremY &lt;- birthweight$PREM &gt; 0
+birthweight_logit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;logit&quot;))
+birthweight$LBW_prob &lt;- predict(birthweight_logit, type = &quot;response&quot;)
+birthweight &lt;- birthweight[order(birthweight$LBW_prob),]
+birthweight$decile &lt;- rep(1:10, each = 19)[-190]
+observed_pos &lt;- tapply(birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+observed_neg &lt;- tapply(!birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+expected_pos &lt;- tapply(birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+expected_neg &lt;- tapply(1 - birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+birthweight_deciles &lt;- data.frame(decile = 1:10, observed_pos, observed_neg, expected_pos, expected_neg)
+positives &lt;- ((birthweight_deciles$observed_pos - birthweight_deciles$expected_pos)^2)/birthweight_deciles$expected_pos
+negatives &lt;- ((birthweight_deciles$observed_neg - birthweight_deciles$expected_neg)^2)/birthweight_deciles$expected_neg
+hl_stat &lt;- sum(positives + negatives)</code></pre>
+</div>
+<div id="section-the-dataset" class="section level2">
+<h2>The dataset</h2>
+<p>In this lab, you will use logistic regression to determine what factors predict whether a pregnant woman will have a child with low birth weight. Low birth weight, defined as birth weight less than 2500 grams, is an outcome that has been of concern to physicians for years. This is due to the fact that infant mortality rates and birth defect rates are very high for low birth weight babies.</p>
+<p>A woman’s behavior during pregnancy (including diet, smoking habits, and receiving prenatal care) can greatly alter the chances of carrying the baby to term and, consequently, of delivering a baby of normal birth weight.</p>
+<p>The dataset you will work with in these exercises includes the following variables:</p>
+<ul>
+<li>ID: identification variable for the mother</li>
+<li>MOTH_AGE: mother’s age (years)</li>
+<li>MOTH_WT: mother’s weight (pounds)</li>
+<li>RACE: mother’s race (White, Black, or Other)</li>
+<li>SMOKE: whether mother smokes</li>
+<li>PREM: history of premature labor (number of times)</li>
+<li>HYPER: whether mother has history of hypertension</li>
+<li>URIN_IRR: whether mother has history of urinary irritation</li>
+<li>PHYS_VIS: number of physician visits</li>
+<li>BIRTH_WT: newborn’s birth weight (grams)</li>
+</ul>
+<p>It has been loaded for you as <code>birthweight</code>.</p>
+</div>
+<div id="section-the-determinants-of-low-birth-weight" class="section level2">
+<h2>The determinants of low birth weight</h2>
+<div id="section-exercise-the-log-odds-of-low-birth-weight" class="section level3">
+<h3>Exercise: The (log-)odds of low birth weight</h3>
+<p>Generate a new variable (in the dataset), <code>LBW</code>, which takes on a value of 1 if birth weight is 2500 grams or lower and 0 otherwise. What are the log-odds of low birth weight? Remember that the mean of a 0/1 valued variable is the probability of that variable taking value 1.</p>
+<div class="tutorial-exercise" data-label="gen_lbw" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"load-data","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="gen_lbw-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight$LBW &lt;- birthweight$BIRTH_WT &lt;= 2500
+log(mean(birthweight$LBW)/(1 - mean(birthweight$LBW)))</code></pre>
+</div>
+</div>
+<div id="section-exercise-fitting-a-logistic-regression-model" class="section level3">
+<h3>Exercise: Fitting a logistic regression model</h3>
+<p>Use the <code>glm</code> function to fit a logistic regression model with no predictor. The <code>LBW</code> variable has been added to your dataset already. Inspect your results with the <code>summary</code> function.</p>
+<div class="tutorial-exercise" data-label="fit_logit" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="fit_logit-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight_logit &lt;- glm(LBW~1, data = birthweight, family = binomial(link = &quot;logit&quot;))
+summary(birthweight_logit)</code></pre>
+</div>
+<p>Verify that the baseline log-odds (the intercept term of the model) equals the observed log-odds of LBW in the data that you computed in the previous exercise.</p>
+</div>
+</div>
+<div id="section-adding-predictors" class="section level2">
+<h2>Adding predictors</h2>
+<div id="section-exercise-premature-birth-history-and-birth-weight" class="section level3">
+<h3>Exercise: Premature birth history and birth weight</h3>
+<p>Now it’s time to add some predictors. Generate a new variable <code>PremY</code> which is equal to 1 if <code>PREM</code> is greater than zero, and 0 otherwise. Run a logistic regression model using <code>PremY</code> as the predictor. Compute the odds ratio of <span class="math inline">\(\text{PremY}=1\)</span> versus <span class="math inline">\(\text{PremY}=0\)</span> by exponentiating the corresponding regression coefficient.</p>
+<div class="tutorial-exercise" data-label="odds_ratio_2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="odds_ratio_2-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight$PremY &lt;- birthweight$PREM &gt; 0
+birthweight_logit2 &lt;- glm(LBW~PremY, data = birthweight, family = binomial)
+exp(coefficients(birthweight_logit2)[2])</code></pre>
+</div>
+<p>You can calculate the odds ratio a different way by making use of the <code>table</code> function (or something similar). Is it the same as what you got from the logistic regression coefficient?</p>
+<div class="tutorial-exercise" data-label="odds_ratio-compare" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+</div>
+</div>
+<div id="section-exercise-more-predictors" class="section level3">
+<h3>Exercise: More predictors</h3>
+<p>Now run a logistic regression using all the predictors in the dataset except ID, birth weight, and <code>PREM</code>, and call it <code>birthweight_logit</code>. Inspect the results using the <code>summary</code> function. Recode <code>RACE</code> as dummy variables for <code>Black</code> and <code>Other</code>, and use those instead of the factor variable <code>RACE</code>.</p>
+<div class="tutorial-exercise" data-label="fit_logit_3" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="fit_logit_3-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
+birthweight$Other &lt;- birthweight$RACE == &quot;Other&quot;
+birthweight_logit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;logit&quot;))
+summary(birthweight_logit)</code></pre>
+</div>
+<p>Quiz time! See if you can interpret the coefficients from the logistic regression model with all predictors.</p>
+<div class="panel panel-default">
+<div class="panel-heading tutorial-panel-heading">Quiz</div>
+<table class="table quiz-table">
+<tr>
+<td>
+
+<div id="htmlwidget-d06f140f5a903df4c6b3" style="width:100%;height:auto;", class = "quiz html-widget">
+<div class="panel panel-default">
+<div class="panel-body quizArea">
+</div>
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-d06f140f5a903df4c6b3">{"x":{"question":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","answers":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"label":"logistic-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","a":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+<tr>
+<td>
+
+<div id="htmlwidget-8dfd418df95ad007bddb" style="width:100%;height:auto;", class = "quiz html-widget">
+<div class="panel panel-default">
+<div class="panel-body quizArea">
+</div>
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-8dfd418df95ad007bddb">{"x":{"question":"All else equal, an additional physician visit is associated with a ___ increase in the probability of low birth weight.","answers":[{"option":"5.2 percent","correct":false,"message":null},{"option":"105.2 percent","correct":false,"message":null},{"option":"5.2 percentage point","correct":false,"message":null},{"option":"Ambiguous; it depends on the values of the other covariates","correct":true,"message":null}],"label":"logistic-quiz-2","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"All else equal, an additional physician visit is associated with a ___ increase in the probability of low birth weight.","a":[{"option":"5.2 percent","correct":false,"message":null},{"option":"105.2 percent","correct":false,"message":null},{"option":"5.2 percentage point","correct":false,"message":null},{"option":"Ambiguous; it depends on the values of the other covariates","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div id="section-the-probit-link" class="section level2">
+<h2>The probit link</h2>
+<p>Instead of the logit link, we may consider using a different link function, like the probit link: <span class="math inline">\(\Phi^{-1}(p)=X\beta\)</span>, where <span class="math inline">\(\Phi\)</span> is the standard normal cdf. In R, the probit regression uses identical syntax to the logit regression, except <code>link = &quot;probit&quot;</code> must be specified in the <code>family</code> argument.</p>
+<div id="section-exercise-the-probit-model" class="section level3">
+<h3>Exercise: The probit model</h3>
+<p>Fit the same model as above, except using the probit link instead of the logit link. Again, use dummies for <code>Black</code> and <code>Other</code> instead of the <code>RACE</code> variable.</p>
+<div class="tutorial-exercise" data-label="fit_probit" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="fit_probit-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
+birthweight$Other &lt;- birthweight$RACE == &quot;Other&quot;
+birthweight_probit &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;probit&quot;))
+summary(birthweight_probit)</code></pre>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading tutorial-panel-heading">Quiz</div>
+<table class="table quiz-table">
+<tr>
+<td>
+
+<div id="htmlwidget-c88e99a45465c9069cb6" style="width:100%;height:auto;", class = "quiz html-widget">
+<div class="panel panel-default">
+<div class="panel-body quizArea">
+</div>
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-c88e99a45465c9069cb6">{"x":{"question":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","answers":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"label":"probit-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the following are statistically significant (at p &lt; 0.05) risk factors for low birth weight?","a":[{"option":"MOTH_AGE","correct":false,"message":null},{"option":"MOTH_WT","correct":false,"message":null},{"option":"Black","correct":true,"message":null},{"option":"Other","correct":false,"message":null},{"option":"SMOKEYes","correct":true,"message":null},{"option":"PremY","correct":true,"message":null},{"option":"HYPERYes","correct":true,"message":null},{"option":"URIN_IRRYes","correct":false,"message":null},{"option":"PHYS_VIS","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+</table>
+</div>
+<p>Are these the same as the the risk factors you identified when using the logit link?</p>
+</div>
+</div>
+<div id="section-choosing-a-link-function" class="section level2">
+<h2>Choosing a link function</h2>
+<p>Both the logit and probit link functions are widely used in the social sciences (a third, the complementary log-log link, is less common). How do we choose which link function to use? Although the link functions are different, if we use the same set of predictors in both models, we can compare log-likelihoods (or anything derived from the log-likelihoods, like AIC and BIC). The greater the log-likelihood, the better the model fit. But for AIC/BIC values, the better the better (since they are negative log likelihood plus the model size).</p>
+<div id="section-exercise-comparing-log-likelihoods" class="section level3">
+<h3>Exercise: Comparing log-likelihoods</h3>
+<p>Compare the log-likelihoods for the logit and probit models using the <code>logLik</code> function. Which link function is a better fit?</p>
+<div class="tutorial-exercise" data-label="logLik_fit" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="logLik_fit-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>logLik(birthweight_logit)
+logLik(birthweight_probit)</code></pre>
+</div>
+</div>
+<div id="section-exercise-comparing-deviances" class="section level3">
+<h3>Exercise: Comparing deviances</h3>
+<p>Comparing residual deviance is another way to compare model fit (lower deviance is better). Which link function is better according to residual deviance? (Hint: You can use the <code>deviance</code> function to print out the residual deviance of a model.)</p>
+<div class="tutorial-exercise" data-label="deviance_fit" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="deviance_fit-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>deviance(birthweight_logit)
+deviance(birthweight_probit)</code></pre>
+</div>
+</div>
+<div id="section-exercise-the-complementary-log-log-link" class="section level3">
+<h3>Exercise: The complementary log-log link</h3>
+<p>Now run model low birth weight using the same predictors, except with the complementary log-log link. (Specify <code>link = &quot;cloglog&quot;</code>.) Print out the log-likelihood of the model. Again, use dummies for <code>Black</code> and <code>Other</code> instead of the <code>RACE</code> variable.</p>
+<div class="tutorial-exercise" data-label="fit_cloglog" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="fit_cloglog-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
+birthweight$Other &lt;- birthweight$RACE == &quot;Other&quot;
+birthweight_cloglog &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = &quot;cloglog&quot;))
+logLik(birthweight_cloglog)</code></pre>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading tutorial-panel-heading">Quiz</div>
+<table class="table quiz-table">
+<tr>
+<td>
+
+<div id="htmlwidget-0ee109ed53420147d762" style="width:100%;height:auto;", class = "quiz html-widget">
+<div class="panel panel-default">
+<div class="panel-body quizArea">
+</div>
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-0ee109ed53420147d762">{"x":{"question":"Which of the three link functions, based on the log-likelihood, is best for our model of low birth weight? (Ignore the fact that they may be very close to each other.)","answers":[{"option":"Logit","correct":false,"message":null},{"option":"Probit","correct":false,"message":null},{"option":"Complementary log-log","correct":true,"message":null}],"label":"link-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Which of the three link functions, based on the log-likelihood, is best for our model of low birth weight? (Ignore the fact that they may be very close to each other.)","a":[{"option":"Logit","correct":false,"message":null},{"option":"Probit","correct":false,"message":null},{"option":"Complementary log-log","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div id="section-interaction-effects" class="section level2">
+<h2>Interaction effects</h2>
+<p>As in linear regression, we can allow for interaction effects in binomial regression models. Run the same logit regression as above, allowing for an interaction effect between hypertension and smoking. Print out the regression results using the <code>summary</code> function.</p>
+<div class="tutorial-exercise" data-label="interaction" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"prepare-data-2","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="interaction-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight$Black &lt;- birthweight$RACE == &quot;Black&quot;
+birthweight$Other &lt;- birthweight$RACE == &quot;Other&quot;
+birthweight_logit.int &lt;- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+HYPER*SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial)
+summary(birthweight_logit.int)</code></pre>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading tutorial-panel-heading">Quiz</div>
+<table class="table quiz-table">
+<tr>
+<td>
+
+<div id="htmlwidget-11a9b516adaba8b654b5" style="width:100%;height:auto;", class = "quiz html-widget">
+<div class="panel panel-default">
+<div class="panel-body quizArea">
+</div>
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-11a9b516adaba8b654b5">{"x":{"question":"Is there a statistically significant (p &lt; 0.05) interaction effect between hypertension and smoking?","answers":[{"option":"Yes","correct":false,"message":null},{"option":"No","correct":true,"message":null}],"label":"interaction-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"Is there a statistically significant (p &lt; 0.05) interaction effect between hypertension and smoking?","a":[{"option":"Yes","correct":false,"message":null},{"option":"No","correct":true,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+<tr>
+<td>
+
+<div id="htmlwidget-68accb04cb3c47ed0792" style="width:100%;height:auto;", class = "quiz html-widget">
+<div class="panel panel-default">
+<div class="panel-body quizArea">
+</div>
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-68accb04cb3c47ed0792">{"x":{"question":"All else equal, compared to a non-smoker with no hypertension history, how much greater are the odds of low birth weight for a woman who smokes and has a history of hypertension?","answers":[{"option":"133 percent","correct":false,"message":null},{"option":"2,240 percent","correct":true,"message":null},{"option":"4,962 percent","correct":false,"message":null},{"option":"It depends on the values of the other covariates","correct":false,"message":null}],"label":"interaction-quiz-2","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"All else equal, compared to a non-smoker with no hypertension history, how much greater are the odds of low birth weight for a woman who smokes and has a history of hypertension?","a":[{"option":"133 percent","correct":false,"message":null},{"option":"2,240 percent","correct":true,"message":null},{"option":"4,962 percent","correct":false,"message":null},{"option":"It depends on the values of the other covariates","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id="section-making-predictions" class="section level2">
+<h2>Making predictions</h2>
+<p>Frequently we are interested in using logistic regression to make <strong>predictions</strong>. For binary data, this typically involves using the model to generate predicted probabilities for new cases, and setting a probability threshold so that we classify all cases with predicted probability greater than the threshold as positive cases and all cases with predicted probability less than the threshold as negative cases.</p>
+<div id="section-exercise-generating-predictions" class="section level3">
+<h3>Exercise: Generating predictions</h3>
+<p>Using the logistic regression with all predictors except ID and birth weight, generate predicted probabilities by calling the <code>predict</code> function on the model with the argument <code>type = response</code>. (By default <code>predict</code> will give you predictions on the log-odds scale; using <code>type = response</code> will convert these to probabilities.) Then use a threshold of <span class="math inline">\(0.5\)</span> to classify each prediction as low birth weight or not. Assign these predictions to a vector called <code>lbw_preds</code>, and print out the first six predictions with the <code>head</code> function.</p>
+<div class="tutorial-exercise" data-label="lbw_predict" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="lbw_predict-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>lbw_probs &lt;- predict(birthweight_logit, type = &quot;response&quot;)
+lbw_preds &lt;- lbw_probs &gt;= 0.5
+head(lbw_preds)</code></pre>
+</div>
+</div>
+</div>
+<div id="section-classification-accuracy" class="section level2">
+<h2>Classification accuracy</h2>
+<p>One metric by which to evaluate a logistic regression model is <strong>classification accuracy</strong>, how often the model correctly predicts positive cases to be positive and negative cases to be negative.</p>
+<div id="section-exercise-computing-classification-accuracy" class="section level3">
+<h3>Exercise: Computing classification accuracy</h3>
+<p>Compute the classification accuracy of the model. (The predictions have been loaded for you as <code>lbw_preds</code>.)</p>
+<div class="tutorial-exercise" data-label="accuracy" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"predictions","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="accuracy-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>mean(lbw_preds == birthweight$LBW)</code></pre>
+</div>
+</div>
+</div>
+<div id="section-sensitivity-and-specificity" class="section level2">
+<h2>Sensitivity and specificity</h2>
+<p>(Pause and ponder on this: why might classification accuracy not be a good metric for evaluating a model? What would happen if the outcome of interest occurred in the population at a rate of 0.1%?)</p>
+<p>Because classification accuracy isn’t necessarily a good model evaluation metric, we may want to consider others. Two closely related evaluation metrics are <strong>sensitivity</strong> and <strong>specificity</strong>, sometimes referred to as “true positive rate” and “true negative rate” respectively. Sensitivity is equal to <span class="math inline">\(P(\hat{Y}=1|Y=1)\)</span>—the probability of predicting <span class="math inline">\(Y=1\)</span> when <span class="math inline">\(Y\)</span> in fact is <span class="math inline">\(1\)</span>—and specificity is equal to <span class="math inline">\(P(\hat{Y}=0|Y=0)\)</span>, the probability of predicting <span class="math inline">\(Y=0\)</span> when <span class="math inline">\(Y\)</span> is actually <span class="math inline">\(0\)</span>.</p>
+<div id="section-exercise-computing-sensitivity" class="section level3">
+<h3>Exercise: Computing sensitivity</h3>
+<p>Compute the sensitivity of the model. (Again, <code>lbw_preds</code> is loaded for you.)</p>
+<div class="tutorial-exercise" data-label="sensitivity" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"predictions","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="sensitivity-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>lbw_positive &lt;- which(birthweight$LBW)
+mean(lbw_preds[lbw_positive])</code></pre>
+</div>
+</div>
+<div id="section-exercise-computing-specificity" class="section level3">
+<h3>Exercise: Computing specificity</h3>
+<p>Now compute the specificity.</p>
+<div class="tutorial-exercise" data-label="specificity" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"predictions","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="specificity-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>lbw_negative &lt;- which(!birthweight$LBW)
+mean(!lbw_preds[lbw_negative])</code></pre>
+</div>
+</div>
+</div>
+<div id="section-pearsons-chi2-test" class="section level2">
+<h2>Pearson’s <span class="math inline">\(\chi^2\)</span> test</h2>
+<p>It’s often helpful to plot residuals. In particular, large residuals are often worth investigating, as they indicate that a model has performed particularly poorly for those cases. Inspecting these cases may give some insight as to what the model is missing.</p>
+<p>The <strong>Pearson residual</strong>, <span class="math inline">\(r\)</span>, is defined as</p>
+<p><span class="math display">\[r_i=\frac{y_i-\hat{\pi}_i}{\sqrt{\hat{\pi}_i(1-\hat{\pi}_i)}},\]</span></p>
+<p>where <span class="math inline">\(\hat{\pi}_i\)</span> is the model’s predicted probability of the <span class="math inline">\(i\)</span>th observation being a positive case. Run the code chunk below to view a histogram of the Pearson residuals from the logistic regression model.</p>
+<div class="tutorial-exercise" data-label="pearson-residuals" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>hist(residuals(birthweight_logit, type = &quot;pearson&quot;))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<p>What does the distribution of the residuals look like? Are there any observations where the residual appears particularly large? Feel free to use the next code chunk to investigate the observations with large residuals.</p>
+<div class="tutorial-exercise" data-label="pearson-residuals-open" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<p>A model that produces very large Pearson residuals might be said to have poor fit. We can formalize this with a statistical hypothesis test. <span class="math inline">\(X^2\)</span> is our test statistic of interest, defined by</p>
+<p><span class="math display">\[X^2=\sum_{i=1}^n r_i^2.\]</span></p>
+<p>Under the null hypothesis that the model fits the data well, <span class="math inline">\(X^2\)</span> is distributed <span class="math inline">\(\chi^2\)</span> with <span class="math inline">\(g-p\)</span> degrees of freedom, where <span class="math inline">\(g\)</span> is the number of <em>unique covariate patterns</em> and <span class="math inline">\(p\)</span> is the number of predictors in the model including the intercept. A covariate pattern is a combination of values of the predictors in the model.</p>
+<div id="section-exercise-performing-the-test" class="section level3">
+<h3>Exercise: Performing the test</h3>
+<p>The full logistic regression model you fitted without the interaction term has been loaded as <code>birthweight_logit</code>. Compute <span class="math inline">\(X^2\)</span> for that model. (Hint: The <code>residuals</code> function returns the <em>deviance</em> residuals of a model; specify <code>type = &quot;pearson&quot;</code> to return Pearson residuals.) Then compute <span class="math inline">\(g\)</span> (you can do this by subsetting the data frame to only the predictors in the model and calling either the <code>dplyr</code> function <code>n_distinct</code> or <code>nrow(unique())</code> on it). Finally, use the <code>pchisq</code> function to obtain the <span class="math inline">\(p\)</span>-value.</p>
+<div class="tutorial-exercise" data-label="pearson-test" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="pearson-test-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>chi_squared &lt;- sum(residuals(birthweight_logit, type = &quot;pearson&quot;)^2)
+p &lt;- length(coefficients(birthweight_logit))
+
+## dplyr solution
+g &lt;- n_distinct(dplyr::select(birthweight, MOTH_AGE, MOTH_WT, RACE, SMOKE, HYPER, URIN_IRR, PHYS_VIS, PremY, Black, Other))
+
+## Base R solution
+g &lt;- nrow(unique(birthweight[, c(&quot;MOTH_AGE&quot;, &quot;MOTH_WT&quot;, &quot;RACE&quot;, &quot;SMOKE&quot;, &quot;HYPER&quot;, &quot;URIN_IRR&quot;, &quot;PHYS_VIS&quot;, &quot;PremY&quot;, &quot;Black&quot;, &quot;Other&quot;)]))
+
+pchisq(chi_squared, df = g-p, lower.tail = FALSE)</code></pre>
+</div>
+<p>According to this test, does the model fit well? (Remember: what are the null and alternative hypotheses?)</p>
+</div>
+</div>
+<div id="section-the-deviance-test" class="section level2">
+<h2>The deviance test</h2>
+<p>The deviance statistic is a different measure of a model’s goodness of fit, based on the likelihood function. The deviance residual for the <span class="math inline">\(i\)</span>th observation, <span class="math inline">\(d_i\)</span>, is defined differently from the Pearson residual; it’s calculated as</p>
+<p><span class="math display">\[d_i=s_i\sqrt{-2\left[y_i\log\hat{\pi}_i+(1-y_i)\log(1-\hat{\pi}_i)\right]}\]</span> where <span class="math inline">\(s_i\)</span> is <span class="math inline">\(1\)</span> if <span class="math inline">\(y_i=1\)</span> and <span class="math inline">\(-1\)</span> if <span class="math inline">\(y_i=0\)</span>. That isn’t that important, though, since the <code>residual</code> function will compute deviance residuals for you (the default is <code>type = &quot;deviance&quot;</code>). Again, high deviance residuals may indicate that the model is performing particularly poorly on a certain class of cases. Run the code chunk below to plot a histogram of the deviance residuals.</p>
+<div class="tutorial-exercise" data-label="deviance-residuals" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>hist(residuals(birthweight_logit))</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<p>Again, do some informal inspection of the deviance residuals using the code chunk below. For which cases are the deviance residuals particularly large? Are these the same as the ones that had particularly large Pearson residuals?</p>
+<div class="tutorial-exercise" data-label="deviance-residuals-open" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<p>The <strong>residual deviance</strong> of a model (not to be confused with the deviance residuals), similar to Pearson’s <span class="math inline">\(X^2\)</span>, is the sum of the squared deviance residuals. (You can also compute it directly by calling the <code>deviance</code> function on the model.) For our deviance residual goodness-of-fit test, the test statistic is the difference between the residual deviance and the <strong>null deviance</strong>, the residual deviance of a model with no predictors. That difference follows a <span class="math inline">\(\chi^2\)</span> distribution with degrees of freedom equal to the number of predictors, not including the intercept.</p>
+<div id="section-exercise-the-deviance-test" class="section level3">
+<h3>Exercise: The deviance test</h3>
+<p>The <code>birthweight_logit</code> model has been loaded for you. Perform the deviance test by computing the test statistic and then the <span class="math inline">\(p\)</span>-value according to the appropriate <span class="math inline">\(\chi^2\)</span> distribution. Print the <span class="math inline">\(p\)</span>-value. (Hint: The null deviance is stored in <code>birthweight_logit$null.deviance</code>.)</p>
+<div class="tutorial-exercise" data-label="deviance-test" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"fitted-models","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="deviance-test-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>test_statistic &lt;- birthweight_logit$null.deviance - deviance(birthweight_logit)
+pchisq(test_statistic, df = birthweight_logit$df.null - birthweight_logit$df.residual, lower.tail = FALSE)</code></pre>
+</div>
+<p>What do you conclude about the fit of the model?</p>
+</div>
+</div>
+<div id="section-the-hosmerlemeshow-test" class="section level2">
+<h2>The Hosmer–Lemeshow test</h2>
+<p>A more sophisticated diagnostic is the Hosmer–Lemeshow test, which tests how well calibrated the model is. By <strong>well calibrated</strong>, we mean that the predicted probabilities produced by the logistic regression model match up well with the proportions observed in the data. For example, if a model is well calibrated, then out of all of the cases where it gives a predicted probability somewhere between 0 and 0.1, about 0 to 10 percent should actually be positive cases.</p>
+<div id="section-part-1-predicted-probabilities" class="section level3">
+<h3>Part 1: Predicted probabilities</h3>
+<p>Extract the predicted probabilities of low birth weight from the <code>birthweight_logit</code> model using the <code>predict</code> function, and add it to the <code>birthweight</code> data frame. (Again, make sure to call <code>predict</code> with the <code>type = &quot;response&quot;</code> argument.) Print the first six predicted probabilities with the <code>head</code> function.</p>
+<div class="tutorial-exercise" data-label="hosmer-lemeshow-1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"hosmer-lemeshow-1-setup","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-1-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight$LBW_prob &lt;- predict(birthweight_logit, type = &quot;response&quot;)
+head(birthweight$LBW_prob)</code></pre>
+</div>
+</div>
+<div id="section-part-2-binning-the-sample" class="section level3">
+<h3>Part 2: Binning the sample</h3>
+<p>The predicted probabilities have been added to the <code>birthweight</code> data frame as the variable <code>LBW_prob</code>. (Go ahead, print the data frame if you don’t believe me.) Order the data ascending by predicted probability of low birth weight. (The <code>order</code> function from the base R package or the <code>arrange</code> function from the <code>dplyr</code> library may be helpful here.)</p>
+<p>After reordering the data, create a new variable indicating which quintile each observation is in.</p>
+<div class="tutorial-exercise" data-label="hosmer-lemeshow-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"hosmer-lemeshow-2-setup","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-2-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>## Base R solution
+birthweight &lt;- birthweight[order(birthweight$LBW_prob),]
+birthweight$quintile &lt;- rep(1:5, each = 38)[-190]
+
+## dplyr solution
+birthweight &lt;- dplyr::arrange(birthweight, LBW_prob) %&gt;%
+  mutate(quintile = rep(1:5, each = 38)[-190])</code></pre>
+</div>
+</div>
+<div id="section-part-3-computing-observed-and-expected-cases" class="section level3">
+<h3>Part 3: Computing observed and expected cases</h3>
+<p>Now for each quintile, we need to compute the following:</p>
+<ul>
+<li>The <strong>observed</strong> number of <strong>positive</strong> cases (i.e. babies who were actually born with low birth weight).</li>
+<li>The <strong>observed</strong> number of <strong>negative</strong> cases.</li>
+<li>The <strong>expected</strong> number of <strong>positive</strong> cases.</li>
+<li>The <strong>expected</strong> number of <strong>negative</strong> cases.</li>
+</ul>
+<p>The expected number of positive cases within one quintile is simply the sum of the predicted probabilities for all the cases in that quintile. The expected number of negative cases is the sum of the complements of those probabilities. (Hint: the <code>group_by</code> and <code>summarise</code> functions from the <code>dplyr</code> library are extremely useful for this task, although you can also do this through judicious use of the base R function <code>tapply</code>.) Print out a data frame with the following variable names (in this order from left to right):</p>
+<ul>
+<li><code>quintile</code>: the integers 1 through 5, indicating the quintile;</li>
+<li><code>observed_pos</code>: the number of observed low birth weight babies in each quintile;</li>
+<li><code>observed_neg</code>: the number of observed non-low birth weight babies in each quintile;</li>
+<li><code>expected_pos</code>: the expected number of low birth weight babies in each quintile; and</li>
+<li><code>expected_neg</code>: the expected number of non-low birth weight babies in each quintile.</li>
+</ul>
+<div class="tutorial-exercise" data-label="hosmer-lemeshow-3" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"hosmer-lemeshow-3-setup","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-3-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>## Base R solution
+observed_pos &lt;- tapply(birthweight$LBW, INDEX = birthweight$quintile, FUN = sum)
+observed_neg &lt;- tapply(!birthweight$LBW, INDEX = birthweight$quintile, FUN = sum)
+expected_pos &lt;- tapply(birthweight$LBW_prob, INDEX = birthweight$quintile, FUN = sum)
+expected_neg &lt;- tapply(1 - birthweight$LBW_prob, INDEX = birthweight$quintile, FUN = sum)
+birthweight_quintiles &lt;- data.frame(quintile = 1:5, observed_pos, observed_neg, expected_pos, expected_neg)
+
+## dplyr solution
+birthweight_quintiles &lt;- birthweight %&gt;%
+  group_by(quintile) %&gt;%
+  summarise(observed_pos = sum(LBW),
+            observed_neg = sum(!LBW),
+            expected_pos = sum(LBW_prob),
+            expected_neg = sum(1 - LBW_prob)) %&gt;%
+  as.data.frame()
+
+birthweight_quintiles</code></pre>
+</div>
+</div>
+<div id="section-part-4-computing-the-hosmerlemeshow-statistic" class="section level3">
+<h3>Part 4: Computing the Hosmer–Lemeshow statistic</h3>
+<p>We will use the data frame you just created, loaded as <code>birthweight_quintiles</code>, to compute the Hosmer–Lemeshow statistic for the logistic regression model. The Hosmer–Lemeshow statistic, <span class="math inline">\(H\)</span>, is defined as</p>
+<p><span class="math display">\[H=\sum_{g}^G\left(\frac{\left[n_g^+-E(n_g^+)\right]^2}{E(n_g^+)}+\frac{\left[n_g^--E(n_g^-)\right]^2}{E(n_g^-)}\right)\]</span></p>
+<p>where <span class="math inline">\(n_g^+\)</span> is the number of observed positive cases in group <span class="math inline">\(g\)</span> and <span class="math inline">\(E(n_g^+)\)</span> is the expected number. (The definitions for <span class="math inline">\(n_g^-\)</span> and <span class="math inline">\(E(n_g^-)\)</span> are similar.)</p>
+<p>Compute the Hosmer–Lemeshow statistic for our logistic regression model by 1) taking the squared differences between the expected and observed positive counts, 2) standardizing by dividing by the expected number of positive counts, 3) repeating steps 1 and 2 for negative cases, and 4) summing over all quintiles. Print the result.</p>
+<div class="tutorial-exercise" data-label="hosmer-lemeshow-4" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"hosmer-lemeshow-4-setup","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-4-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>## Base R solution
+positives &lt;- ((birthweight_quintiles$observed_pos - birthweight_quintiles$expected_pos)^2)/birthweight_quintiles$expected_pos
+negatives &lt;- ((birthweight_quintiles$observed_neg - birthweight_quintiles$expected_neg)^2)/birthweight_quintiles$expected_neg
+hl_stat &lt;- sum(positives + negatives)
+
+## dplyr solution
+hl_stat &lt;- birthweight_quintiles %&gt;%
+  summarise(positive = sum(((observed_pos - expected_pos)^2)/expected_pos),
+            negative = sum(((observed_neg - expected_neg)^2)/expected_neg)) %&gt;%
+  mutate(hl_stat = positive + negative) %&gt;%
+  pull(hl_stat)
+
+hl_stat</code></pre>
+</div>
+</div>
+<div id="section-part-5-statistical-insignificance" class="section level3">
+<h3>Part 5: Statistical (in)significance</h3>
+<p>The Hosmer–Lemeshow statistic follows a chi-squared distribution with <span class="math inline">\(G-2\)</span> degrees of freedom, where <span class="math inline">\(G\)</span> is the number of groups into which you’ve cut your sample when calculating the Hosmer–Lemeshow statistic. (Since we cut it into quintiles, <span class="math inline">\(G=5\)</span> here.) Compute the <span class="math inline">\(p\)</span>-value for the calculated Hosmer–Lemeshow statistic, which has been loaded for you as <code>hl_stat</code>.</p>
+<div class="tutorial-exercise" data-label="hosmer-lemeshow-5" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"hosmer-lemeshow-5-setup","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="hosmer-lemeshow-5-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>pchisq(hl_stat, df = 3, lower.tail = FALSE)</code></pre>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading tutorial-panel-heading">Quiz</div>
+<table class="table quiz-table">
+<tr>
+<td>
+
+<div id="htmlwidget-e07a9657bc997e99066d" style="width:100%;height:auto;", class = "quiz html-widget">
+<div class="panel panel-default">
+<div class="panel-body quizArea">
+</div>
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-e07a9657bc997e99066d">{"x":{"question":"What conclusion do you draw from this hypothesis test?","answers":[{"option":"We fail to reject the null hypothesis of a well calibrated model.","correct":true,"message":null},{"option":"We fail to reject the null hypothesis of a poorly calibrated model.","correct":false,"message":null},{"option":"We reject the null hypothesis of a well calibrated model and conclude the model is poorly calibrated.","correct":false,"message":null},{"option":"We reject the null hypothesis of a poorly calibrated model and conclude the model is well calibrated.","correct":false,"message":null}],"label":"hosmer_lemeshow-quiz-1","skipStartButton":true,"perQuestionResponseAnswers":true,"perQuestionResponseMessaging":true,"preventUnanswered":true,"displayQuestionCount":false,"displayQuestionNumber":false,"disableRanking":true,"nextQuestionText":"","checkAnswerText":"Submit Answer","allowRetry":false,"randomSortAnswers":false,"json":{"info":{"name":"","main":""},"questions":[{"q":"What conclusion do you draw from this hypothesis test?","a":[{"option":"We fail to reject the null hypothesis of a well calibrated model.","correct":true,"message":null},{"option":"We fail to reject the null hypothesis of a poorly calibrated model.","correct":false,"message":null},{"option":"We reject the null hypothesis of a well calibrated model and conclude the model is poorly calibrated.","correct":false,"message":null},{"option":"We reject the null hypothesis of a poorly calibrated model and conclude the model is well calibrated.","correct":false,"message":null}],"correct":"Correct!","incorrect":"Incorrect."}]}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div id="section-roc-curves" class="section level2">
+<h2>ROC curves</h2>
+<p>The Hosmer–Lemeshow test has its limitations, one of which is that it doesn’t address model overfitting (you can read more criticisms on <a href="https://stats.stackexchange.com/a/207512">this StackExchange answer</a>). A different diagnostic is the <strong>receiver operating characteristic</strong> (ROC) curve, which plots the true positive rate (sensitivity) against the false positive rate for a number of different classification thresholds.</p>
+<p>In the context of our birth weight data, we earlier used a threshold of <span class="math inline">\(0.5\)</span> to predict whether a woman would have a low birth weight baby or not: for predicted probabilities of <span class="math inline">\(0.5\)</span> or above we predicted that they would, and for predicted probabilities below <span class="math inline">\(0.5\)</span> we predicted that they would not. But <span class="math inline">\(0.5\)</span> isn’t the only threshold we could have used. If we compute the true positive and false positive rates at many different thresholds and plot them against each other, the resulting curve is the ROC curve.</p>
+<div id="section-exercise-reading-the-roc-curve" class="section level3">
+<h3>Exercise: Reading the ROC curve</h3>
+<p>The <code>roc</code> function from the <code>pROC</code> library takes a response vector and a predictor vector as arguments. The response vector is the vector of actual outcomes—in our case, it’s whether each child was actually born with low birth weight. The predictor vector is the vector of predicted <em>probabilities</em> (NOT predictions). Use the <code>roc</code> function to generate the ROC curve for the logistic regression model; then call the <code>plot</code> function on the result, with the argument <code>print.thres = c(0.1, 0.3, 0.5, 0.7, 0.9)</code>. The predicted probabilities have been loaded for you as <code>lbw_probs</code>, and the <code>pROC</code> library has been pre-loaded as well.</p>
+<div class="tutorial-exercise" data-label="roc-plot" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"roc-setup","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="roc-plot-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight_roc &lt;- roc(birthweight$LBW, lbw_probs)
+plot(birthweight_roc, print.thres = c(0.1, 0.3, 0.5, 0.7, 0.9))</code></pre>
+</div>
+<p>Notice that the optional <code>print.thres</code> argument we provided marks different combinations of true and false positive rates corresponding to the probability thresholds we chose. When we chose <span class="math inline">\(0.5\)</span> as the threshold earlier, we obtained a sensitivity of <span class="math inline">\(0.9\)</span> and a sensitivity of <span class="math inline">\(0.441\)</span>, and that’s what’s shown on the graph.</p>
+<p>Other features of the ROC curve:</p>
+<ul>
+<li>It starts at <span class="math inline">\((1.0,0.0)\)</span> and moves up and to the right, ending at <span class="math inline">\((0.0,1.0)\)</span> (note that the horizontal axis has been flipped). This intuitively makes sense if you consider the sensitivity and specificity when using classification thresholds of <span class="math inline">\(p=0\)</span> and <span class="math inline">\(p=1\)</span>, respectively.</li>
+<li>It never slopes downward, which graphically represents the sad fact that you cannot simultaneously increase sensitivity and specificity simply by changing the classification threshold.</li>
+<li>It is always above the 45-degree line (plotted in gray) as long as the model is doing better than random guessing, which reflects the fact that when sensitivity is high and specificity is low, you can raise the classification threshold to sacrifice a little sensitivity for a big gain in specificity, and vice versa. For example, when we moved the threshold from <span class="math inline">\(p=0.9\)</span> to <span class="math inline">\(p=0.7\)</span>, sensitivity rose from <span class="math inline">\(0.017\)</span> to <span class="math inline">\(0.169\)</span>, but specificity only fell from <span class="math inline">\(1\)</span> to <span class="math inline">\(0.969\)</span>.</li>
+</ul>
+<p>What does the ROC curve for a good model look like? If we define a “good” model as one that is able to discriminate well between positive and negative cases, then the ROC curve for a model that discriminates perfectly should include the point <span class="math inline">\((1.0,1.0)\)</span>, which would mean that there is some classification threshold that would perfectly separate positive and negative cases. (For example, a model which assigned all positive cases a probability greater than <span class="math inline">\(0.5\)</span> and all negative cases a probability less than <span class="math inline">\(0.5\)</span> would include this point.) So the ROC curve for a perfect model should be a vertical line going straight up from <span class="math inline">\((1.0,0.0)\)</span> all the way up to <span class="math inline">\((1.0,1.0)\)</span>, and then a horizontal line going straight across from <span class="math inline">\((1.0,1.0)\)</span> to <span class="math inline">\((0.0,1.0)\)</span>.</p>
+<p>By contrast, the ROC curve for the worst possible model—random guessing—is exactly the 45-degree line. And models that do better than random guessing but worse than perfect discrimination will have bowed-out shapes like the ROC curve we plotted above. Therefore a sensible summary statistic that describes how well a model discriminates between positive and negative cases would be the area under the ROC curve (AUC). It maxes out at <span class="math inline">\(1\)</span> (for the perfect discriminator whose ROC curve has that inverted L-shape) and bottoms out at <span class="math inline">\(0.5\)</span> (the AUC for the 45-degree line). (It’s possible to have an AUC under <span class="math inline">\(0.5\)</span>, but that means that either you’ve flipped the positive and negative labels or your model is somehow doing worse than random chance.)</p>
+</div>
+<div id="section-exercise-auc" class="section level3">
+<h3>Exercise: AUC</h3>
+<p>The <code>auc</code> function in the <code>pROC</code> library computes the AUC for a ROC curve. As before, use the <code>roc</code> function to obtain a ROC object, and then call the <code>auc</code> function on that object.</p>
+<div class="tutorial-exercise" data-label="auc" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.setup":"roc-setup","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="auc-solution" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>birthweight_roc &lt;- roc(birthweight$LBW, lbw_probs)
+auc(birthweight_roc)</code></pre>
+</div>
+The AUC has a probabilistic interpretation as well: it’s the probability that, if we chose a random positive case and a random negative case, that our model assigned a higher probability to the positive case than to the negative case. However, what constitutes a “good” AUC is often domain-specific, and AUC is often more useful for comparing models. 
+<script type="application/shiny-prerendered" data-context="server-start">
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+#backpack::install_binders("2044-Binomial")
+
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::register_http_handlers(session, metadata = NULL)
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-gen_lbw-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-gen_lbw-code-editor`)), session)
+output$`tutorial-exercise-gen_lbw-output` <- renderUI({
+  `tutorial-exercise-gen_lbw-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-fit_logit-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-fit_logit-code-editor`)), session)
+output$`tutorial-exercise-fit_logit-output` <- renderUI({
+  `tutorial-exercise-fit_logit-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-odds_ratio_2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-odds_ratio_2-code-editor`)), session)
+output$`tutorial-exercise-odds_ratio_2-output` <- renderUI({
+  `tutorial-exercise-odds_ratio_2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-odds_ratio-compare-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-odds_ratio-compare-code-editor`)), session)
+output$`tutorial-exercise-odds_ratio-compare-output` <- renderUI({
+  `tutorial-exercise-odds_ratio-compare-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-fit_logit_3-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-fit_logit_3-code-editor`)), session)
+output$`tutorial-exercise-fit_logit_3-output` <- renderUI({
+  `tutorial-exercise-fit_logit_3-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-fit_probit-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-fit_probit-code-editor`)), session)
+output$`tutorial-exercise-fit_probit-output` <- renderUI({
+  `tutorial-exercise-fit_probit-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-logLik_fit-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-logLik_fit-code-editor`)), session)
+output$`tutorial-exercise-logLik_fit-output` <- renderUI({
+  `tutorial-exercise-logLik_fit-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-deviance_fit-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-deviance_fit-code-editor`)), session)
+output$`tutorial-exercise-deviance_fit-output` <- renderUI({
+  `tutorial-exercise-deviance_fit-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-fit_cloglog-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-fit_cloglog-code-editor`)), session)
+output$`tutorial-exercise-fit_cloglog-output` <- renderUI({
+  `tutorial-exercise-fit_cloglog-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-interaction-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-interaction-code-editor`)), session)
+output$`tutorial-exercise-interaction-output` <- renderUI({
+  `tutorial-exercise-interaction-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-lbw_predict-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-lbw_predict-code-editor`)), session)
+output$`tutorial-exercise-lbw_predict-output` <- renderUI({
+  `tutorial-exercise-lbw_predict-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-accuracy-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-accuracy-code-editor`)), session)
+output$`tutorial-exercise-accuracy-output` <- renderUI({
+  `tutorial-exercise-accuracy-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-sensitivity-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-sensitivity-code-editor`)), session)
+output$`tutorial-exercise-sensitivity-output` <- renderUI({
+  `tutorial-exercise-sensitivity-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-specificity-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-specificity-code-editor`)), session)
+output$`tutorial-exercise-specificity-output` <- renderUI({
+  `tutorial-exercise-specificity-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-pearson-residuals-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-pearson-residuals-code-editor`)), session)
+output$`tutorial-exercise-pearson-residuals-output` <- renderUI({
+  `tutorial-exercise-pearson-residuals-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-pearson-residuals-open-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-pearson-residuals-open-code-editor`)), session)
+output$`tutorial-exercise-pearson-residuals-open-output` <- renderUI({
+  `tutorial-exercise-pearson-residuals-open-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-pearson-test-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-pearson-test-code-editor`)), session)
+output$`tutorial-exercise-pearson-test-output` <- renderUI({
+  `tutorial-exercise-pearson-test-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-deviance-residuals-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-deviance-residuals-code-editor`)), session)
+output$`tutorial-exercise-deviance-residuals-output` <- renderUI({
+  `tutorial-exercise-deviance-residuals-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-deviance-residuals-open-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-deviance-residuals-open-code-editor`)), session)
+output$`tutorial-exercise-deviance-residuals-open-output` <- renderUI({
+  `tutorial-exercise-deviance-residuals-open-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-deviance-test-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-deviance-test-code-editor`)), session)
+output$`tutorial-exercise-deviance-test-output` <- renderUI({
+  `tutorial-exercise-deviance-test-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-hosmer-lemeshow-1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-hosmer-lemeshow-1-code-editor`)), session)
+output$`tutorial-exercise-hosmer-lemeshow-1-output` <- renderUI({
+  `tutorial-exercise-hosmer-lemeshow-1-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-hosmer-lemeshow-2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-hosmer-lemeshow-2-code-editor`)), session)
+output$`tutorial-exercise-hosmer-lemeshow-2-output` <- renderUI({
+  `tutorial-exercise-hosmer-lemeshow-2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-hosmer-lemeshow-3-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-hosmer-lemeshow-3-code-editor`)), session)
+output$`tutorial-exercise-hosmer-lemeshow-3-output` <- renderUI({
+  `tutorial-exercise-hosmer-lemeshow-3-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-hosmer-lemeshow-4-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-hosmer-lemeshow-4-code-editor`)), session)
+output$`tutorial-exercise-hosmer-lemeshow-4-output` <- renderUI({
+  `tutorial-exercise-hosmer-lemeshow-4-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-hosmer-lemeshow-5-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-hosmer-lemeshow-5-code-editor`)), session)
+output$`tutorial-exercise-hosmer-lemeshow-5-output` <- renderUI({
+  `tutorial-exercise-hosmer-lemeshow-5-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-roc-plot-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-roc-plot-code-editor`)), session)
+output$`tutorial-exercise-roc-plot-output` <- renderUI({
+  `tutorial-exercise-roc-plot-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-auc-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-auc-code-editor`)), session)
+output$`tutorial-exercise-auc-output` <- renderUI({
+  `tutorial-exercise-auc-result`()
+})
+</script>
+ <!--html_preserve-->
+<script type="application/shiny-prerendered" data-context="dependencies">
+{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery-1.11.3"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap-3.3.5"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/cerulean.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["pagedtable"]},{"type":"character","attributes":{},"value":["1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/pagedtable-1.1"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/pagedtable.js"]},{"type":"character","attributes":{},"value":["css/pagedtable.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["highlightjs"]},{"type":"character","attributes":{},"value":["9.12.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/highlightjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["highlight.js"]},{"type":"character","attributes":{},"value":["textmate.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-format"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmarkdown/templates/tutorial/resources"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-format.js"]},{"type":"character","attributes":{},"value":["tutorial-format.css","rstudio-theme.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery-1.11.3"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["font-awesome"]},{"type":"character","attributes":{},"value":["5.0.13"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/fontawesome"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/fontawesome-all.min.js","js/fa-v4-shims.min.js"]},{"type":"character","attributes":{},"value":["css/fa-svg-with-js.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["localforage"]},{"type":"character","attributes":{},"value":["1.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/localforage"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["localforage.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"character","attributes":{},"value":["1.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["quiz-binding"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["quiz.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery-1.11.3"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap-3.3.5"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/bootstrap.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["localforage"]},{"type":"character","attributes":{},"value":["1.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/localforage"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["localforage.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["slickquiz"]},{"type":"character","attributes":{},"value":["1.5.20"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/slickquiz"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/slickQuiz.js"]},{"type":"character","attributes":{},"value":["css/slickQuiz.css","css/slickQuizTutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"character","attributes":{},"value":["1.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["quiz-binding"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["quiz.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery-1.11.3"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap-3.3.5"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/bootstrap.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["localforage"]},{"type":"character","attributes":{},"value":["1.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/localforage"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["localforage.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["slickquiz"]},{"type":"character","attributes":{},"value":["1.5.20"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/slickquiz"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/slickQuiz.js"]},{"type":"character","attributes":{},"value":["css/slickQuiz.css","css/slickQuizTutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"character","attributes":{},"value":["1.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["quiz-binding"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["quiz.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery-1.11.3"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap-3.3.5"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/bootstrap.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["localforage"]},{"type":"character","attributes":{},"value":["1.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/localforage"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["localforage.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["slickquiz"]},{"type":"character","attributes":{},"value":["1.5.20"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/slickquiz"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/slickQuiz.js"]},{"type":"character","attributes":{},"value":["css/slickQuiz.css","css/slickQuizTutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"character","attributes":{},"value":["1.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["quiz-binding"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["quiz.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery-1.11.3"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap-3.3.5"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/bootstrap.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["localforage"]},{"type":"character","attributes":{},"value":["1.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/localforage"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["localforage.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["slickquiz"]},{"type":"character","attributes":{},"value":["1.5.20"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/slickquiz"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/slickQuiz.js"]},{"type":"character","attributes":{},"value":["css/slickQuiz.css","css/slickQuizTutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"character","attributes":{},"value":["1.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["quiz-binding"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["quiz.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[false]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.11.3"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/jquery-1.11.3"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootstrap"]},{"type":"character","attributes":{},"value":["3.3.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["rmd/h/bootstrap-3.3.5"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["viewport"]}},"value":[{"type":"character","attributes":{},"value":["width=device-width, initial-scale=1"]}]},{"type":"character","attributes":{},"value":["js/bootstrap.min.js","shim/html5shiv.min.js","shim/respond.min.js"]},{"type":"character","attributes":{},"value":["css/bootstrap.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rmarkdown"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["bootbox"]},{"type":"character","attributes":{},"value":["4.4.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/bootbox"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["bootbox.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["localforage"]},{"type":"character","attributes":{},"value":["1.5"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/localforage"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["localforage.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial.js"]},{"type":"character","attributes":{},"value":["tutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-autocompletion"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-autocompletion.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["tutorial-diagnostics"]},{"type":"character","attributes":{},"value":["0.9.2.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/tutorial"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["tutorial-diagnostics.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["slickquiz"]},{"type":"character","attributes":{},"value":["1.5.20"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/slickquiz"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/slickQuiz.js"]},{"type":"character","attributes":{},"value":["css/slickQuiz.css","css/slickQuizTutorial.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ace"]},{"type":"character","attributes":{},"value":["1.2.6"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/ace"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["ace.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["clipboardjs"]},{"type":"character","attributes":{},"value":["1.5.15"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["lib/clipboardjs"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["clipboard.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["learnr"]},{"type":"logical","attributes":{},"value":[true]}]}]}
+</script>
+<!--/html_preserve-->
+</div>
+</div>
+
+</div> <!-- topics -->
+
+<div class="topicsContainer">
+<div class="topicsPositioner">
+<div class="band">
+<div class="bandContent topicsListContainer">
+
+<!-- begin doc-metadata -->
+<div id="doc-metadata">
+<h2 class="title toc-ignore" style="display:none;">Lab 1: Binary response data</h2>
+</div>
+<!-- end doc-metadata -->
+
+</div> <!-- bandContent.topicsListContainer -->
+</div> <!-- band -->
+</div> <!-- topicsPositioner -->
+</div> <!-- topicsContainer -->
+
+
+</div> <!-- bandContent page -->
+</div> <!-- pageContent band -->
+
+
+
+
+<script>
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+
+</html>

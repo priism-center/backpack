@@ -1,0 +1,689 @@
+---
+title: "Lab 1: Binary response data"
+output: 
+  learnr::tutorial:
+  progressive: true
+  allow_skip: false
+runtime: shiny_prerendered
+---
+
+```{r setup, include = FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+#backpack::install_binders("2044-Binomial")
+
+```
+
+```{r load-data, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+```
+
+```{r prepare-data, include = TRUE, echo = TRUE}
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+```
+
+```{r prepare-data-2, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+```
+
+```{r fitted-models, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+birthweight$Black <- as.numeric(birthweight$RACE=="Black")
+birthweight$Other <- as.numeric(birthweight$RACE=="Other")
+
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+birthweight_probit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "probit"))
+```
+
+```{r predictions-setup, include = TRUE, echo = FALSE}
+birthweigth <- backpack::birthwt
+birthweight$Black <- as.numeric(birthweight$RACE=="Black")
+birthweight$Other <- as.numeric(birthweight$RACE=="Other")
+
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial)
+lbw_preds <- predict(birthweight_logit, type = "response") > 0.5
+```
+
+```{r roc-setup, include = TRUE, echo = FALSE}
+birthweigth <- backpack::birthwt
+birthweight$Black <- as.numeric(birthweight$RACE=="Black")
+birthweight$Other <- as.numeric(birthweight$RACE=="Other")
+
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+birthweight_probit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "probit"))
+lbw_probs <- predict(birthweight_logit, type = "response")
+```
+
+```{r hosmer-lemeshow-1-setup, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+birthweight$Black <- as.numeric(birthweight$RACE=="Black")
+birthweight$Other <- as.numeric(birthweight$RACE=="Other")
+
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+```
+
+```{r hosmer-lemeshow-2-setup, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+birthweight$Black <- as.numeric(birthweight$RACE=="Black")
+birthweight$Other <- as.numeric(birthweight$RACE=="Other")
+
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+birthweight$LBW_prob <- predict(birthweight_logit, type = "response")
+```
+
+```{r hosmer-lemeshow-3-setup, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+birthweight$LBW_prob <- predict(birthweight_logit, type = "response")
+birthweight <- birthweight[order(birthweight$LBW_prob),]
+birthweight$decile <- rep(1:10, each = 19)[-190]
+```
+
+```{r hosmer-lemeshow-4-setup, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+birthweight$LBW_prob <- predict(birthweight_logit, type = "response")
+birthweight <- birthweight[order(birthweight$LBW_prob),]
+birthweight$decile <- rep(1:10, each = 19)[-190]
+observed_pos <- tapply(birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+observed_neg <- tapply(!birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+expected_pos <- tapply(birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+expected_neg <- tapply(1 - birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+birthweight_deciles <- data.frame(decile = 1:10, observed_pos, observed_neg, expected_pos, expected_neg)
+```
+
+```{r hosmer-lemeshow-5-setup, include = TRUE, echo = TRUE}
+birthweigth <- backpack::birthwt
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+birthweight$LBW_prob <- predict(birthweight_logit, type = "response")
+birthweight <- birthweight[order(birthweight$LBW_prob),]
+birthweight$decile <- rep(1:10, each = 19)[-190]
+observed_pos <- tapply(birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+observed_neg <- tapply(!birthweight$LBW, INDEX = birthweight$decile, FUN = sum)
+expected_pos <- tapply(birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+expected_neg <- tapply(1 - birthweight$LBW_prob, INDEX = birthweight$decile, FUN = sum)
+birthweight_deciles <- data.frame(decile = 1:10, observed_pos, observed_neg, expected_pos, expected_neg)
+positives <- ((birthweight_deciles$observed_pos - birthweight_deciles$expected_pos)^2)/birthweight_deciles$expected_pos
+negatives <- ((birthweight_deciles$observed_neg - birthweight_deciles$expected_neg)^2)/birthweight_deciles$expected_neg
+hl_stat <- sum(positives + negatives)
+```
+
+
+## The dataset
+
+In this lab, you will use logistic regression to determine what factors predict whether a pregnant woman will have a child with low birth weight. Low birth weight, defined as birth weight less than 2500 grams, is an outcome that has been of concern to physicians for years. This is due to the fact that infant mortality rates and birth defect rates are very high for low birth weight babies. 
+
+A woman's behavior during pregnancy (including diet, smoking habits, and receiving prenatal care) can greatly alter the chances of carrying the baby to term and, consequently, of delivering a baby of normal birth weight.
+
+The dataset you will work with in these exercises includes the following variables:
+
+* ID: identification variable for the mother
+* MOTH_AGE: mother's age (years)
+* MOTH_WT: mother's weight (pounds) 
+* RACE: mother's race (White, Black, or Other)
+* SMOKE: whether mother smokes
+* PREM: history of premature labor (number of times)
+* HYPER: whether mother has history of hypertension 
+* URIN_IRR: whether mother has history of urinary irritation
+* PHYS_VIS: number of physician visits
+* BIRTH_WT: newborn's birth weight (grams)
+
+It has been loaded for you as `birthweight`.
+
+## The determinants of low birth weight
+
+### Exercise: The (log-)odds of low birth weight
+
+Generate a new variable (in the dataset), `LBW`, which takes on a value of 1 if birth weight is 2500 grams or lower and 0 otherwise. What are the log-odds of low birth weight? Remember that the mean of a 0/1 valued variable is the probability of that variable taking value 1. 
+
+```{r gen_lbw, exercise=TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r gen_lbw-solution}
+birthweight$LBW <- birthweight$BIRTH_WT <= 2500
+log(mean(birthweight$LBW)/(1 - mean(birthweight$LBW)))
+```
+
+### Exercise: Fitting a logistic regression model
+
+Use the `glm` function to fit a logistic regression model with no predictor. The `LBW` variable has been added to your dataset already. Inspect your results with the `summary` function.
+
+```{r fit_logit, exercise=TRUE, exercise.setup = 'prepare-data' }
+
+```
+
+```{r fit_logit-solution}
+birthweight_logit <- glm(LBW~1, data = birthweight, family = binomial(link = "logit"))
+summary(birthweight_logit)
+```
+
+Verify that the baseline log-odds (the intercept term of the model) equals the observed log-odds of LBW in the data that you computed in the previous exercise.
+
+## Adding predictors
+
+### Exercise: Premature birth history and birth weight
+
+Now it's time to add some predictors. Generate a new variable `PremY` which is equal to 1 if `PREM` is greater than zero, and 0 otherwise. Run a logistic regression model using `PremY` as the predictor. Compute the odds ratio of $\text{PremY}=1$ versus $\text{PremY}=0$ by exponentiating the corresponding regression coefficient.
+
+```{r odds_ratio_2, exercise = TRUE, exercise.setup = 'prepare-data'}
+
+```
+
+```{r odds_ratio_2-solution}
+birthweight$PremY <- birthweight$PREM > 0
+birthweight_logit2 <- glm(LBW~PremY, data = birthweight, family = binomial)
+exp(coefficients(birthweight_logit2)[2])
+```
+
+You can calculate the odds ratio a different way by making use of the `table` function (or something similar). Is it the same as what you got from the logistic regression coefficient?
+
+```{r odds_ratio-compare, exercise = TRUE, exercise.setup = 'prepare-data-2'}
+
+```
+
+
+### Exercise: More predictors
+
+Now run a logistic regression using all the predictors in the dataset except ID, birth weight, and `PREM`, and call it `birthweight_logit`. Inspect the results using the `summary` function. Recode `RACE` as dummy variables for `Black` and `Other`, and use those instead of the factor variable `RACE`.
+
+```{r fit_logit_3, exercise=TRUE, exercise.setup = 'prepare-data-2'}
+
+```
+
+```{r fit_logit_3-solution}
+birthweight$Black <- birthweight$RACE == "Black"
+birthweight$Other <- birthweight$RACE == "Other"
+birthweight_logit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "logit"))
+summary(birthweight_logit)
+```
+
+Quiz time! See if you can interpret the coefficients from the logistic regression model with all predictors.
+
+```{r logistic-quiz}
+quiz(
+  question("Which of the following are statistically significant (at p < 0.05) risk factors for low birth weight?",
+    answer("MOTH_AGE"),
+    answer("MOTH_WT"),
+    answer("Black", correct = TRUE),
+    answer("Other"),
+    answer("SMOKEYes", correct = TRUE),
+    answer("PremY", correct = TRUE),
+    answer("HYPERYes", correct = TRUE),
+    answer("URIN_IRRYes"),
+    answer("PHYS_VIS")
+    ),
+
+  question("All else equal, an additional physician visit is associated with a ___ increase in the probability of low birth weight.",
+    answer("5.2 percent"),
+    answer("105.2 percent"),
+    answer("5.2 percentage point"),
+    answer("Ambiguous; it depends on the values of the other covariates", correct = TRUE)
+  )
+)
+```
+
+## The probit link
+
+Instead of the logit link, we may consider using a different link function, like the probit link: $\Phi^{-1}(p)=X\beta$, where $\Phi$ is the standard normal cdf. In R, the probit regression uses identical syntax to the logit regression, except `link = "probit"` must be specified in the `family` argument. 
+
+### Exercise: The probit model
+
+Fit the same model as above, except using the probit link instead of the logit link. Again, use dummies for `Black` and `Other` instead of the `RACE` variable.
+
+```{r fit_probit, exercise = TRUE, exercise.setup = 'prepare-data-2'}
+
+```
+
+```{r fit_probit-solution}
+birthweight$Black <- birthweight$RACE == "Black"
+birthweight$Other <- birthweight$RACE == "Other"
+birthweight_probit <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "probit"))
+summary(birthweight_probit)
+```
+
+```{r probit-quiz}
+quiz(
+  question("Which of the following are statistically significant (at p < 0.05) risk factors for low birth weight?",
+    answer("MOTH_AGE"),
+    answer("MOTH_WT"),
+    answer("Black", correct = TRUE),
+    answer("Other"),
+    answer("SMOKEYes", correct = TRUE),
+    answer("PremY", correct = TRUE),
+    answer("HYPERYes", correct = TRUE),
+    answer("URIN_IRRYes"),
+    answer("PHYS_VIS")
+    )
+)
+```
+
+Are these the same as the the risk factors you identified when using the logit link?
+
+## Choosing a link function
+
+Both the logit and probit link functions are widely used in the social sciences (a third, the complementary log-log link, is less common). How do we choose which link function to use? Although the link functions are different, if we use the same set of predictors in both models, we can compare log-likelihoods (or anything derived from the log-likelihoods, like AIC and BIC). The greater the log-likelihood, the better the model fit. But for AIC/BIC values, the better the better (since they are negative log likelihood plus the model size). 
+
+### Exercise: Comparing log-likelihoods
+
+Compare the log-likelihoods for the logit and probit models using the `logLik` function. Which link function is a better fit? 
+
+```{r logLik_fit, exercise = TRUE, exercise.setup = 'fitted-models'}
+
+```
+
+```{r logLik_fit-solution}
+logLik(birthweight_logit)
+logLik(birthweight_probit)
+```
+
+### Exercise: Comparing deviances
+
+Comparing residual deviance is another way to compare model fit (lower deviance is better). Which link function is better according to residual deviance? (Hint: You can use the `deviance` function to print out the residual deviance of a model.)
+
+```{r deviance_fit, exercise = TRUE, exercise.setup = 'fitted-models'}
+
+```
+
+```{r deviance_fit-solution}
+deviance(birthweight_logit)
+deviance(birthweight_probit)
+```
+
+### Exercise: The complementary log-log link
+
+Now run model low birth weight using the same predictors, except with the complementary log-log link. (Specify `link = "cloglog"`.) Print out the log-likelihood of the model. Again, use dummies for `Black` and `Other` instead of the `RACE` variable.
+
+```{r fit_cloglog, exercise = TRUE, exercise.setup = 'prepare-data-2'}
+
+```
+
+```{r fit_cloglog-solution}
+birthweight$Black <- birthweight$RACE == "Black"
+birthweight$Other <- birthweight$RACE == "Other"
+birthweight_cloglog <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial(link = "cloglog"))
+logLik(birthweight_cloglog)
+```
+
+```{r link-quiz}
+quiz(
+  question("Which of the three link functions, based on the log-likelihood, is best for our model of low birth weight? (Ignore the fact that they may be very close to each other.)",
+    answer("Logit"),
+    answer("Probit"),
+    answer("Complementary log-log", correct = TRUE)
+  )
+)
+```
+
+## Interaction effects
+
+As in linear regression, we can allow for interaction effects in binomial regression models. Run the same logit regression as above, allowing for an interaction effect between hypertension and smoking. Print out the regression results using the `summary` function.
+
+```{r interaction, exercise=TRUE, exercise.setup = 'prepare-data-2'}
+
+```
+
+```{r interaction-solution}
+birthweight$Black <- birthweight$RACE == "Black"
+birthweight$Other <- birthweight$RACE == "Other"
+birthweight_logit.int <- glm(LBW~MOTH_AGE+MOTH_WT+Black+Other+HYPER*SMOKE+PremY+HYPER+URIN_IRR+PHYS_VIS, data = birthweight, family = binomial)
+summary(birthweight_logit.int)
+```
+
+```{r interaction-quiz}
+quiz(
+  question("Is there a statistically significant (p < 0.05) interaction effect between hypertension and smoking?",
+           answer("Yes"),
+           answer("No", correct = TRUE)
+           ),
+  question("All else equal, compared to a non-smoker with no hypertension history, how much greater are the odds of low birth weight for a woman who smokes and has a history of hypertension?",
+           answer("133 percent"),
+           answer("2,240 percent", correct = TRUE),
+           answer("4,962 percent"),
+           answer("It depends on the values of the other covariates"))
+)
+```
+
+## Making predictions
+
+Frequently we are interested in using logistic regression to make **predictions**. For binary data, this typically involves using the model to generate predicted probabilities for new cases, and setting a probability threshold so that we classify all cases with predicted probability greater than the threshold as positive cases and all cases with predicted probability less than the threshold as negative cases.
+
+### Exercise: Generating predictions
+
+Using the logistic regression with all predictors except ID and birth weight, generate predicted probabilities by calling the `predict` function on the model with the argument `type = response`. (By default `predict` will give you predictions on the log-odds scale; using `type = response` will convert these to probabilities.) Then use a threshold of $0.5$ to classify each prediction as low birth weight or not. Assign these predictions to a vector called `lbw_preds`, and print out the first six predictions with the `head` function.
+
+```{r lbw_predict, exercise=TRUE, exercise.setup = 'fitted-models'}
+
+```
+
+```{r lbw_predict-solution}
+lbw_probs <- predict(birthweight_logit, type = "response")
+lbw_preds <- lbw_probs >= 0.5
+head(lbw_preds)
+```
+
+## Classification accuracy
+
+One metric by which to evaluate a logistic regression model is **classification accuracy**, how often the model correctly predicts positive cases to be positive and negative cases to be negative. 
+
+### Exercise: Computing classification accuracy
+
+Compute the classification accuracy of the model. (The predictions have been loaded for you as `lbw_preds`.)
+
+```{r accuracy, exercise=TRUE, exercise.setup = 'predictions'}
+
+```
+
+```{r accuracy-solution}
+mean(lbw_preds == birthweight$LBW)
+```
+
+## Sensitivity and specificity
+
+(Pause and ponder on this: why might classification accuracy not be a good metric for evaluating a model? What would happen if the outcome of interest occurred in the population at a rate of 0.1%?)
+
+Because classification accuracy isn't necessarily a good model evaluation metric, we may want to consider others. Two closely related evaluation metrics are **sensitivity** and **specificity**, sometimes referred to as "true positive rate" and "true negative rate" respectively. Sensitivity is equal to $P(\hat{Y}=1|Y=1)$---the probability of predicting $Y=1$ when $Y$ in fact is $1$---and specificity is equal to $P(\hat{Y}=0|Y=0)$, the probability of predicting $Y=0$ when $Y$ is actually $0$.
+
+### Exercise: Computing sensitivity
+
+Compute the sensitivity of the model. (Again, `lbw_preds` is loaded for you.)
+ 
+```{r sensitivity, exercise=TRUE, exercise.setup = 'predictions'}
+
+```
+
+```{r sensitivity-solution}
+lbw_positive <- which(birthweight$LBW)
+mean(lbw_preds[lbw_positive])
+```
+
+### Exercise: Computing specificity
+
+Now compute the specificity.
+
+```{r specificity, exercise=TRUE, exercise.setup = 'predictions'}
+
+```
+
+```{r specificity-solution}
+lbw_negative <- which(!birthweight$LBW)
+mean(!lbw_preds[lbw_negative])
+```
+
+## Pearson's $\chi^2$ test
+
+It's often helpful to plot residuals. In particular, large residuals are often worth investigating, as they indicate that a model has performed particularly poorly for those cases. Inspecting these cases may give some insight as to what the model is missing.
+
+The **Pearson residual**, $r$, is defined as
+
+$$r_i=\frac{y_i-\hat{\pi}_i}{\sqrt{\hat{\pi}_i(1-\hat{\pi}_i)}},$$
+
+where $\hat{\pi}_i$ is the model's predicted probability of the $i$th observation being a positive case. Run the code chunk below to view a histogram of the Pearson residuals from the logistic regression model.
+
+```{r pearson-residuals, exercise = TRUE, exercise.setup = 'fitted-models'}
+hist(residuals(birthweight_logit, type = "pearson"))
+```
+
+What does the distribution of the residuals look like? Are there any observations where the residual appears particularly large? Feel free to use the next code chunk to investigate the observations with large residuals.
+
+```{r pearson-residuals-open, exercise = TRUE, exercise.setup = 'fitted-models'}
+
+```
+
+A model that produces very large Pearson residuals might be said to have poor fit. We can formalize this with a statistical hypothesis test. $X^2$ is our test statistic of interest, defined by
+
+$$X^2=\sum_{i=1}^n r_i^2.$$
+
+Under the null hypothesis that the model fits the data well, $X^2$ is distributed $\chi^2$ with $g-p$ degrees of freedom, where $g$ is the number of *unique covariate patterns* and $p$ is the number of predictors in the model including the intercept. A covariate pattern is a combination of values of the predictors in the model.
+
+### Exercise: Performing the test
+
+The full logistic regression model you fitted without the interaction term has been loaded as `birthweight_logit`. Compute $X^2$ for that model. (Hint: The `residuals` function returns the *deviance* residuals of a model; specify `type = "pearson"` to return Pearson residuals.) Then compute $g$ (you can do this by subsetting the data frame to only the predictors in the model and calling either the `dplyr` function `n_distinct` or `nrow(unique())` on it). Finally, use the `pchisq` function to obtain the $p$-value.
+
+```{r pearson-test, exercise = TRUE, exercise.setup = 'fitted-models'}
+
+```
+
+```{r pearson-test-solution}
+chi_squared <- sum(residuals(birthweight_logit, type = "pearson")^2)
+p <- length(coefficients(birthweight_logit))
+
+## dplyr solution
+g <- n_distinct(dplyr::select(birthweight, MOTH_AGE, MOTH_WT, RACE, SMOKE, HYPER, URIN_IRR, PHYS_VIS, PremY, Black, Other))
+
+## Base R solution
+g <- nrow(unique(birthweight[, c("MOTH_AGE", "MOTH_WT", "RACE", "SMOKE", "HYPER", "URIN_IRR", "PHYS_VIS", "PremY", "Black", "Other")]))
+
+pchisq(chi_squared, df = g-p, lower.tail = FALSE)
+```
+
+According to this test, does the model fit well? (Remember: what are the null and alternative hypotheses?)
+
+## The deviance test
+
+The deviance statistic is a different measure of a model's goodness of fit, based on the likelihood function. The deviance residual for the $i$th observation, $d_i$, is defined differently from the Pearson residual; it's calculated as
+
+$$d_i=s_i\sqrt{-2\left[y_i\log\hat{\pi}_i+(1-y_i)\log(1-\hat{\pi}_i)\right]}$$
+where $s_i$ is $1$ if $y_i=1$ and $-1$ if $y_i=0$. That isn't that important, though, since the `residual` function will compute deviance residuals for you (the default is `type = "deviance"`). Again, high deviance residuals may indicate that the model is performing particularly poorly on a certain class of cases. Run the code chunk below to plot a histogram of the deviance residuals.
+
+```{r deviance-residuals, exercise = TRUE, exercise.setup = 'fitted-models'}
+hist(residuals(birthweight_logit))
+```
+
+Again, do some informal inspection of the deviance residuals using the code chunk below. For which cases are the deviance residuals particularly large? Are these the same as the ones that had particularly large Pearson residuals?
+
+```{r deviance-residuals-open, exercise = TRUE, exercise.setup = 'fitted-models'}
+
+```
+
+The **residual deviance** of a model (not to be confused with the deviance residuals), similar to Pearson's $X^2$, is the sum of the squared deviance residuals. (You can also compute it directly by calling the `deviance` function on the model.) For our deviance residual goodness-of-fit test, the test statistic is the difference between the residual deviance and the **null deviance**, the residual deviance of a model with no predictors. That difference follows a $\chi^2$ distribution with degrees of freedom equal to the number of predictors, not including the intercept. 
+
+### Exercise: The deviance test
+
+The `birthweight_logit` model has been loaded for you. Perform the deviance test by computing the test statistic and then the $p$-value according to the appropriate $\chi^2$ distribution. Print the $p$-value. (Hint: The null deviance is stored in `birthweight_logit$null.deviance`.)
+
+```{r deviance-test, exercise = TRUE, exercise.setup = 'fitted-models'}
+
+```
+
+```{r deviance-test-solution}
+test_statistic <- birthweight_logit$null.deviance - deviance(birthweight_logit)
+pchisq(test_statistic, df = birthweight_logit$df.null - birthweight_logit$df.residual, lower.tail = FALSE)
+```
+
+What do you conclude about the fit of the model?
+
+## The Hosmer–Lemeshow test
+
+A more sophisticated diagnostic is the Hosmer–Lemeshow test, which tests how well calibrated the model is. By **well calibrated**, we mean that the predicted probabilities produced by the logistic regression model match up well with the proportions observed in the data. For example, if a model is well calibrated, then out of all of the cases where it gives a predicted probability somewhere between 0 and 0.1, about 0 to 10 percent should actually be positive cases. 
+
+### Part 1: Predicted probabilities
+
+Extract the predicted probabilities of low birth weight from the `birthweight_logit` model using the `predict` function, and add it to the `birthweight` data frame. (Again, make sure to call `predict` with the `type = "response"` argument.) Print the first six predicted probabilities with the `head` function.
+
+```{r hosmer-lemeshow-1, exercise = TRUE, exercise.setup = 'hosmer-lemeshow-1-setup'}
+
+```
+
+```{r hosmer-lemeshow-1-solution}
+birthweight$LBW_prob <- predict(birthweight_logit, type = "response")
+head(birthweight$LBW_prob)
+```
+
+### Part 2: Binning the sample
+
+The predicted probabilities have been added to the `birthweight` data frame as the variable `LBW_prob`. (Go ahead, print the data frame if you don't believe me.) Order the data ascending by predicted probability of low birth weight. (The `order` function from the base R package or the `arrange` function from the `dplyr` library may be helpful here.)
+
+After reordering the data, create a new variable indicating which quintile each observation is in. 
+
+```{r hosmer-lemeshow-2, exercise = TRUE, exercise.setup = 'hosmer-lemeshow-2-setup'}
+
+```
+
+```{r hosmer-lemeshow-2-solution}
+## Base R solution
+birthweight <- birthweight[order(birthweight$LBW_prob),]
+birthweight$quintile <- rep(1:5, each = 38)[-190]
+
+## dplyr solution
+birthweight <- dplyr::arrange(birthweight, LBW_prob) %>%
+  mutate(quintile = rep(1:5, each = 38)[-190])
+```
+
+### Part 3: Computing observed and expected cases
+
+Now for each quintile, we need to compute the following:
+
+*   The **observed** number of **positive** cases (i.e. babies who were actually born with low birth weight).
+*   The **observed** number of **negative** cases.
+*   The **expected** number of **positive** cases.
+*   The **expected** number of **negative** cases.
+
+The expected number of positive cases within one quintile is simply the sum of the predicted probabilities for all the cases in that quintile. The expected number of negative cases is the sum of the complements of those probabilities. (Hint: the `group_by` and `summarise` functions from the `dplyr` library are extremely useful for this task, although you can also do this through judicious use of the base R function `tapply`.) Print out a data frame with the following variable names (in this order from left to right):
+
+*   `quintile`: the integers 1 through 5, indicating the quintile;
+*   `observed_pos`: the number of observed low birth weight babies in each quintile;
+*   `observed_neg`: the number of observed non-low birth weight babies in each quintile;
+*   `expected_pos`: the expected number of low birth weight babies in each quintile; and
+*   `expected_neg`: the expected number of non-low birth weight babies in each quintile.
+
+```{r hosmer-lemeshow-3, exercise = TRUE, exercise.setup = 'hosmer-lemeshow-3-setup'}
+
+```
+
+```{r hosmer-lemeshow-3-solution}
+## Base R solution
+observed_pos <- tapply(birthweight$LBW, INDEX = birthweight$quintile, FUN = sum)
+observed_neg <- tapply(!birthweight$LBW, INDEX = birthweight$quintile, FUN = sum)
+expected_pos <- tapply(birthweight$LBW_prob, INDEX = birthweight$quintile, FUN = sum)
+expected_neg <- tapply(1 - birthweight$LBW_prob, INDEX = birthweight$quintile, FUN = sum)
+birthweight_quintiles <- data.frame(quintile = 1:5, observed_pos, observed_neg, expected_pos, expected_neg)
+
+## dplyr solution
+birthweight_quintiles <- birthweight %>%
+  group_by(quintile) %>%
+  summarise(observed_pos = sum(LBW),
+            observed_neg = sum(!LBW),
+            expected_pos = sum(LBW_prob),
+            expected_neg = sum(1 - LBW_prob)) %>%
+  as.data.frame()
+
+birthweight_quintiles
+```
+
+### Part 4: Computing the Hosmer–Lemeshow statistic
+
+We will use the data frame you just created, loaded as `birthweight_quintiles`, to compute the Hosmer–Lemeshow statistic for the logistic regression model. The Hosmer–Lemeshow statistic, $H$, is defined as
+
+$$H=\sum_{g}^G\left(\frac{\left[n_g^+-E(n_g^+)\right]^2}{E(n_g^+)}+\frac{\left[n_g^--E(n_g^-)\right]^2}{E(n_g^-)}\right)$$
+
+where $n_g^+$ is the number of observed positive cases in group $g$ and $E(n_g^+)$ is the expected number. (The definitions for $n_g^-$ and $E(n_g^-)$ are similar.) 
+
+Compute the Hosmer–Lemeshow statistic for our logistic regression model by 1) taking the squared differences between the expected and observed positive counts, 2) standardizing by dividing by the expected number of positive counts, 3) repeating steps 1 and 2 for negative cases, and 4) summing over all quintiles. Print the result.
+
+```{r hosmer-lemeshow-4, exercise = TRUE, exercise.setup = 'hosmer-lemeshow-4-setup'}
+
+```
+
+```{r hosmer-lemeshow-4-solution}
+## Base R solution
+positives <- ((birthweight_quintiles$observed_pos - birthweight_quintiles$expected_pos)^2)/birthweight_quintiles$expected_pos
+negatives <- ((birthweight_quintiles$observed_neg - birthweight_quintiles$expected_neg)^2)/birthweight_quintiles$expected_neg
+hl_stat <- sum(positives + negatives)
+
+## dplyr solution
+hl_stat <- birthweight_quintiles %>%
+  summarise(positive = sum(((observed_pos - expected_pos)^2)/expected_pos),
+            negative = sum(((observed_neg - expected_neg)^2)/expected_neg)) %>%
+  mutate(hl_stat = positive + negative) %>%
+  pull(hl_stat)
+
+hl_stat
+```
+
+### Part 5: Statistical (in)significance
+
+The Hosmer–Lemeshow statistic follows a chi-squared distribution with $G-2$ degrees of freedom, where $G$ is the number of groups into which you've cut your sample when calculating the Hosmer–Lemeshow statistic. (Since we cut it into quintiles, $G=5$ here.) Compute the $p$-value for the calculated Hosmer–Lemeshow statistic, which has been loaded for you as `hl_stat`.
+
+```{r hosmer-lemeshow-5, exercise = TRUE, exercise.setup = 'hosmer-lemeshow-5-setup'}
+
+```
+
+```{r hosmer-lemeshow-5-solution}
+pchisq(hl_stat, df = 3, lower.tail = FALSE)
+```
+
+```{r hosmer_lemeshow-quiz}
+quiz(
+  question("What conclusion do you draw from this hypothesis test?",
+           answer("We fail to reject the null hypothesis of a well calibrated model.", correct = TRUE),
+           answer("We fail to reject the null hypothesis of a poorly calibrated model."),
+           answer("We reject the null hypothesis of a well calibrated model and conclude the model is poorly calibrated."),
+           answer("We reject the null hypothesis of a poorly calibrated model and conclude the model is well calibrated.")
+           )
+)
+```
+
+## ROC curves
+
+The Hosmer–Lemeshow test has its limitations, one of which is that it doesn't address model overfitting (you can read more criticisms on [this StackExchange answer](https://stats.stackexchange.com/a/207512)). A different diagnostic is the **receiver operating characteristic** (ROC) curve, which plots the true positive rate (sensitivity) against the false positive rate for a number of different classification thresholds.
+
+In the context of our birth weight data, we earlier used a threshold of $0.5$ to predict whether a woman would have a low birth weight baby or not: for predicted probabilities of $0.5$ or above we predicted that they would, and for predicted probabilities below $0.5$ we predicted that they would not. But $0.5$ isn't the only threshold we could have used. If we compute the true positive and false positive rates at many different thresholds and plot them against each other, the resulting curve is the ROC curve.
+
+### Exercise: Reading the ROC curve
+
+The `roc` function from the `pROC` library takes a response vector and a predictor vector as arguments. The response vector is the vector of actual outcomes---in our case, it's whether each child was actually born with low birth weight. The predictor vector is the vector of predicted *probabilities* (NOT predictions). Use the `roc` function to generate the ROC curve for the logistic regression model; then call the `plot` function on the result, with the argument `print.thres = c(0.1, 0.3, 0.5, 0.7, 0.9)`. The predicted probabilities have been loaded for you as `lbw_probs`, and the `pROC` library has been pre-loaded as well. 
+
+```{r roc-plot, exercise = TRUE, exercise.setup = 'roc-setup'}
+
+```
+
+```{r roc-plot-solution}
+birthweight_roc <- roc(birthweight$LBW, lbw_probs)
+plot(birthweight_roc, print.thres = c(0.1, 0.3, 0.5, 0.7, 0.9))
+```
+
+Notice that the optional `print.thres` argument we provided marks different combinations of true and false positive rates corresponding to the probability thresholds we chose. When we chose $0.5$ as the threshold earlier, we obtained a sensitivity of $0.9$ and a sensitivity of $0.441$, and that's what's shown on the graph. 
+
+Other features of the ROC curve:
+
+* It starts at $(1.0,0.0)$ and moves up and to the right, ending at $(0.0,1.0)$ (note that the horizontal axis has been flipped). This intuitively makes sense if you consider the sensitivity and specificity when using classification thresholds of $p=0$ and $p=1$, respectively.
+* It never slopes downward, which graphically represents the sad fact that you cannot simultaneously increase sensitivity and specificity simply by changing the classification threshold. 
+* It is always above the 45-degree line (plotted in gray) as long as the model is doing better than random guessing, which reflects the fact that when sensitivity is high and specificity is low, you can raise the classification threshold to sacrifice a little sensitivity for a big gain in specificity, and vice versa. For example, when we moved the threshold from $p=0.9$ to $p=0.7$, sensitivity rose from $0.017$ to $0.169$, but specificity only fell from $1$ to $0.969$.
+
+What does the ROC curve for a good model look like? If we define a "good" model as one that is able to discriminate well between positive and negative cases, then the ROC curve for a model that discriminates perfectly should include the point $(1.0,1.0)$, which would mean that there is some classification threshold that would perfectly separate positive and negative cases. (For example, a model which assigned all positive cases a probability greater than $0.5$ and all negative cases a probability less than $0.5$ would include this point.) So the ROC curve for a perfect model should be a vertical line going straight up from $(1.0,0.0)$ all the way up to $(1.0,1.0)$, and then a horizontal line going straight across from $(1.0,1.0)$ to $(0.0,1.0)$. 
+
+By contrast, the ROC curve for the worst possible model---random guessing---is exactly the 45-degree line. And models that do better than random guessing but worse than perfect discrimination will have bowed-out shapes like the ROC curve we plotted above. Therefore a sensible summary statistic that describes how well a model discriminates between positive and negative cases would be the area under the ROC curve (AUC). It maxes out at $1$ (for the perfect discriminator whose ROC curve has that inverted L-shape) and bottoms out at $0.5$ (the AUC for the 45-degree line). (It's possible to have an AUC under $0.5$, but that means that either you've flipped the positive and negative labels or your model is somehow doing worse than random chance.)
+
+### Exercise: AUC
+
+The `auc` function in the `pROC` library computes the AUC for a ROC curve. As before, use the `roc` function to obtain a ROC object, and then call the `auc` function on that object.
+
+```{r auc, exercise = TRUE, exercise.setup = 'roc-setup'}
+
+```
+
+```{r auc-solution}
+birthweight_roc <- roc(birthweight$LBW, lbw_probs)
+auc(birthweight_roc)
+```
+
+The AUC has a probabilistic interpretation as well: it's the probability that, if we chose a random positive case and a random negative case, that our model assigned a higher probability to the positive case than to the negative case. However, what constitutes a "good" AUC is often domain-specific, and AUC is often more useful for comparing models. 

@@ -1,0 +1,457 @@
+---
+title: "Lab 3: Count data"
+output: 
+  learnr::tutorial:
+  progressive: true
+  allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include = FALSE}
+library(learnr)
+articles <- backpack::art
+if(!require(dplyr)) {
+  install.packages("dplyr")
+}
+library(dplyr)
+if(!require(MASS)) {
+  install.packages("MASS")
+}
+library(MASS)
+if(!require(pscl)) {
+  install.packages("pscl")
+}
+library(pscl)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load-data, include = TRUE, echo = TRUE}
+articles <- backpack::art
+```
+
+```{r art-poisson, include = TRUE, echo = TRUE}
+articles <- backpack::art
+```
+
+```{r quadratic-poisson, include = TRUE, echo = TRUE}
+articles <- backpack::art
+art_poisson <- glm(art~., data = articles, family = poisson)
+art_poisson.quad <- glm(art~.+I(ment^2), data = articles, family = poisson)
+```
+
+```{r all-models, include = TRUE, echo = TRUE}
+articles <- backpack::art
+art_poisson.quad <- glm(art~.+I(ment^2), data = articles, family = poisson)
+art_quasipoisson.quad <- glm(art~.+I(ment^2), data = articles, family = quasipoisson)
+art_nb.quad <- glm.nb(art~.+I(ment^2), data = articles)
+```
+
+```{r zip-models, include = TRUE, echo = FALSE}
+articles <- backpack::art
+zip_covariates <- zeroinfl(art~fem+mar+kid5+phd+ment|fem+mar+kid5+phd+ment, data = articles)
+```
+
+```{r risk-probs, include = TRUE, echo = FALSE}
+articles <- backpack::art
+zip_covariates <- zeroinfl(art~fem+mar+kid5+phd+ment|fem+mar+kid5+phd+ment, data = articles)
+risk_probs <- predict(zip_covariates, type = "zero")
+```
+
+
+## The dataset
+
+In this lab, you will use various models for **count data**---where the outcome of interest is always a non-negative integer---to model the number of articles published by biochemistry Ph.D. candidates in the final three years of their doctoral program. The dataset contains the following variables:
+
+* `art`: the number of articles in the last three years of their Ph.D.
+* `fem`: the candidate's gender (male or female).
+* `mar`: marital status (married or single).
+* `kid5`: the number of children under the age of six that the candidate has.
+* `phd`: the prestige of the Ph.D. program.
+* `ment`: the number of articles written by the candidate's mentor in the past three years.
+
+It has been loaded for you as `articles`. We would like to identify the factors that determine the number of articles published by the Ph.D. candidate.
+
+## Poisson regression
+
+A common type of model for count data is **Poisson regression**, which assumes that the outcome variable follows a Poisson distribution. That is,
+
+$$P(Y_i=y)=\frac{\exp(-\lambda_i)\lambda_i^y}{y!}$$
+
+where $\lambda_i$ the Poisson rate parameter for the $i$th observation. As usual, we wish to model the (conditional) mean, which also happens to be $\lambda_i$. Canonically, we do this by using the log link, i.e. we use maximum likelihood methods to fit
+
+$$\log(\lambda_i)=x_i\beta$$
+
+## The no-predictor model
+
+### Exercise: Tabulating outcomes
+
+First, tabulate the outcome variable `art`. What percentage of students published no articles during the last three years of their PhD? What percentage published more than four articles?
+
+```{r tabulate, exercise=TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r tabulate-solution}
+## Table
+table(articles$art)
+
+## % non-publishing
+sum(articles$art == 0)/nrow(articles)
+
+## % publishing a lot
+sum(articles$art > 4)/nrow(articles)
+```
+
+### Exercise: The sample mean
+
+If we don't include predictor variables in our model (that is, the model is intercept-only), then we effectively assume that the whole sample comes from a common Poisson distribution, with rate parameter $\lambda$ constant for all observations. (Remember that this doesn't mean that the outcome is the same for all Ph.D. candidates, only that the expected value of the outcome is the same.) Since $E(Y)=\lambda$ when $Y\sim\text{Poisson}(\lambda)$, we can use the sample mean to estimate $\lambda$ for the sample. Go ahead and do this.
+
+```{r mean_estimate, exercise=TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r mean_estimate-solution}
+mean(articles$art)
+```
+
+### Exercise: The maximum likelihood estimate
+
+It can be shown that the sample mean is the maximum likelihood estimate for $\lambda$, although since the derivation is kinda tedious and not very helpful anyway we won't go into it. But in a no-predictor model, our model is simply $\log(\lambda)=\beta_0$, so we should be able to run an intercept-only Poisson regression, exponentiate the intercept, and obtain the same estimate of $\lambda$. Use the `glm` function with the argument `family = poisson` to do this, and print out the exponentiated intercept.
+
+```{r intercept_regression, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r intercept_regression-solution}
+intercept_only <- glm(art~1, data = articles, family = poisson)
+exp(coefficients(intercept_only))
+```
+
+Is it the same as the sample mean you got before? (Hint: Your answer should be yes.)
+
+### Exercise: Verifying Poisson-ness
+
+A distinctive property of the Poisson distribution is that its mean is equal to its variance. Print out the sample variance of `art`. Is it the same as the sample mean? If not, does it look pretty close?
+
+```{r sample_variance, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r sample_variance-solution}
+var(articles$art)
+```
+
+## Adding predictors
+
+We saw that the sample variance wasn't even close to the sample mean---in fact, it was more than twice the sample mean. This suggests that either 1) our model is incorrectly specified or 2) a Poisson model is unrealistic due to overdispersion (more on that later). To investigate the first concern, we can add predictors to the model.
+
+### Exercise: Comparing means and variances
+
+We might suspect, for example, that the rate of publication differs by gender---that is, men and women come from different distributions. First, calculate the sample mean by gender using the `tapply` function.
+
+```{r gender_mean, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r gender_mean-solution}
+tapply(articles$art, INDEX = articles$fem, FUN = mean)
+```
+
+Now calculate the sample variance by gender.
+
+```{r gender_variance, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r gender_variance-solution}
+tapply(articles$art, INDEX = articles$fem, FUN = var)
+```
+
+How do the means and variances compare across gender? Is a Poisson distribution realistic for the two genders?
+
+```{r mean_var-quiz}
+quiz(
+  question("Check all that apply.",
+    answer("A Poisson distribution appears more realistic for women than for men.", correct = TRUE),
+    answer("While a single Poisson distribution for the entire sample looks unrealistic, it looks appropriate once you control for gender."),
+    answer("On average, men publish more articles in the final three years of their Ph.D. than women do.", correct = TRUE)
+  )
+)
+```
+
+
+### Exercise: Poisson regression
+
+Just like before, when the log of the sample mean was equal to the intercept in the intercept-only Poisson regression, the log of the *conditional* (on gender) means should be equal to the predicted counts we obtain from a Poisson regression of article counts on gender. Again use the `glm` function to fit a Poisson regression, this time of `art` on `fem`. Print the predicted counts for men and women.
+
+```{r gender_regression, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r gender_regression-solution}
+poisson_gender <- glm(art~fem, data = articles, family = poisson)
+
+## Men (intercept)
+exp(coefficients(poisson_gender)[1])
+
+## Women
+exp(sum(coefficients(poisson_gender)))
+```
+
+Are they the same as the conditional means you obtained in the previous exercise? (Again, your answer should be yes.) 
+
+Pause and ponder: what's the predicted variance for men and women? Is it the same as the conditional variances you obtained earlier? What does this say about the appropriateness of our model?
+
+## Interpreting Poisson coefficients
+
+Consider a model with a single predictor. Our model is
+
+$$\log(\hat\lambda|x_{1i})=\beta_0+\beta_1x_1,$$
+
+reading the left-hand side as "log of lambda conditional on $x_{1i}$". But that's really equivalent to
+
+$$\hat\lambda|x_{1i}=\exp(\beta_0+\beta_1x_1)=\exp(\beta_0)\exp(\beta_1x_1).$$
+When we increase $x_1$ by one unit, our predicted $\lambda$ is
+
+$$\hat\lambda|(x_{1i}+1)=\exp(\beta_0)\exp(\beta_1(x_1+1))=\exp(\beta_0)\exp(\beta_1x_1+\beta_1)=\exp(\beta_0)\exp(\beta_1x_1)\exp(\beta_1)=\exp(\beta_1)\left[\hat\lambda|x_{1i}\right]$$
+
+So the interpretation of $\beta_1$ is **the natural log of the multiplicative effect on $\lambda$ of a one-unit increase in $x_1$**. (We're using the word "effect" loosely here.) By exponentiating $\beta_1$, we get the answer to the question: if we increase $x_1$ by one, by what factor does the expected value of $Y$ increase? 
+
+This generalizes to models with more than one predictor, as we're about to see; as in other GLMs including linear regression, when multiple predictors are involved we need to add the qualifier "holding all other predictors constant".
+
+### Exercise: Multiple predictors
+
+Run a Poisson regression using all the predictors in the dataset and call it `art_poisson`. Inspect the results using the `summary` function.
+
+```{r art_poisson, exercise=TRUE,exercise.setup = 'load-data'}
+
+```
+
+```{r art_poisson-solution}
+art_poisson <- glm(art~., data = articles, family = poisson)
+summary(art_poisson)
+```
+
+Which variable does *not* predict article count well? (That is, which one is not statistically significant at $\alpha=0.05$?) Exponentiate the coefficient on this variable. How do you interpret this value?
+
+```{r phd_effect, exercise = TRUE, exercise.setup = 'art-poisson'}
+
+```
+
+```{r phd_effect-solution}
+exp(coefficients(glm(art~., data = articles, family = poisson))["phd"])
+```
+
+### Exercise: Polynomial terms
+
+Just like in other GLMs, we may want to account for the possibility that $\log(\lambda)$ has a non-linear relationship with one of the predictors. In our case, we might suspect that the effect of a more prolific mentor is non-linear. Run the same regression as before, this time adding a quadratic term for `ment`, and print the `summary`.
+
+```{r ment_quad, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r ment_quad-solution}
+art_poisson.quad <- glm(art~.+I(ment^2), data = articles, family = poisson)
+summary(art_poisson.quad)
+```
+
+Quiz time! Use the code chunk below to do any computations you might need. The `articles` dataset and the Poisson regression model `art_poisson.quad` are loaded for you.
+
+```{r coefficients_quiz_work, exercise = TRUE, exercise.setup = 'quadratic-poisson'}
+
+```
+
+```{r coefficients-quiz}
+question('What does the Poisson regression model with the quadratic term in the variable "ment" tell us?',
+  answer("There is evidence to suggest a non-linear relationship between mentor publication rate and candidate publication rate.", correct = TRUE),
+  answer("All else equal, a one-article increase in the mentor's publication rate is associated with a 5.9 percent increase in the candidate's publication rate."),
+  answer("All else equal, for a candidate with an average mentor in terms of publication rate, a one-article increase in the mentor's publication rate is associated with a 4.7 percent increase in the candidate's publication rate.", correct = TRUE),
+  answer("The relationship between mentor publication rate and candidate publication rate is positive over the entire support of mentor publication rate.", correct = TRUE),
+  answer("The relationship between mentor publication rate and candidate publication rate is positive for all mentor publication rates below 87 and negative for all mentor publication rates above that.")
+)
+```
+
+
+## Overdispersion
+
+As we noted before, the sample mean and variance of article counts were not equal, contrary to what the Poisson model assumes. Specifically, the sample variance was much larger than the sample mean, a phenomenon known as **overdispersion**. (Underdispersion, where the variance is smaller than the mean, can also be a problem, although it's rarer---consider the reasons overdispersion might occur.) Importantly, while coefficient estimates will still be consistent, standard errors will be biased, making proper statistical inference impossible.
+
+While overdispersion was easy to check directly in the simple case with one categorical predictor, as you add more predictors the number of cases you have to check grows very quickly, so that manually checking the mean and variance for different cases becomes impractical. Instead, we can use residual deviance to check for overdispersion. Let our null hypothesis be that the model fits the data, i.e. we do not have overdispersion. Then the residual deviance is distributed $\chi^2$ with $n-p$ degrees of freedom, $p$ being the number of predictors in the model including the intercept. If the residual deviance is much greater than the expected value, which is $n-p$ for a $\chi^2_{n-p}$ distribution, then we reject the null and conclude overdispersion.
+
+### Exercise: Diagnosing overdispersion
+
+Perform a $\chi^2$ test for overdispersion in the quadratic model, which has been loaded for you as `art_poisson.quad`. (Hint: Call the `deviance` function on the model to extract the residual deviance.) Print out the $p$-value. Do you conclude that the article count is overdispersed?
+
+```{r overdispersion_test, exercise = TRUE, exercise.setup = 'quadratic-poisson'}
+
+```
+
+```{r overdispersion_test-solution}
+pchisq(deviance(art_poisson.quad), df = df.residual(art_poisson.quad), lower.tail = FALSE)
+```
+
+When the conditional mean isn't equal to the conditional variance, then standard errors will be biased. (But you saw that coming, right?) Specifically, in the case of overdispersion, the variance will be larger than the mean. A quick-and-dirty way to address this is to scale up the sample variances of the coefficients (i.e. the squared standard errors) by the appropriate factor. The scale factor, which we denote $\phi$, is given by the sum of the squared residuals divided by the residual degrees of freedom, i.e.
+
+$$\phi=\frac{\sum_{i=1}^nr_i^2}{n-p}$$
+
+As it turns out, this is roughly an estimate of $\text{Var}(Y)/E(Y)$ whether you use Pearson or deviance residuals for $r_i$. For the most conservative inferences (that is, erring on the side of failing to reject the null), use the larger value for $\phi$. Then we scale up all the standard errors by $\sqrt{\phi}$ to obtain the overdispersion-robust standard errors.
+
+### Exercise: Computing the dispersion parameter
+
+Compute and print $\phi$ for the quadratic Poisson model, which is still loaded as `art_poisson.quad`. Remember to use the most conservative estimate, estimating it using both the deviance and Pearson residuals and using the larger of the two.
+
+```{r robust_se, exercise = TRUE, exercise.setup = 'quadratic-poisson'}
+
+```
+
+```{r robust_se-solution}
+phi_deviance <- deviance(art_poisson.quad)/df.residual(art_poisson.quad)
+phi_pearson <- sum(residuals(art_poisson.quad, type = "pearson")^2)/df.residual(art_poisson.quad)
+phi <- max(phi_deviance, phi_pearson)
+phi
+```
+
+### Exercise: Quasi-Poisson regression
+
+To fit a model that accounts for overdispersion, we can instead fit a **quasi-Poisson regression**, which, in addition to modeling the mean, also models the dispersion parameter. Fit the same model as above (with all predictors and a quadratic term for `ment`), this time specifying `family = quasipoisson` instead of `family = poisson`. Inspect the results with `summary`.
+
+```{r quasipoisson, exercise = TRUE, exercise.setup = 'quadratic-poisson'}
+
+```
+
+```{r quasipoisson-solution}
+art_quasipoisson.quad <- glm(art~.+I(ment^2), data = articles, family = quasipoisson)
+summary(art_quasipoisson.quad)
+```
+
+Compare your results to the regular Poisson model (run the chunk below). What's changed? What's stayed the same? Is the estimated dispersion parameter what you expect?
+
+```{r quasipoisson_compare, exercise = TRUE, exercise.setup = 'quadratic-poisson'}
+summary(art_poisson.quad)
+```
+
+## Negative binomial regression
+
+### Exercise: Fitting a negative binomial regression
+
+Base R's `glm` function doesn't do negative binomial regression; instead, we use the `glm.nb` function from the `MASS` library, which has been loaded for you. The syntax for `glm.nb` is identical to that for `lm`. Fit a negative binomial regression of `art` on all predictors, plus the quadratic term for `ment`. Print the results with `summary`.
+
+```{r nbreg, exercise = TRUE, exercise.setup = 'quadratic-poisson'}
+
+```
+
+```{r nbreg-solution}
+art_nb.quad <- glm.nb(art~.+I(ment^2), data = articles)
+summary(art_nb.quad)
+```
+
+Compare the results of the negative binomial regression with the Poisson and quasi-Poisson regressions with the same predictors. What similarities and differences do you see across the three? (Just run the code below; no need to enter anything new.)
+
+```{r nbreg_compare, exercise = TRUE, exercise.setup = 'all-models'}
+summary(art_poisson.quad)
+summary(art_quasipoisson.quad)
+summary(art_nb.quad)
+```
+
+Notice that, in addition to coefficient estimates, `summary` prints out a value $\theta$, which is equal to the reciprocal of the $\alpha$ parameter that Stata will return.
+
+```{r theta-quiz}
+quiz(
+  question("What does this tell you about the dispersion of the outcome?",
+    answer("The data are overdispersed because theta is not very large (1/theta is very large).", correct = TRUE),
+    answer("The data are underdispersed because theta is not very large."),
+    answer("Nothing; the theta parameter doesn't say anything about dispersion.")
+  )
+)
+```
+
+## Comparing model predictions
+
+We have now fitted three models with the same predictors to model the number of articles published by Ph.D. students in their final three years as candidates: a regular Poisson regression (`art_poisson.quad`), a quasi-Poisson regression to account for overdispersion (`art_quasipoisson.quad`), and a negative binomial regression (`art_nb.quad`). We also saw that the coefficients estimated by the Poisson and quasi-Poisson regressions were identical, the only difference being in their standard errors; as a result, the Poisson and quasi-Poisson models will produce identical predictions.
+
+Now it's time to compare the predictions from the Poisson model to the predictions from the negative binomial model. 
+
+### Exercise: Comparing predictions
+
+The three models have been loaded as `art_poisson.quad`, `art_quasipoisson.quad`, and `art_nb.quad` respectively. Generate the predicted article counts for the Poisson model and then the negative binomial model. (Remember to specify `type = "response"` so that the predictions don't come out on the log scale.) Then plot a histogram of the difference between the predictions (negative binomial predictions minus )
+
+```{r compare_preds_1, exercise = TRUE, exercise.setup = 'all-models'}
+
+```
+
+```{r compare_preds_1-solution}
+poisson_preds <- predict(art_poisson.quad, type = "response")
+nb_preds <- predict(art_nb.quad, type = "response")
+hist(nb_preds - poisson_preds, breaks = 20)
+```
+
+Considering how the coefficient estimates differed between the Poisson model and the negative binomial model, does this look like what you'd expect? Why or why not?
+
+## Zero-inflated Poisson regression
+
+A common way for overdispersion to occur is when zero values are much more common than would be expected under a Poisson distribution. In our publication counts example, this could be because many students pursue a doctorate with no intention of publishing after they finish, instead going into industry. This means that the population could include two distinct groups: first, a group of students who do not intend to publish anything at all and for whom the number of publications is exactly zero; and second, a group of students for whom publication counts really do follow a Poisson distribution.
+
+We can model this using a **zero-inflated Poisson regression (ZIP)** model. Instead of modeling the entire population as Poisson, we first model (using a logistic regression) whether an individual will be "at risk" of having a nonzero value for the outcome variable, and then fit a Poisson regression *conditional on being at risk*.
+
+### Exercise: Fitting a zero-inflated Poisson regression
+
+We will use the `zeroinfl` function in the `pscl` library to fit a ZIP model. The syntax for the `zeroinfl` function is `zeroinfl(outcome~Poisson predictors|risk predictors, data)`. Fit a ZIP regression on article count, using all predictors in the dataset to predict the counts and using an intercept-only model for being at risk of a nonzero article count, then print out the `summary`. The `articles` dataset and the `pscl` library have been loaded for you.
+
+```{r zip_unconditional, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r zip_unconditional-solution}
+zip_unconditional <- zeroinfl(art~fem+mar+kid5+phd+ment|1, data = articles)
+summary(zip_unconditional)
+```
+
+### Exercise: Adding predictors to the risk model
+
+In the previous exercise, we did not use covariates to model the risk of having a nonzero article count; effectively we assumed that all individuals had the same risk. But we can also model the effect of covariates on risk. Fit the ZIP regression with the same predictors as in the previous exercise, this time adding all predictors to the risk model. Then print the `summary`.
+
+```{r zip_covariates, exercise = TRUE, exercise.setup = 'load-data'}
+
+```
+
+```{r zip_covariates-solution}
+zip_covariates <- zeroinfl(art~fem+mar+kid5+phd+ment|fem+mar+kid5+phd+ment, data = articles)
+summary(zip_covariates)
+```
+
+**Important to note**: there is a distinction between having a count of zero under the zero-inflated Poisson model and not being at risk. In our substantive example of article counts, you should think about the difference between someone who continues into academia but doesn't manage to publish anything and someone who looks like that person on observed characteristics but does not go into academia (and thus publishes nothing by virtue of not trying).
+
+## Making predictions under ZIP regression
+
+Making predictions under ZIP regression is not too different from under vanilla Poisson regression; the key difference is that we also have to reckon with the fact that for each individual there's a certain probability that their count can only be zero, regardless of what $\lambda$ would be conditional on the predictors. 
+
+### Exercise: Predicting risk
+
+The ZIP model with covariates that you fit earlier has been loaded as `zip_covariates`. Generate predicted probabilities of being at risk of publishing any articles at all by calling the `predict` function on the model and specifying the argument `type = "zero"`. Print the first six probabilities using the `head` function.
+
+```{r predict_risk, exercise = TRUE, exercise.setup = 'zip-model'}
+
+```
+
+```{r predict_risk-solution}
+risk_probs <- predict(zip_covariates, type = "zero")
+head(risk_probs)
+```
+
+### Exercise: Predicting counts
+
+Remember that publishing zero articles is not the same as not being at risk of publishing. We can use the `predict` function to estimate the probability distribution of article counts for each individual if we instead specify `type = "prob"`. Do this, and print the marginal probability of publishing zero articles. Then print the actual fraction of zeroes observed in the data. How do the two compare? (The model and data have again been loaded for you as `zip_covariates` and `articles` respectively.)
+
+```{r predict_zeroes, exercise = TRUE, exercise.setup = 'zip-model'}
+
+```
+
+```{r predict_zeroes-solution}
+## Predicted zeroes according to the model
+predicted_counts <- predict(zip_covariates, type = "prob")
+zero_probs <- predicted_counts[,1]
+mean(zero_probs)
+
+## Actually observed zeroes
+mean(articles$art == 0)
+```
